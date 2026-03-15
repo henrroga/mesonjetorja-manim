@@ -1322,3 +1322,902 @@ class ExerciseScene(Scene):
             Line(v + dh, v + dh + dv, color=c, stroke_width=2.5),
             Line(v + dv, v + dh + dv, color=c, stroke_width=2.5),
         )
+
+    # ══════════════════════════════════════════
+    #  CROSS-SUBJECT COMPONENTS
+    #  (Physics, Chemistry, Math)
+    # ══════════════════════════════════════════
+
+    # ──────────────────────────────────────────
+    #  VECTOR ARROWS
+    # ──────────────────────────────────────────
+
+    def draw_vector(self, start, end, color=None, label_tex=None,
+                    label_direction=None, stroke_width=4,
+                    max_tip_length=0.25):
+        """
+        Draw a vector arrow with an optional label.
+
+        Useful for: forces, velocities, displacements, electric fields.
+
+        Args:
+            start: Start point (np.array or list).
+            end: End point.
+            color: Arrow color (defaults to SHAPE_COLOR).
+            label_tex: LaTeX label (e.g. r"\\vec{F}"). None to skip.
+            label_direction: Where to place label (auto if None).
+            stroke_width: Arrow thickness.
+            max_tip_length: Arrow head size.
+
+        Returns:
+            (arrow, label) tuple. label is None if label_tex is None.
+        """
+        c = color or SHAPE_COLOR
+        arrow = Arrow(
+            start=np.array(start), end=np.array(end),
+            color=c, stroke_width=stroke_width,
+            max_tip_length_to_length_ratio=max_tip_length,
+            buff=0,
+        )
+        lbl = None
+        if label_tex:
+            mid = (np.array(start) + np.array(end)) / 2
+            if label_direction is None:
+                # Auto: perpendicular to arrow direction
+                d = np.array(end) - np.array(start)
+                perp = np.array([-d[1], d[0], 0])
+                norm = np.linalg.norm(perp)
+                label_direction = perp / norm * 0.4 if norm > 1e-6 else UP * 0.4
+            lbl = MathTex(label_tex, font_size=24, color=c)
+            lbl.next_to(mid, label_direction, buff=0.1)
+        return arrow, lbl
+
+    def show_vector(self, start, end, color=None, label_tex=None,
+                    label_direction=None):
+        """Draw and animate a vector arrow with label."""
+        arrow, lbl = self.draw_vector(start, end, color=color,
+                                       label_tex=label_tex,
+                                       label_direction=label_direction)
+        anims = [GrowArrow(arrow)]
+        if lbl:
+            anims.append(FadeIn(lbl))
+        self.play(*anims, run_time=T_KEY_EQUATION)
+        self.wait(0.5)
+        return arrow, lbl
+
+    # ──────────────────────────────────────────
+    #  FREE BODY DIAGRAM
+    # ──────────────────────────────────────────
+
+    def show_free_body_diagram(self, forces, body_position=ORIGIN,
+                                body_radius=0.3, body_label=None):
+        """
+        Draw a free body diagram: a body with force vectors.
+
+        Args:
+            forces: List of dicts, each with:
+                - "direction": np.array unit direction (e.g. UP, DOWN, RIGHT)
+                - "magnitude": visual length of arrow
+                - "label": LaTeX label (e.g. r"\\vec{F}_g")
+                - "color": arrow color (optional)
+            body_position: Center of the body dot.
+            body_radius: Size of the body circle.
+            body_label: Label for the body (e.g. "m").
+
+        Returns:
+            VGroup of all elements.
+        """
+        bp = np.array(body_position)
+
+        # Body
+        body = Circle(radius=body_radius, color=WHITE, fill_color=DIVIDER_COLOR,
+                       fill_opacity=0.3, stroke_width=2)
+        body.move_to(bp)
+
+        elements = [body]
+
+        if body_label:
+            b_lbl = MathTex(body_label, font_size=24, color=WHITE)
+            b_lbl.move_to(bp)
+            elements.append(b_lbl)
+
+        self.play(Create(body), run_time=0.6)
+        if body_label:
+            self.play(FadeIn(b_lbl), run_time=0.3)
+
+        # Force arrows
+        default_colors = [AUX_COLOR, SHAPE_COLOR, ANSWER_COLOR, HIGHLIGHT_COLOR, LABEL_COLOR]
+        for i, f in enumerate(forces):
+            direction = np.array(f["direction"])
+            direction = direction / np.linalg.norm(direction)
+            mag = f.get("magnitude", 1.5)
+            c = f.get("color", default_colors[i % len(default_colors)])
+
+            start = bp + direction * body_radius
+            end = start + direction * mag
+
+            arrow, lbl = self.draw_vector(start, end, color=c,
+                                           label_tex=f.get("label"))
+            elements.append(arrow)
+            if lbl:
+                elements.append(lbl)
+
+            anims = [GrowArrow(arrow)]
+            if lbl:
+                anims.append(FadeIn(lbl))
+            self.play(*anims, run_time=0.6)
+
+        self.wait(W_AFTER_ROUTINE)
+        return VGroup(*elements)
+
+    # ──────────────────────────────────────────
+    #  BAR CHART
+    # ──────────────────────────────────────────
+
+    def show_bar_chart(self, values, labels, title_text=None,
+                       colors=None, position=None, bar_width=0.6,
+                       max_height=3.5, show_values=True, value_format=None):
+        """
+        Display a labeled bar chart.
+
+        Useful for: energy comparisons (KE/PE), stoichiometry (moles/mass),
+        statistics, any quantity comparison.
+
+        Args:
+            values: List of numeric values.
+            labels: List of LaTeX strings for each bar.
+            title_text: Chart title (optional).
+            colors: List of bar colors (cycles defaults if None).
+            position: Where to place the chart.
+            bar_width: Width of each bar.
+            max_height: Maximum bar height in scene units.
+            show_values: Display numeric value on top of each bar.
+            value_format: Format string for values (e.g. "{:.1f}").
+
+        Returns:
+            VGroup of all chart elements.
+        """
+        default_colors = [SHAPE_COLOR, AUX_COLOR, ANSWER_COLOR,
+                          HIGHLIGHT_COLOR, LABEL_COLOR]
+
+        max_val = max(abs(v) for v in values) if values else 1
+        scale = max_height / max_val if max_val > 0 else 1
+
+        bars = VGroup()
+        bar_labels = VGroup()
+        val_labels = VGroup()
+
+        for i, (val, label_tex) in enumerate(zip(values, labels)):
+            c = (colors[i] if colors else
+                 default_colors[i % len(default_colors)])
+
+            height = abs(val) * scale
+            bar = Rectangle(
+                width=bar_width, height=max(height, 0.05),
+                fill_color=c, fill_opacity=0.7,
+                stroke_color=c, stroke_width=2,
+            )
+
+            bars.add(bar)
+
+            lbl = MathTex(label_tex, font_size=22, color=c)
+            bar_labels.add(lbl)
+
+            if show_values:
+                fmt = value_format or "{}"
+                v_lbl = MathTex(fmt.format(val), font_size=20, color=c)
+                val_labels.add(v_lbl)
+
+        # Arrange bars side by side
+        bars.arrange(RIGHT, buff=0.4, aligned_edge=DOWN)
+
+        # Position labels below bars
+        for bar, lbl in zip(bars, bar_labels):
+            lbl.next_to(bar, DOWN, buff=0.2)
+
+        # Position values above bars
+        if show_values:
+            for bar, v_lbl in zip(bars, val_labels):
+                v_lbl.next_to(bar, UP, buff=0.1)
+
+        # Baseline
+        baseline = Line(
+            bars.get_left() + LEFT * 0.3 + DOWN * 0.01,
+            bars.get_right() + RIGHT * 0.3 + DOWN * 0.01,
+            color=DIVIDER_COLOR, stroke_width=2,
+        )
+
+        all_elements = VGroup(bars, bar_labels, baseline)
+        if show_values:
+            all_elements.add(val_labels)
+
+        if position is not None:
+            all_elements.move_to(position)
+
+        # Title
+        if title_text:
+            title = Text(title_text, font_size=STEP_TITLE_SIZE,
+                         color=STEP_TITLE_COLOR, weight=BOLD)
+            title.next_to(all_elements, UP, buff=0.4)
+            all_elements.add(title)
+
+        # Animate
+        self.play(FadeIn(baseline), run_time=0.3)
+        self.play(
+            LaggedStart(
+                *[GrowFromEdge(bar, DOWN) for bar in bars],
+                lag_ratio=0.15,
+            ),
+            run_time=1.2,
+        )
+        self.play(
+            *[FadeIn(l) for l in bar_labels],
+            run_time=0.5,
+        )
+        if show_values:
+            self.play(*[FadeIn(v) for v in val_labels], run_time=0.5)
+        if title_text:
+            self.play(Write(title), run_time=0.6)
+
+        self.wait(W_AFTER_ROUTINE)
+        return all_elements
+
+    # ──────────────────────────────────────────
+    #  LABELED DIAGRAM
+    # ──────────────────────────────────────────
+
+    def add_label(self, target, label_tex, direction=RIGHT, color=None,
+                  font_size=22, line=False):
+        """
+        Add a label to any mobject, optionally with a connecting line.
+
+        Useful for labeling parts of any diagram (physics, chemistry, biology).
+
+        Args:
+            target: The mobject to label.
+            label_tex: LaTeX string for the label.
+            direction: Where to place (UP, DOWN, LEFT, RIGHT, etc.)
+            color: Label color.
+            font_size: Label font size.
+            line: If True, draw a thin line from label to target.
+
+        Returns:
+            (label, line_or_None) tuple.
+        """
+        c = color or BODY_TEXT_COLOR
+        lbl = MathTex(label_tex, font_size=font_size, color=c)
+        lbl.next_to(target, direction, buff=0.3)
+
+        connector = None
+        if line:
+            connector = Line(
+                target.get_center(), lbl.get_center(),
+                color=DIVIDER_COLOR, stroke_width=1, stroke_opacity=0.5,
+            )
+            self.play(Create(connector), FadeIn(lbl), run_time=T_BODY_FADE)
+        else:
+            self.play(FadeIn(lbl), run_time=T_BODY_FADE)
+
+        return lbl, connector
+
+    def add_brace_label(self, mobject, label_tex, direction=DOWN, color=None,
+                        font_size=22):
+        """
+        Add a brace with label to a mobject (for showing lengths, ranges, etc.).
+
+        Args:
+            mobject: Mobject to brace.
+            label_tex: LaTeX label.
+            direction: Brace direction.
+            color: Brace and label color.
+            font_size: Label font size.
+
+        Returns:
+            (brace, label) tuple.
+        """
+        c = color or BODY_TEXT_COLOR
+        brace = Brace(mobject, direction, color=c)
+        lbl = MathTex(label_tex, font_size=font_size, color=c)
+        brace.put_at_tip(lbl)
+
+        self.play(GrowFromCenter(brace), FadeIn(lbl), run_time=T_BODY_FADE)
+        return brace, lbl
+
+    # ──────────────────────────────────────────
+    #  BEFORE / AFTER LAYOUT
+    # ──────────────────────────────────────────
+
+    def show_before_after(self, before_group, after_group,
+                          before_title="Para", after_title="Pas",
+                          arrow_label=None):
+        """
+        Show a before/after comparison with an arrow between them.
+
+        Useful for: collisions, reactions, transformations, state changes.
+
+        Args:
+            before_group: VGroup for the "before" state.
+            after_group: VGroup for the "after" state.
+            before_title: Title above left side.
+            after_title: Title above right side.
+            arrow_label: Label on the arrow (e.g. "react", "collision").
+
+        Returns:
+            VGroup of entire layout.
+        """
+        # Position
+        before_group.move_to(LEFT * 3.5)
+        after_group.move_to(RIGHT * 3.5)
+
+        # Titles
+        b_title = Text(before_title, font_size=STEP_TITLE_SIZE,
+                        color=STEP_TITLE_COLOR, weight=BOLD)
+        b_title.next_to(before_group, UP, buff=0.4)
+
+        a_title = Text(after_title, font_size=STEP_TITLE_SIZE,
+                        color=STEP_TITLE_COLOR, weight=BOLD)
+        a_title.next_to(after_group, UP, buff=0.4)
+
+        # Arrow
+        arrow = Arrow(LEFT * 1.2, RIGHT * 1.2, color=DIVIDER_COLOR,
+                       stroke_width=3)
+        arrow.move_to(ORIGIN)
+
+        elements = [before_group, after_group, b_title, a_title, arrow]
+
+        if arrow_label:
+            a_lbl = MathTex(arrow_label, font_size=20, color=BODY_TEXT_COLOR)
+            a_lbl.next_to(arrow, UP, buff=0.1)
+            elements.append(a_lbl)
+
+        # Animate
+        self.play(Write(b_title), FadeIn(before_group), run_time=T_SHAPE_CREATE)
+        self.wait(W_AFTER_ROUTINE)
+        self.play(GrowArrow(arrow), run_time=0.6)
+        if arrow_label:
+            self.play(FadeIn(a_lbl), run_time=0.3)
+        self.play(Write(a_title), FadeIn(after_group), run_time=T_SHAPE_CREATE)
+        self.wait(W_AFTER_KEY)
+
+        return VGroup(*elements)
+
+    # ──────────────────────────────────────────
+    #  UNIT CONVERSION CHAIN
+    # ──────────────────────────────────────────
+
+    def show_conversion_chain(self, steps, position=None):
+        """
+        Show a step-by-step unit conversion.
+
+        Useful for: physics (m/s to km/h), chemistry (moles to grams), etc.
+
+        Args:
+            steps: List of LaTeX strings for each step.
+                   e.g. [r"72\\,\\text{km/h}", r"\\times \\frac{1000}{3600}",
+                         r"= 20\\,\\text{m/s}"]
+            position: Where to place (default: ORIGIN).
+
+        Returns:
+            VGroup of all step elements.
+        """
+        elements = []
+        for i, step_tex in enumerate(steps):
+            eq = MathTex(step_tex, font_size=CALC_SIZE)
+            if i == 0:
+                if position is not None:
+                    eq.move_to(position)
+            else:
+                eq.next_to(elements[-1], RIGHT, buff=0.15)
+            elements.append(eq)
+
+        # Check if it fits, if not stack vertically
+        group = VGroup(*elements)
+        if group.get_width() > 12:
+            # Re-arrange vertically
+            group.arrange(DOWN, buff=0.3, aligned_edge=LEFT)
+            if position is not None:
+                group.move_to(position)
+
+        # Color the last step as the answer
+        if len(elements) > 1:
+            elements[-1].set_color(ANSWER_COLOR)
+
+        self.play(
+            LaggedStart(*[Write(e) for e in elements], lag_ratio=0.3),
+            run_time=T_KEY_EQUATION * len(elements) * 0.5,
+        )
+        self.wait(W_AFTER_KEY)
+        return group
+
+    # ══════════════════════════════════════════
+    #  PHYSICS COMPONENTS
+    # ══════════════════════════════════════════
+
+    # ──────────────────────────────────────────
+    #  KINEMATICS GRAPHS
+    # ──────────────────────────────────────────
+
+    def show_kinematics_graph(self, graph_type, segments, t_max,
+                               y_label=None, y_max=None,
+                               show_area=False, show_slope=False):
+        """
+        Display a piecewise-linear kinematics graph (x-t, v-t, or a-t).
+
+        Args:
+            graph_type: "position", "velocity", or "acceleration".
+            segments: List of (t_end, value) tuples defining
+                      piecewise-constant or linear segments.
+                      For "velocity": [(2, 10), (5, 10), (7, 0)] means
+                      v=10 from t=0..2, v=10 from t=2..5, v=0 from t=5..7.
+            t_max: Maximum time.
+            y_label: Custom y-axis label (auto if None).
+            y_max: Custom y-axis max (auto if None).
+            show_area: Shade area under curve (useful for v-t → displacement).
+            show_slope: Draw slope annotation (useful for x-t → velocity).
+
+        Returns:
+            (axes, graph_group) tuple.
+        """
+        type_labels = {
+            "position": "x\\,(\\text{m})",
+            "velocity": "v\\,(\\text{m/s})",
+            "acceleration": "a\\,(\\text{m/s}^2)",
+        }
+        y_lbl = y_label or type_labels.get(graph_type, "y")
+
+        # Determine y range
+        all_vals = [v for _, v in segments]
+        y_min_val = min(0, min(all_vals)) - 1
+        y_max_val = y_max or (max(all_vals) + 2)
+        y_step = max(1, int((y_max_val - y_min_val) / 5))
+
+        axes = self.create_axes_custom(
+            [0, t_max, max(1, t_max // 6)],
+            [y_min_val, y_max_val, y_step],
+            x_length=7, y_length=4.5,
+        )
+        axes_labels = VGroup(
+            MathTex("t\\,(\\text{s})", font_size=20).next_to(axes.x_axis, RIGHT, buff=0.1),
+            MathTex(y_lbl, font_size=20).next_to(axes.y_axis, UP, buff=0.1),
+        )
+
+        # Build piecewise line
+        points = [axes.c2p(0, segments[0][1] if segments else 0)]
+        t_prev = 0
+        for t_end, val in segments:
+            points.append(axes.c2p(t_end, val))
+            t_prev = t_end
+
+        graph_line = VMobject(color=SHAPE_COLOR, stroke_width=3)
+        graph_line.set_points_as_corners(points)
+
+        elements = [axes, axes_labels, graph_line]
+
+        self.play(Create(axes), FadeIn(axes_labels), run_time=T_SHAPE_CREATE)
+        self.play(Create(graph_line), run_time=T_SHAPE_CREATE)
+
+        # Key value dots
+        t_prev = 0
+        for t_end, val in segments:
+            dot = Dot(axes.c2p(t_end, val), color=LABEL_COLOR, radius=0.06)
+            elements.append(dot)
+            t_prev = t_end
+        self.play(*[FadeIn(e) for e in elements[3:]], run_time=0.5)
+
+        # Shade area
+        if show_area:
+            # Build polygon for area under curve
+            area_points = [axes.c2p(0, 0)]
+            area_points.extend(points)
+            area_points.append(axes.c2p(t_prev, 0))
+
+            area = Polygon(*area_points, fill_color=SHAPE_COLOR,
+                           fill_opacity=0.2, stroke_width=0)
+            elements.append(area)
+            self.play(FadeIn(area), run_time=T_BODY_FADE)
+
+        self.wait(W_AFTER_KEY)
+        return axes, VGroup(*elements)
+
+    # ──────────────────────────────────────────
+    #  PROJECTILE MOTION
+    # ──────────────────────────────────────────
+
+    def show_projectile_path(self, v0, angle_deg, g=9.81,
+                              show_components=False, show_max_height=True,
+                              show_range=True):
+        """
+        Animate a projectile motion parabola.
+
+        Args:
+            v0: Initial speed (m/s).
+            angle_deg: Launch angle in degrees.
+            g: Gravitational acceleration.
+            show_components: Show v_x and v_y components at start.
+            show_max_height: Mark maximum height.
+            show_range: Mark horizontal range.
+
+        Returns:
+            (axes, graph_group) tuple.
+        """
+        angle_rad = angle_deg * DEGREES
+        v0x = v0 * np.cos(angle_rad)
+        v0y = v0 * np.sin(angle_rad)
+
+        t_flight = 2 * v0y / g
+        x_range_val = v0x * t_flight
+        y_max_val = v0y**2 / (2 * g)
+
+        # Scale for visualization
+        x_bound = x_range_val * 1.2
+        y_bound = y_max_val * 1.4
+
+        axes = self.create_axes_custom(
+            [0, x_bound, x_bound / 5],
+            [0, y_bound, y_bound / 4],
+            x_length=8, y_length=4.5,
+        )
+        x_lbl = MathTex("x\\,(\\text{m})", font_size=20).next_to(axes.x_axis, RIGHT, buff=0.1)
+        y_lbl = MathTex("y\\,(\\text{m})", font_size=20).next_to(axes.y_axis, UP, buff=0.1)
+
+        # Parametric path
+        path = axes.plot_parametric_curve(
+            lambda t: np.array([v0x * t, v0y * t - 0.5 * g * t**2, 0]),
+            t_range=[0, t_flight],
+            color=SHAPE_COLOR, stroke_width=3,
+        )
+
+        elements = [axes, x_lbl, y_lbl, path]
+
+        self.play(Create(axes), FadeIn(x_lbl), FadeIn(y_lbl), run_time=T_SHAPE_CREATE)
+        self.play(Create(path), run_time=T_SHAPE_CREATE * 1.5)
+
+        # Velocity components at launch
+        if show_components:
+            origin = axes.c2p(0, 0)
+            vx_end = axes.c2p(v0x * 0.15, 0)
+            vy_end = axes.c2p(0, v0y * 0.15)
+            v_end = axes.c2p(v0x * 0.15, v0y * 0.15)
+
+            vx_arr, vx_lbl = self.draw_vector(origin, vx_end, color=AUX_COLOR,
+                                               label_tex=r"v_x")
+            vy_arr, vy_lbl = self.draw_vector(origin, vy_end, color=HIGHLIGHT_COLOR,
+                                               label_tex=r"v_y")
+            v_arr, v_lbl = self.draw_vector(origin, v_end, color=ANSWER_COLOR,
+                                             label_tex=r"v_0")
+            for arr, lbl in [(vx_arr, vx_lbl), (vy_arr, vy_lbl), (v_arr, v_lbl)]:
+                self.play(GrowArrow(arr), FadeIn(lbl), run_time=0.5)
+                elements.extend([arr, lbl])
+
+        # Max height
+        if show_max_height:
+            t_apex = v0y / g
+            h_max = v0y * t_apex - 0.5 * g * t_apex**2
+            x_apex = v0x * t_apex
+            dot_h = Dot(axes.c2p(x_apex, h_max), color=ANSWER_COLOR, radius=0.08)
+            lbl_h = MathTex(f"h_{{max}} = {h_max:.1f}", font_size=20, color=ANSWER_COLOR)
+            lbl_h.next_to(dot_h, UR, buff=0.1)
+            # Dashed line down
+            dash_h = DashedLine(axes.c2p(x_apex, 0), axes.c2p(x_apex, h_max),
+                                color=DIVIDER_COLOR, dash_length=0.08, stroke_width=1.5)
+            elements.extend([dot_h, lbl_h, dash_h])
+            self.play(FadeIn(dot_h), FadeIn(lbl_h), Create(dash_h), run_time=0.6)
+
+        # Range
+        if show_range:
+            dot_r = Dot(axes.c2p(x_range_val, 0), color=LABEL_COLOR, radius=0.08)
+            lbl_r = MathTex(f"R = {x_range_val:.1f}", font_size=20, color=LABEL_COLOR)
+            lbl_r.next_to(dot_r, DOWN, buff=0.15)
+            elements.extend([dot_r, lbl_r])
+            self.play(FadeIn(dot_r), FadeIn(lbl_r), run_time=0.5)
+
+        self.wait(W_AFTER_KEY)
+        return axes, VGroup(*elements)
+
+    # ──────────────────────────────────────────
+    #  ENERGY BAR CHART
+    # ──────────────────────────────────────────
+
+    def show_energy_bars(self, states, position=None):
+        """
+        Show energy bar charts for multiple states (before/after).
+
+        Common in conservation of energy problems.
+
+        Args:
+            states: List of dicts, each with:
+                - "title": State label (e.g. "Fillimi", "Fundi")
+                - "KE": kinetic energy value
+                - "PE": potential energy value
+                - "TE": total energy (optional, auto-calculated)
+            position: Where to place.
+
+        Returns:
+            VGroup of all charts.
+        """
+        charts = VGroup()
+        n = len(states)
+        spacing = 10.0 / n
+
+        for i, state in enumerate(states):
+            ke = state.get("KE", 0)
+            pe = state.get("PE", 0)
+            te = state.get("TE", ke + pe)
+
+            chart = self.show_bar_chart(
+                values=[ke, pe, te],
+                labels=[r"E_k", r"E_p", r"E_{tot}"],
+                title_text=state.get("title"),
+                colors=[AUX_COLOR, SHAPE_COLOR, ANSWER_COLOR],
+                position=LEFT * (spacing * (n - 1) / 2) + RIGHT * (spacing * i),
+                bar_width=0.45,
+                max_height=2.5,
+                value_format="{:.0f}",
+            )
+            charts.add(chart)
+
+        return charts
+
+    # ══════════════════════════════════════════
+    #  CHEMISTRY COMPONENTS
+    # ══════════════════════════════════════════
+
+    # ──────────────────────────────────────────
+    #  CHEMICAL EQUATION
+    # ──────────────────────────────────────────
+
+    def show_chemical_equation(self, reactants, products, coefficients=None,
+                                position=None, balanced=True):
+        """
+        Display a chemical equation with optional coefficient highlighting.
+
+        Args:
+            reactants: List of formula strings (e.g. ["H_2", "O_2"]).
+            products: List of formula strings (e.g. ["H_2O"]).
+            coefficients: Dict mapping formula -> coefficient string.
+                          e.g. {"H_2": "2", "H_2O": "2"}
+            position: Where to place.
+            balanced: If True, show checkmark; if False, show X.
+
+        Returns:
+            The equation VGroup.
+        """
+        parts = []
+        coeffs = coefficients or {}
+
+        # Build reactant side
+        for i, r in enumerate(reactants):
+            coeff = coeffs.get(r, "")
+            if coeff:
+                c_tex = MathTex(coeff, font_size=CALC_SIZE, color=ANSWER_COLOR)
+                parts.append(c_tex)
+            parts.append(MathTex(r"\\text{" + r + "}", font_size=CALC_SIZE))
+            if i < len(reactants) - 1:
+                parts.append(MathTex("+", font_size=CALC_SIZE, color=DIVIDER_COLOR))
+
+        # Arrow
+        parts.append(MathTex(r"\\rightarrow", font_size=CALC_SIZE, color=BODY_TEXT_COLOR))
+
+        # Build product side
+        for i, p in enumerate(products):
+            coeff = coeffs.get(p, "")
+            if coeff:
+                c_tex = MathTex(coeff, font_size=CALC_SIZE, color=ANSWER_COLOR)
+                parts.append(c_tex)
+            parts.append(MathTex(r"\\text{" + p + "}", font_size=CALC_SIZE))
+            if i < len(products) - 1:
+                parts.append(MathTex("+", font_size=CALC_SIZE, color=DIVIDER_COLOR))
+
+        group = VGroup(*parts).arrange(RIGHT, buff=0.15)
+        if position is not None:
+            group.move_to(position)
+
+        self.play(
+            LaggedStart(*[FadeIn(p) for p in parts], lag_ratio=0.1),
+            run_time=T_SHAPE_CREATE,
+        )
+        self.wait(W_AFTER_ROUTINE)
+
+        return group
+
+    # ──────────────────────────────────────────
+    #  REACTION ENERGY DIAGRAM
+    # ──────────────────────────────────────────
+
+    def show_reaction_energy_diagram(self, e_reactants, e_products, e_activation,
+                                      labels=None, position=None):
+        """
+        Show a reaction energy (enthalpy) diagram.
+
+        Displays: reactant energy level → activation energy peak → product level.
+
+        Args:
+            e_reactants: Energy level of reactants.
+            e_products: Energy level of products.
+            e_activation: Activation energy (height above reactants).
+            labels: Dict with optional keys:
+                    "reactants", "products", "activation", "delta_h"
+            position: Where to place.
+
+        Returns:
+            VGroup of all elements.
+        """
+        lbls = labels or {}
+
+        # Scale
+        e_max = max(e_reactants + e_activation, e_products) * 1.3
+        e_min = min(e_reactants, e_products) * 0.8 if min(e_reactants, e_products) > 0 else -1
+
+        axes = self.create_axes_custom(
+            [0, 10, 2], [e_min, e_max, (e_max - e_min) / 5],
+            x_length=8, y_length=5, include_numbers=False,
+        )
+
+        # Axis labels
+        x_lbl = Text("Rruga e reaksionit", font_size=18, color=BODY_TEXT_COLOR)
+        x_lbl.next_to(axes.x_axis, DOWN, buff=0.3)
+        y_lbl = Text("Energjia", font_size=18, color=BODY_TEXT_COLOR)
+        y_lbl.next_to(axes.y_axis, UP, buff=0.2)
+
+        # Reactant level (flat line)
+        r_line = Line(axes.c2p(0.5, e_reactants), axes.c2p(3, e_reactants),
+                       color=SHAPE_COLOR, stroke_width=3)
+        r_lbl = MathTex(
+            lbls.get("reactants", r"\text{Reaktantët}"),
+            font_size=20, color=SHAPE_COLOR,
+        )
+        r_lbl.next_to(r_line, LEFT, buff=0.15)
+
+        # Product level
+        p_line = Line(axes.c2p(7, e_products), axes.c2p(9.5, e_products),
+                       color=ANSWER_COLOR, stroke_width=3)
+        p_lbl = MathTex(
+            lbls.get("products", r"\text{Produktet}"),
+            font_size=20, color=ANSWER_COLOR,
+        )
+        p_lbl.next_to(p_line, RIGHT, buff=0.15)
+
+        # Activation energy curve (smooth bump)
+        peak_e = e_reactants + e_activation
+        curve_points = []
+        for t in np.linspace(0, 1, 50):
+            x = 3 + 4 * t
+            # Gaussian-ish bump
+            y = e_reactants + (peak_e - e_reactants) * np.exp(-((t - 0.35)**2) / 0.04)
+            if t > 0.5:
+                # Transition down to products
+                blend = (t - 0.5) / 0.5
+                y = peak_e * np.exp(-((t - 0.35)**2) / 0.04) + e_products * blend
+                y = e_products + (peak_e - e_products) * np.exp(-((t - 0.35)**2) / 0.04)
+            curve_points.append(axes.c2p(x, y))
+
+        # Simpler approach: use a smooth curve through key points
+        key_pts = [
+            axes.c2p(3, e_reactants),
+            axes.c2p(4, e_reactants + e_activation * 0.5),
+            axes.c2p(5, e_reactants + e_activation),
+            axes.c2p(6, e_products + (e_reactants + e_activation - e_products) * 0.5),
+            axes.c2p(7, e_products),
+        ]
+        curve = VMobject(color=AUX_COLOR, stroke_width=2.5)
+        curve.set_points_smoothly(key_pts)
+
+        # Activation energy arrow
+        ea_arrow = DoubleArrow(
+            axes.c2p(4.2, e_reactants), axes.c2p(4.2, e_reactants + e_activation),
+            color=HIGHLIGHT_COLOR, stroke_width=2, buff=0,
+            max_tip_length_to_length_ratio=0.1,
+        )
+        ea_lbl = MathTex(
+            lbls.get("activation", r"E_a"),
+            font_size=22, color=HIGHLIGHT_COLOR,
+        )
+        ea_lbl.next_to(ea_arrow, LEFT, buff=0.1)
+
+        # Delta H arrow
+        dh_arrow = DoubleArrow(
+            axes.c2p(8.5, e_reactants), axes.c2p(8.5, e_products),
+            color=LABEL_COLOR, stroke_width=2, buff=0,
+            max_tip_length_to_length_ratio=0.1,
+        )
+        dh_lbl = MathTex(
+            lbls.get("delta_h", r"\Delta H"),
+            font_size=22, color=LABEL_COLOR,
+        )
+        dh_lbl.next_to(dh_arrow, RIGHT, buff=0.1)
+
+        elements = VGroup(axes, x_lbl, y_lbl, r_line, r_lbl,
+                          p_line, p_lbl, curve, ea_arrow, ea_lbl,
+                          dh_arrow, dh_lbl)
+        if position is not None:
+            elements.move_to(position)
+
+        # Animate
+        self.play(Create(axes), FadeIn(x_lbl), FadeIn(y_lbl), run_time=T_SHAPE_CREATE)
+        self.play(Create(r_line), FadeIn(r_lbl), run_time=0.8)
+        self.play(Create(curve), run_time=T_SHAPE_CREATE)
+        self.play(Create(p_line), FadeIn(p_lbl), run_time=0.8)
+        self.play(GrowArrow(ea_arrow), FadeIn(ea_lbl), run_time=0.6)
+        self.play(GrowArrow(dh_arrow), FadeIn(dh_lbl), run_time=0.6)
+        self.wait(W_AFTER_KEY)
+
+        return elements
+
+    # ──────────────────────────────────────────
+    #  ELECTRON CONFIGURATION
+    # ──────────────────────────────────────────
+
+    def show_electron_config(self, element_symbol, config_str, orbital_diagram=None,
+                              position=None):
+        """
+        Display an electron configuration with optional orbital box diagram.
+
+        Args:
+            element_symbol: Element symbol (e.g. "Na").
+            config_str: Configuration string LaTeX
+                        (e.g. r"1s^2\\,2s^2\\,2p^6\\,3s^1").
+            orbital_diagram: List of (orbital_name, n_electrons, max_electrons)
+                            tuples for box diagram. None to skip.
+                            e.g. [("1s", 2, 2), ("2s", 2, 2), ("2p", 6, 6), ("3s", 1, 2)]
+            position: Where to place.
+
+        Returns:
+            VGroup of all elements.
+        """
+        # Element symbol
+        elem = MathTex(
+            r"\text{" + element_symbol + r"}: ",
+            font_size=CALC_SIZE + 4, color=SHAPE_COLOR,
+        )
+        config = MathTex(config_str, font_size=CALC_SIZE, color=WHITE)
+
+        top_line = VGroup(elem, config).arrange(RIGHT, buff=0.2)
+        if position is not None:
+            top_line.move_to(position + UP * 1.5)
+        else:
+            top_line.move_to(UP * 1.5)
+
+        self.play(Write(elem), run_time=0.5)
+        self.play(Write(config), run_time=T_KEY_EQUATION)
+        self.wait(W_AFTER_ROUTINE)
+
+        elements = [top_line]
+
+        # Orbital box diagram
+        if orbital_diagram:
+            boxes_group = VGroup()
+            for orbital_name, n_e, max_e in orbital_diagram:
+                # Label
+                o_lbl = MathTex(orbital_name, font_size=18, color=BODY_TEXT_COLOR)
+
+                # Boxes (one per electron pair slot)
+                n_slots = max_e // 2 if max_e > 1 else 1
+                slot_boxes = VGroup()
+                for s in range(n_slots):
+                    box = Square(side_length=0.35, color=DIVIDER_COLOR, stroke_width=1.5)
+                    # Arrows inside
+                    arrows_in = VGroup()
+                    e_in_slot = min(2, n_e - s * 2)
+                    if e_in_slot >= 1:
+                        up_arrow = MathTex(r"\uparrow", font_size=16, color=ANSWER_COLOR)
+                        up_arrow.move_to(box.get_center() + LEFT * 0.06)
+                        arrows_in.add(up_arrow)
+                    if e_in_slot >= 2:
+                        down_arrow = MathTex(r"\downarrow", font_size=16, color=AUX_COLOR)
+                        down_arrow.move_to(box.get_center() + RIGHT * 0.06)
+                        arrows_in.add(down_arrow)
+                    slot_boxes.add(VGroup(box, arrows_in))
+
+                slot_boxes.arrange(RIGHT, buff=0.05)
+                o_lbl.next_to(slot_boxes, DOWN, buff=0.1)
+                orbital_group = VGroup(slot_boxes, o_lbl)
+                boxes_group.add(orbital_group)
+
+            boxes_group.arrange(RIGHT, buff=0.3)
+            boxes_group.next_to(top_line, DOWN, buff=0.6)
+
+            self.play(FadeIn(boxes_group), run_time=T_SHAPE_CREATE)
+            self.wait(W_AFTER_KEY)
+            elements.append(boxes_group)
+
+        return VGroup(*elements)
