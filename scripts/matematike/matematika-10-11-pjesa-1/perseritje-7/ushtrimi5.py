@@ -71,7 +71,7 @@ class Ushtrimi5(ExerciseScene):
         lbl = None
         if label_tex:
             center = sum(np.array(c) for c in corners) / 4
-            lbl = MathTex(label_tex, font_size=28, color=color, weight=BOLD)
+            lbl = MathTex(label_tex, font_size=28, color=color)
             lbl.next_to(center, label_dir, buff=0.15)
 
         return rect, lbl
