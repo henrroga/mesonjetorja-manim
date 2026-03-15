@@ -1,5 +1,6 @@
 # Manim output
 media/
+output/
 
 # Python
 __pycache__/
