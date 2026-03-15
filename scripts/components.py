@@ -524,6 +524,722 @@ class ExerciseScene(Scene):
     #  GEOMETRY HELPERS
     # ──────────────────────────────────────────
 
+    # ──────────────────────────────────────────
+    #  ASYMMETRIC / CUSTOM AXES
+    # ──────────────────────────────────────────
+
+    def create_axes_custom(self, x_range, y_range, x_length=6, y_length=5.5,
+                           include_numbers=True, font_size=18):
+        """
+        Create Axes with independent x/y ranges.
+
+        Unlike create_axes() which assumes symmetric ranges, this supports
+        any [min, max, step] for each axis. Useful for exponential, log,
+        and trig graphs where the domain/range aren't symmetric.
+
+        Args:
+            x_range: [x_min, x_max, x_step]
+            y_range: [y_min, y_max, y_step]
+            x_length: Visual width.
+            y_length: Visual height.
+            include_numbers: Show tick numbers.
+            font_size: Number font size.
+        """
+        return Axes(
+            x_range=x_range,
+            y_range=y_range,
+            x_length=x_length,
+            y_length=y_length,
+            axis_config={
+                "include_tip": True,
+                "include_numbers": include_numbers,
+                "font_size": font_size,
+                "color": DIVIDER_COLOR,
+            },
+        )
+
+    # ──────────────────────────────────────────
+    #  FUNCTION GRAPHING
+    # ──────────────────────────────────────────
+
+    def plot_function(self, axes, func, x_range, color=None,
+                      stroke_width=2.5, label_tex=None, label_direction=UR):
+        """
+        Plot a function on axes with an optional label.
+
+        Args:
+            axes: Axes object.
+            func: Callable f(x) -> y.
+            x_range: [x_min, x_max] for the plot domain.
+            color: Curve color (defaults to SHAPE_COLOR).
+            stroke_width: Line width.
+            label_tex: LaTeX label (e.g. r"y = x^2"). None to skip.
+            label_direction: Where to place label relative to curve end.
+
+        Returns:
+            (curve, label) tuple. label is None if label_tex is None.
+        """
+        c = color or SHAPE_COLOR
+        curve = axes.plot(func, x_range=x_range, color=c, stroke_width=stroke_width)
+        lbl = None
+        if label_tex:
+            lbl = MathTex(label_tex, font_size=20, color=c)
+            lbl.next_to(curve.point_from_proportion(0.85), label_direction, buff=0.1)
+        return curve, lbl
+
+    def show_function_graph(self, functions, x_range_axes, y_range_axes,
+                            points=None, point_labels=None,
+                            show_roots=False, animate_construction=True):
+        """
+        Full animated function graph with curves, points, and labels.
+
+        Useful for: quadratic, exponential, logarithmic, trigonometric exercises.
+
+        Args:
+            functions: List of dicts, each with:
+                - "func": callable f(x) -> y
+                - "x_range": [x_min, x_max] for plot domain
+                - "label": LaTeX label string (optional)
+                - "color": color (optional, cycles through SHAPE/AUX/HIGHLIGHT)
+            x_range_axes: [x_min, x_max, step] for axes
+            y_range_axes: [y_min, y_max, step] for axes
+            points: List of (x, y) tuples to mark (optional)
+            point_labels: List of LaTeX labels for points (optional)
+            show_roots: If True, mark x-intercepts of first function.
+            animate_construction: If True, animate each element.
+
+        Returns:
+            (axes, graph_group) — graph_group contains all elements.
+        """
+        default_colors = [SHAPE_COLOR, AUX_COLOR, HIGHLIGHT_COLOR, LABEL_COLOR]
+
+        axes = self.create_axes_custom(x_range_axes, y_range_axes)
+        axes_labels = axes.get_axis_labels(x_label="x", y_label="y")
+
+        all_elements = [axes, axes_labels]
+        curves = []
+
+        if animate_construction:
+            self.play(Create(axes), FadeIn(axes_labels), run_time=T_SHAPE_CREATE)
+
+        for i, f_spec in enumerate(functions):
+            c = f_spec.get("color", default_colors[i % len(default_colors)])
+            curve, lbl = self.plot_function(
+                axes, f_spec["func"], f_spec["x_range"],
+                color=c, label_tex=f_spec.get("label"),
+            )
+            curves.append(curve)
+            all_elements.append(curve)
+            if lbl:
+                all_elements.append(lbl)
+
+            if animate_construction:
+                anims = [Create(curve)]
+                if lbl:
+                    anims.append(FadeIn(lbl))
+                self.play(*anims, run_time=T_SHAPE_CREATE)
+
+        # Mark specific points
+        if points:
+            labels = point_labels or [f"({x},\\,{y})" for x, y in points]
+            for j, ((px, py), lbl_tex) in enumerate(zip(points, labels)):
+                dot, lbl = self.mark_point(
+                    axes, px, py, lbl_tex,
+                    color=default_colors[j % len(default_colors)],
+                )
+                all_elements.extend([dot, lbl])
+                if animate_construction:
+                    self.play(FadeIn(dot, scale=1.5), FadeIn(lbl), run_time=T_DOT_FADE + 0.2)
+
+        # Mark roots of first function
+        if show_roots and curves:
+            root_dots = self._find_and_mark_roots(axes, functions[0]["func"],
+                                                   functions[0]["x_range"])
+            all_elements.extend(root_dots)
+            if animate_construction and root_dots:
+                self.play(
+                    *[FadeIn(d, scale=1.3) for d in root_dots],
+                    run_time=T_DOT_FADE + 0.3,
+                )
+
+        graph_group = VGroup(*all_elements)
+        return axes, graph_group
+
+    def _find_and_mark_roots(self, axes, func, x_range, tol=0.01, n_samples=500):
+        """Find approximate roots of func in x_range and mark them on axes."""
+        x_min, x_max = x_range[0], x_range[1]
+        xs = np.linspace(x_min, x_max, n_samples)
+        ys = np.array([func(x) for x in xs])
+
+        roots = []
+        for i in range(len(ys) - 1):
+            if ys[i] * ys[i + 1] <= 0:
+                # Linear interpolation for root
+                if abs(ys[i + 1] - ys[i]) > 1e-12:
+                    root_x = xs[i] - ys[i] * (xs[i + 1] - xs[i]) / (ys[i + 1] - ys[i])
+                else:
+                    root_x = (xs[i] + xs[i + 1]) / 2
+                roots.append(root_x)
+
+        elements = []
+        for rx in roots:
+            dot = Dot(axes.c2p(rx, 0), color=LABEL_COLOR, radius=0.08)
+            # Format root label nicely
+            if abs(rx - round(rx)) < tol:
+                lbl_str = f"({int(round(rx))},\\,0)"
+            else:
+                lbl_str = f"({rx:.2f},\\,0)"
+            lbl = MathTex(lbl_str, font_size=20, color=LABEL_COLOR)
+            lbl.next_to(dot, DOWN, buff=0.15)
+            elements.extend([dot, lbl])
+
+        return elements
+
+    # ──────────────────────────────────────────
+    #  PARABOLA FEATURES
+    # ──────────────────────────────────────────
+
+    def show_parabola_features(self, axes, a, b, c, show_vertex=True,
+                                show_axis=True, show_roots=True,
+                                show_y_intercept=True, color=None):
+        """
+        Plot y = ax² + bx + c with key features labeled.
+
+        Useful for quadratic function exercises.
+
+        Args:
+            axes: Axes object.
+            a, b, c: Coefficients of ax² + bx + c.
+            show_vertex: Mark and label the vertex.
+            show_axis: Show axis of symmetry (dashed vertical line).
+            show_roots: Mark x-intercepts if they exist.
+            show_y_intercept: Mark the y-intercept.
+            color: Parabola color.
+
+        Returns:
+            VGroup of all created elements (curve + features).
+        """
+        clr = color or SHAPE_COLOR
+        discriminant = b**2 - 4 * a * c
+        vertex_x = -b / (2 * a)
+        vertex_y = a * vertex_x**2 + b * vertex_x + c
+
+        # Determine plot range to show the parabola nicely
+        x_spread = max(3, abs(vertex_x) + 3)
+        x_min = vertex_x - x_spread
+        x_max = vertex_x + x_spread
+
+        func = lambda x: a * x**2 + b * x + c
+        curve = axes.plot(func, x_range=[x_min, x_max], color=clr, stroke_width=2.5)
+
+        elements = [curve]
+
+        # Vertex
+        if show_vertex:
+            dot_v = Dot(axes.c2p(vertex_x, vertex_y), color=ANSWER_COLOR, radius=0.1)
+            vx_str = f"{vertex_x:.1f}" if vertex_x != int(vertex_x) else str(int(vertex_x))
+            vy_str = f"{vertex_y:.1f}" if vertex_y != int(vertex_y) else str(int(vertex_y))
+            lbl_v = MathTex(f"({vx_str},\\,{vy_str})", font_size=20, color=ANSWER_COLOR)
+            direction = DOWN if a > 0 else UP
+            lbl_v.next_to(dot_v, direction, buff=0.15)
+            elements.extend([dot_v, lbl_v])
+
+        # Axis of symmetry
+        if show_axis:
+            y_min = min(vertex_y, 0) - 1
+            y_max = max(vertex_y, 0) + 1
+            axis_line = DashedLine(
+                axes.c2p(vertex_x, y_min), axes.c2p(vertex_x, y_max),
+                color=DIVIDER_COLOR, dash_length=0.08, stroke_width=1.5,
+            )
+            axis_lbl = MathTex(
+                f"x = {vx_str}", font_size=18, color=DIVIDER_COLOR,
+            )
+            axis_lbl.next_to(axis_line, UP, buff=0.1)
+            elements.extend([axis_line, axis_lbl])
+
+        # Roots
+        if show_roots and discriminant >= 0:
+            sqrt_d = np.sqrt(discriminant)
+            x1 = (-b - sqrt_d) / (2 * a)
+            x2 = (-b + sqrt_d) / (2 * a)
+            for rx in sorted(set([x1, x2])):
+                dot_r = Dot(axes.c2p(rx, 0), color=LABEL_COLOR, radius=0.08)
+                rx_str = f"{rx:.2f}" if abs(rx - round(rx)) > 0.01 else str(int(round(rx)))
+                lbl_r = MathTex(f"({rx_str},\\,0)", font_size=20, color=LABEL_COLOR)
+                lbl_r.next_to(dot_r, DOWN, buff=0.15)
+                elements.extend([dot_r, lbl_r])
+
+        # Y-intercept
+        if show_y_intercept:
+            dot_y = Dot(axes.c2p(0, c), color=HIGHLIGHT_COLOR, radius=0.08)
+            c_str = f"{c:.1f}" if c != int(c) else str(int(c))
+            lbl_y = MathTex(f"(0,\\,{c_str})", font_size=20, color=HIGHLIGHT_COLOR)
+            lbl_y.next_to(dot_y, RIGHT, buff=0.15)
+            elements.extend([dot_y, lbl_y])
+
+        return VGroup(*elements)
+
+    # ──────────────────────────────────────────
+    #  VALUE TABLE
+    # ──────────────────────────────────────────
+
+    def show_value_table(self, x_values, y_values, x_label="x", y_label="y",
+                         position=None, font_size=24, highlight_indices=None):
+        """
+        Display a table of x/y values.
+
+        Common in exercises that ask "fill in the table, then plot".
+
+        Args:
+            x_values: List of x values (strings or numbers).
+            y_values: List of y values (strings or numbers).
+            x_label: Header for x row.
+            y_label: Header for y row.
+            position: Where to place the table (default: ORIGIN).
+            font_size: Font size for values.
+            highlight_indices: Set of column indices to highlight.
+
+        Returns:
+            The table VGroup.
+        """
+        highlights = set(highlight_indices or [])
+
+        # Build rows
+        header_x = MathTex(x_label, font_size=font_size, color=STEP_TITLE_COLOR)
+        header_y = MathTex(y_label, font_size=font_size, color=STEP_TITLE_COLOR)
+
+        x_entries = []
+        y_entries = []
+        for i, (xv, yv) in enumerate(zip(x_values, y_values)):
+            x_str = str(xv) if isinstance(xv, (int, float)) else xv
+            y_str = str(yv) if isinstance(yv, (int, float)) else yv
+            x_color = LABEL_COLOR if i in highlights else WHITE
+            y_color = ANSWER_COLOR if i in highlights else WHITE
+            x_entries.append(MathTex(x_str, font_size=font_size, color=x_color))
+            y_entries.append(MathTex(y_str, font_size=font_size, color=y_color))
+
+        # Arrange as grid
+        col_buff = 0.6
+        row_buff = 0.4
+
+        x_row = VGroup(header_x, *x_entries).arrange(RIGHT, buff=col_buff)
+        y_row = VGroup(header_y, *y_entries).arrange(RIGHT, buff=col_buff)
+
+        # Align columns
+        for xe, ye in zip(x_row, y_row):
+            ye.align_to(xe, LEFT)
+
+        table = VGroup(x_row, y_row).arrange(DOWN, buff=row_buff, aligned_edge=LEFT)
+
+        # Add horizontal line between header row and values
+        h_line = Line(
+            x_row.get_left() + DOWN * row_buff / 2 + LEFT * 0.2,
+            x_row.get_right() + DOWN * row_buff / 2 + RIGHT * 0.2,
+            color=DIVIDER_COLOR, stroke_width=1.5,
+        )
+        # Add vertical line after headers
+        v_line = Line(
+            x_row[0].get_right() + RIGHT * col_buff / 2 + UP * 0.3,
+            y_row[0].get_right() + RIGHT * col_buff / 2 + DOWN * 0.3,
+            color=DIVIDER_COLOR, stroke_width=1.5,
+        )
+
+        full_table = VGroup(table, h_line, v_line)
+        if position is not None:
+            full_table.move_to(position)
+
+        self.play(FadeIn(full_table), run_time=T_SHAPE_CREATE)
+        self.wait(W_AFTER_ROUTINE)
+        return full_table
+
+    # ──────────────────────────────────────────
+    #  NUMBER LINE WITH SOLUTION SETS
+    # ──────────────────────────────────────────
+
+    def show_number_line(self, x_range, tick_step=1, length=10,
+                         marked_values=None, position=None):
+        """
+        Create a number line for inequality solutions.
+
+        Args:
+            x_range: [min, max] for the number line.
+            tick_step: Spacing between ticks.
+            length: Visual length.
+            marked_values: List of values to specially label.
+            position: Where to place (default: ORIGIN).
+
+        Returns:
+            The NumberLine mobject.
+        """
+        nl = NumberLine(
+            x_range=[x_range[0], x_range[1], tick_step],
+            length=length,
+            include_numbers=True,
+            font_size=20,
+            color=DIVIDER_COLOR,
+            include_tip=True,
+        )
+        if position is not None:
+            nl.move_to(position)
+
+        if marked_values:
+            for val in marked_values:
+                dot = Dot(nl.n2p(val), color=LABEL_COLOR, radius=0.1)
+                nl.add(dot)
+
+        return nl
+
+    def show_interval_on_line(self, number_line, start, end,
+                               start_open=False, end_open=False,
+                               color=None):
+        """
+        Highlight an interval on a number line (for inequality solutions).
+
+        Args:
+            number_line: NumberLine mobject.
+            start: Left endpoint (use None for -infinity).
+            end: Right endpoint (use None for +infinity).
+            start_open: Open circle at start? (strict inequality)
+            end_open: Open circle at end?
+            color: Interval color (defaults to ANSWER_COLOR).
+
+        Returns:
+            VGroup of (line_segment, start_marker, end_marker).
+        """
+        c = color or ANSWER_COLOR
+
+        # Determine visual endpoints
+        nl_min = number_line.x_range[0]
+        nl_max = number_line.x_range[1]
+        p_start = number_line.n2p(start if start is not None else nl_min)
+        p_end = number_line.n2p(end if end is not None else nl_max)
+
+        # Thick colored line for the interval
+        interval_line = Line(p_start, p_end, color=c, stroke_width=6, stroke_opacity=0.7)
+
+        elements = [interval_line]
+
+        # Start marker
+        if start is not None:
+            if start_open:
+                marker = Circle(radius=0.1, color=c, stroke_width=3).move_to(p_start)
+            else:
+                marker = Dot(p_start, color=c, radius=0.1)
+            elements.append(marker)
+
+        # End marker
+        if end is not None:
+            if end_open:
+                marker = Circle(radius=0.1, color=c, stroke_width=3).move_to(p_end)
+            else:
+                marker = Dot(p_end, color=c, radius=0.1)
+            elements.append(marker)
+
+        # Arrows for infinity
+        if start is None:
+            arrow = Arrow(p_start + LEFT * 0.3, p_start, color=c, stroke_width=4,
+                          max_tip_length_to_length_ratio=0.2)
+            elements.append(arrow)
+        if end is None:
+            arrow = Arrow(p_end + RIGHT * 0.3, p_end, color=c, stroke_width=4,
+                          max_tip_length_to_length_ratio=0.2)
+            elements.append(arrow)
+
+        group = VGroup(*elements)
+        self.play(Create(interval_line), run_time=T_KEY_EQUATION)
+        if len(elements) > 1:
+            self.play(
+                *[FadeIn(e) for e in elements[1:]],
+                run_time=T_DOT_FADE,
+            )
+        self.wait(W_AFTER_ROUTINE)
+        return group
+
+    # ──────────────────────────────────────────
+    #  TRIANGLE BUILDER
+    # ──────────────────────────────────────────
+
+    def build_triangle(self, vertices, labels, side_lengths=None,
+                       angles=None, equal_sides=None, position=None):
+        """
+        Construct and animate a labeled triangle.
+
+        Handles the boilerplate of creating, labeling, and marking triangles
+        for geometry exercises (law of sines/cosines, Pythagorean, etc.)
+
+        Args:
+            vertices: Dict mapping label -> np.array position.
+                      e.g. {"A": np.array([0, 2, 0]), "B": ..., "C": ...}
+            labels: Dict mapping label -> direction for label placement.
+                    e.g. {"A": UP, "B": DL, "C": DR}
+            side_lengths: Dict mapping "AB" -> display string (optional).
+                         e.g. {"AB": "25", "AC": "25"}
+            angles: Dict mapping vertex label -> (degrees_str, color) (optional).
+                    e.g. {"B": ("51°", GREEN)}
+            equal_sides: List of side pairs to mark with tick marks (optional).
+                         e.g. [("A", "B"), ("A", "C")]
+            position: Shift the whole triangle (optional).
+
+        Returns:
+            Dict with keys: "triangle", "labels", "sides", "angles", "ticks", "group"
+        """
+        # Sort vertices to build polygon
+        vertex_names = list(vertices.keys())
+        pts = [vertices[n] for n in vertex_names]
+
+        if position is not None:
+            pts = [p + position for p in pts]
+            vertices = {n: p + position for n, p in vertices.items()}
+
+        tri = Polygon(*pts, color=SHAPE_COLOR, stroke_width=3)
+
+        # Vertex labels
+        vlabels = {}
+        for name, direction in labels.items():
+            lbl = MathTex(name, font_size=36, color=WHITE)
+            lbl.next_to(vertices[name], direction, buff=0.15)
+            vlabels[name] = lbl
+
+        result = {
+            "triangle": tri,
+            "labels": vlabels,
+            "sides": {},
+            "angles": {},
+            "ticks": [],
+            "group": VGroup(tri, *vlabels.values()),
+        }
+
+        # Animate triangle creation
+        self.play(Create(tri), run_time=T_SHAPE_CREATE)
+        self.play(*[FadeIn(l) for l in vlabels.values()], run_time=0.6)
+        self.wait(1)
+
+        # Side lengths
+        if side_lengths:
+            for side_key, length_str in side_lengths.items():
+                p1 = vertices[side_key[0]]
+                p2 = vertices[side_key[1]]
+                mid = self.midpoint(p1, p2)
+                # Determine offset direction
+                offset = self.perp_offset(p1, p2, 0.35)
+                s_lbl = MathTex(length_str, font_size=28, color=LABEL_COLOR)
+                s_lbl.move_to(mid + offset)
+                result["sides"][side_key] = s_lbl
+                result["group"].add(s_lbl)
+
+        # Equal side tick marks
+        if equal_sides:
+            for p1_name, p2_name in equal_sides:
+                tick = self.tick_mark(vertices[p1_name], vertices[p2_name], size=0.12)
+                result["ticks"].append(tick)
+                result["group"].add(tick)
+
+        # Animate sides and ticks
+        side_anims = [FadeIn(s) for s in result["sides"].values()]
+        tick_anims = [Create(t) for t in result["ticks"]]
+        if side_anims or tick_anims:
+            self.play(*side_anims, *tick_anims, run_time=0.8)
+
+        # Angles
+        if angles:
+            for vertex_name, (angle_str, angle_color) in angles.items():
+                v = vertices[vertex_name]
+                # Find the two other vertices
+                others = [n for n in vertex_names if n != vertex_name]
+                p1 = vertices[others[0]]
+                p2 = vertices[others[1]]
+                arc = self.angle_arc(v, p1, p2, radius=0.45, color=angle_color)
+                lbl = MathTex(angle_str, font_size=24, color=angle_color)
+                lbl.move_to(self.angle_label_pos(v, p1, p2, 0.75))
+                result["angles"][vertex_name] = (arc, lbl)
+                result["group"].add(arc, lbl)
+                self.play(Create(arc), FadeIn(lbl), run_time=0.8)
+
+        return result
+
+    # ──────────────────────────────────────────
+    #  CALCULUS HELPERS
+    # ──────────────────────────────────────────
+
+    def show_tangent_to_curve(self, axes, func, x0, dx=0.5, tangent_length=3,
+                               func_color=None, tangent_color=None,
+                               label_point=True):
+        """
+        Draw a tangent line to a curve at x = x0.
+
+        For derivative visualization exercises.
+
+        Args:
+            axes: Axes object.
+            func: Callable f(x) -> y.
+            x0: x-coordinate of the tangent point.
+            dx: Step for numerical derivative.
+            tangent_length: How far the tangent line extends each side.
+            func_color: Curve color.
+            tangent_color: Tangent line color.
+            label_point: Whether to label the tangent point.
+
+        Returns:
+            VGroup of (tangent_line, tangent_point_dot, slope_label).
+        """
+        fc = func_color or SHAPE_COLOR
+        tc = tangent_color or AUX_COLOR
+
+        y0 = func(x0)
+        # Numerical derivative
+        slope = (func(x0 + dx) - func(x0 - dx)) / (2 * dx)
+
+        # Tangent line: y - y0 = slope * (x - x0)
+        tangent_func = lambda x: slope * (x - x0) + y0
+        x_left = x0 - tangent_length
+        x_right = x0 + tangent_length
+
+        tangent_line = axes.plot(
+            tangent_func, x_range=[x_left, x_right],
+            color=tc, stroke_width=2.5,
+        )
+
+        dot = Dot(axes.c2p(x0, y0), color=tc, radius=0.1)
+
+        elements = [tangent_line, dot]
+
+        if label_point:
+            x_str = f"{x0:.1f}" if x0 != int(x0) else str(int(x0))
+            y_str = f"{y0:.1f}" if abs(y0 - round(y0)) > 0.01 else str(int(round(y0)))
+            pt_lbl = MathTex(f"({x_str},\\,{y_str})", font_size=20, color=tc)
+            pt_lbl.next_to(dot, UR, buff=0.15)
+            elements.append(pt_lbl)
+
+        # Slope label
+        slope_str = f"{slope:.2f}" if abs(slope - round(slope)) > 0.01 else str(int(round(slope)))
+        slope_lbl = MathTex(f"m = {slope_str}", font_size=20, color=tc)
+        slope_lbl.next_to(tangent_line.point_from_proportion(0.9), UR, buff=0.1)
+        elements.append(slope_lbl)
+
+        group = VGroup(*elements)
+
+        self.play(FadeIn(dot, scale=1.5), run_time=T_DOT_FADE)
+        self.play(Create(tangent_line), run_time=T_KEY_EQUATION)
+        if label_point:
+            self.play(FadeIn(elements[2]), FadeIn(slope_lbl), run_time=T_BODY_FADE)
+        else:
+            self.play(FadeIn(slope_lbl), run_time=T_BODY_FADE)
+        self.wait(W_AFTER_ROUTINE)
+
+        return group
+
+    def show_area_under_curve(self, axes, func, x_start, x_end,
+                               color=None, opacity=0.3, n_rects=0):
+        """
+        Shade the area under a curve between x_start and x_end.
+
+        For integral visualization exercises.
+
+        Args:
+            axes: Axes object.
+            func: Callable f(x) -> y.
+            x_start: Left bound.
+            x_end: Right bound.
+            color: Fill color (defaults to SHAPE_COLOR).
+            opacity: Fill opacity.
+            n_rects: If > 0, show Riemann rectangles instead of smooth fill.
+
+        Returns:
+            The shaded area mobject.
+        """
+        c = color or SHAPE_COLOR
+
+        if n_rects > 0:
+            # Riemann sum rectangles
+            area = axes.get_riemann_rectangles(
+                axes.plot(func, x_range=[x_start, x_end]),
+                x_range=[x_start, x_end],
+                dx=(x_end - x_start) / n_rects,
+                color=[c, HIGHLIGHT_COLOR],
+                fill_opacity=opacity,
+                stroke_width=1,
+            )
+        else:
+            area = axes.get_area(
+                axes.plot(func, x_range=[x_start, x_end]),
+                x_range=[x_start, x_end],
+                color=c,
+                opacity=opacity,
+            )
+
+        self.play(FadeIn(area), run_time=T_SHAPE_CREATE)
+        self.wait(W_AFTER_ROUTINE)
+        return area
+
+    # ──────────────────────────────────────────
+    #  CONIC SECTION HELPERS
+    # ──────────────────────────────────────────
+
+    def plot_ellipse(self, axes, a, b, center=(0, 0), color=None, stroke_width=3):
+        """
+        Plot an ellipse on axes.
+
+        Equation: (x-h)²/a² + (y-k)²/b² = 1
+
+        Args:
+            axes: Axes object.
+            a: Semi-major axis (horizontal).
+            b: Semi-minor axis (vertical).
+            center: (h, k) center point.
+            color: Ellipse color.
+            stroke_width: Line width.
+
+        Returns:
+            The parametric curve mobject.
+        """
+        c = color or SHAPE_COLOR
+        h, k = center
+        return axes.plot_parametric_curve(
+            lambda t: np.array([h + a * np.cos(t), k + b * np.sin(t), 0]),
+            t_range=[0, 2 * PI],
+            color=c,
+            stroke_width=stroke_width,
+        )
+
+    def plot_hyperbola(self, axes, a, b, center=(0, 0), color=None,
+                        stroke_width=3, t_range=None):
+        """
+        Plot a hyperbola on axes.
+
+        Equation: (x-h)²/a² - (y-k)²/b² = 1
+
+        Args:
+            axes: Axes object.
+            a, b: Semi-axes.
+            center: (h, k) center point.
+            color: Curve color.
+            stroke_width: Line width.
+            t_range: Parameter range (default [-2, 2]).
+
+        Returns:
+            VGroup of left and right branches.
+        """
+        c = color or SHAPE_COLOR
+        h, k = center
+        t_r = t_range or [-2, 2]
+
+        # Right branch: x = h + a*cosh(t), y = k + b*sinh(t)
+        right = axes.plot_parametric_curve(
+            lambda t: np.array([h + a * np.cosh(t), k + b * np.sinh(t), 0]),
+            t_range=t_r, color=c, stroke_width=stroke_width,
+        )
+        # Left branch: x = h - a*cosh(t), y = k + b*sinh(t)
+        left = axes.plot_parametric_curve(
+            lambda t: np.array([h - a * np.cosh(t), k + b * np.sinh(t), 0]),
+            t_range=t_r, color=c, stroke_width=stroke_width,
+        )
+        return VGroup(left, right)
+
+    # ──────────────────────────────────────────
+    #  GEOMETRY HELPERS
+    # ──────────────────────────────────────────
+
     @staticmethod
     def midpoint(p1, p2):
         """Calculate the midpoint of two points."""
