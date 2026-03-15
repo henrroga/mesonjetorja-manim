@@ -73,14 +73,13 @@ class ExerciseScene(Scene):
 
     def title_screen(self):
         """Standard animated title screen."""
-        title = Text(
-            f"Ushtrimi {self.exercise_number} — Njësia {self.unit}",
+        title = MathTex(
+            r"\text{Ushtrimi " + str(self.exercise_number) + r" — Njësia " + self.unit + r"}",
             font_size=TITLE_SIZE,
             color=WHITE,
-            weight=BOLD,
         )
-        source = Text(
-            self.textbook,
+        source = MathTex(
+            r"\text{" + self.textbook + r"}",
             font_size=SUBTITLE_SIZE,
             color=BODY_TEXT_COLOR,
         )
@@ -102,11 +101,10 @@ class ExerciseScene(Scene):
 
         Returns the header mobject for later reference.
         """
-        header = Text(
-            f"Pjesa {label})",
+        header = MathTex(
+            r"\text{Pjesa " + label + r")}",
             font_size=PART_HEADER_SIZE,
             color=LABEL_COLOR,
-            weight=BOLD,
         )
         header.to_corner(UL, buff=0.4)
         self.play(Write(header), run_time=T_HEADER_WRITE)
@@ -195,11 +193,10 @@ class ExerciseScene(Scene):
             rows: List of LaTeX strings for each row.
             font_size: Font size for rows.
         """
-        title = Text(
-            title_text,
+        title = MathTex(
+            r"\text{" + title_text + r"}",
             font_size=PART_HEADER_SIZE + 4,
             color=WHITE,
-            weight=BOLD,
         )
         title.to_edge(UP, buff=0.5)
         self.play(Write(title), run_time=T_TITLE_WRITE)
@@ -335,11 +332,10 @@ class ExerciseScene(Scene):
 
         Returns the title mobject.
         """
-        title = Text(
-            text,
+        title = MathTex(
+            r"\text{" + text + r"}",
             font_size=STEP_TITLE_SIZE,
             color=STEP_TITLE_COLOR,
-            weight=BOLD,
         )
         if position is not None:
             title.move_to(position)
@@ -1536,8 +1532,8 @@ class ExerciseScene(Scene):
 
         # Title
         if title_text:
-            title = Text(title_text, font_size=STEP_TITLE_SIZE,
-                         color=STEP_TITLE_COLOR, weight=BOLD)
+            title = MathTex(r"\text{" + title_text + r"}",
+                           font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR)
             title.next_to(all_elements, UP, buff=0.4)
             all_elements.add(title)
 
@@ -1650,12 +1646,12 @@ class ExerciseScene(Scene):
         after_group.move_to(RIGHT * 3.5)
 
         # Titles
-        b_title = Text(before_title, font_size=STEP_TITLE_SIZE,
-                        color=STEP_TITLE_COLOR, weight=BOLD)
+        b_title = MathTex(r"\text{" + before_title + r"}",
+                          font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR)
         b_title.next_to(before_group, UP, buff=0.4)
 
-        a_title = Text(after_title, font_size=STEP_TITLE_SIZE,
-                        color=STEP_TITLE_COLOR, weight=BOLD)
+        a_title = MathTex(r"\text{" + after_title + r"}",
+                          font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR)
         a_title.next_to(after_group, UP, buff=0.4)
 
         # Arrow
