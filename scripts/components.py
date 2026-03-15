@@ -2221,3 +2221,115 @@ class ExerciseScene(Scene):
             elements.append(boxes_group)
 
         return VGroup(*elements)
+
+    # ══════════════════════════════════════════
+    #  CIRCUIT DIAGRAM COMPONENTS
+    # ══════════════════════════════════════════
+
+    @staticmethod
+    def _resistor_zigzag(start, end, n_peaks=4, amplitude=0.15, color=None):
+        """Create a zigzag resistor symbol between two points."""
+        c = color or SHAPE_COLOR
+        s = np.array(start)
+        e = np.array(end)
+        direction = e - s
+        length = np.linalg.norm(direction)
+        unit = direction / length
+        perp = np.array([-unit[1], unit[0], 0])
+
+        lead = length * 0.2
+        zig_length = length - 2 * lead
+        seg = zig_length / (2 * n_peaks)
+
+        points = [s, s + unit * lead]
+        for i in range(n_peaks):
+            base = s + unit * (lead + 2 * i * seg)
+            points.append(base + unit * (seg * 0.5) + perp * amplitude)
+            points.append(base + unit * (seg * 1.5) - perp * amplitude)
+        points.append(s + unit * (lead + zig_length))
+        points.append(e)
+
+        zigzag = VMobject(color=c, stroke_width=2.5)
+        zigzag.set_points_as_corners(points)
+        return zigzag
+
+    @staticmethod
+    def _battery_symbol(position, direction=RIGHT, size=0.4, color=None):
+        """Create a battery symbol (long/short line pair)."""
+        c = color or WHITE
+        pos = np.array(position)
+        d = np.array(direction)
+        d = d / np.linalg.norm(d)
+        perp = np.array([-d[1], d[0], 0])
+
+        long_half = size * 0.5
+        short_half = size * 0.3
+        gap = size * 0.12
+
+        long_line = Line(
+            pos - perp * long_half + d * gap,
+            pos + perp * long_half + d * gap,
+            color=c, stroke_width=3,
+        )
+        short_line = Line(
+            pos - perp * short_half - d * gap,
+            pos + perp * short_half - d * gap,
+            color=c, stroke_width=5,
+        )
+        plus = MathTex("+", font_size=16, color=c)
+        plus.next_to(long_line, d, buff=0.08)
+
+        return VGroup(long_line, short_line, plus)
+
+    def draw_resistor(self, start, end, label_tex=None, color=None,
+                       label_direction=None):
+        """
+        Draw a resistor between two points with optional label.
+
+        Returns (resistor, label) tuple.
+        """
+        c = color or SHAPE_COLOR
+        resistor = self._resistor_zigzag(start, end, color=c)
+
+        lbl = None
+        if label_tex:
+            mid = (np.array(start) + np.array(end)) / 2
+            if label_direction is None:
+                d = np.array(end) - np.array(start)
+                perp = np.array([-d[1], d[0], 0])
+                norm = np.linalg.norm(perp)
+                label_direction = perp / norm * 0.35 if norm > 1e-6 else UP * 0.35
+            lbl = MathTex(label_tex, font_size=22, color=c)
+            lbl.next_to(mid, label_direction, buff=0.05)
+
+        return resistor, lbl
+
+    def draw_wire(self, *points, color=None):
+        """Draw a wire through a series of points."""
+        c = color or WHITE
+        wire = VMobject(color=c, stroke_width=2)
+        wire.set_points_as_corners([np.array(p) for p in points])
+        return wire
+
+    def draw_battery(self, position, direction=RIGHT, label_tex=None,
+                      size=0.4, color=None):
+        """
+        Draw a battery at a position.
+
+        Returns (battery, label) tuple.
+        """
+        battery = self._battery_symbol(position, direction, size, color)
+
+        lbl = None
+        if label_tex:
+            d = np.array(direction)
+            d = d / np.linalg.norm(d)
+            perp = np.array([-d[1], d[0], 0])
+            lbl = MathTex(label_tex, font_size=22, color=color or WHITE)
+            lbl.next_to(battery, perp * -1, buff=0.2)
+
+        return battery, lbl
+
+    def draw_node(self, position, color=None, radius=0.06):
+        """Draw a junction node dot."""
+        return Dot(np.array(position), color=color or WHITE, radius=radius)
