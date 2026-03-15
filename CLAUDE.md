@@ -140,9 +140,44 @@ eq.set_x(PX)  # REQUIRED — locks horizontal alignment
 5. **One thing at a time** — Show one equation, wait. Show the next, wait. Each equation gets its own moment.
 6. **Clean transitions** — FadeOut everything before starting a new calculation section. Fresh screen for each phase.
 
-## Video Content Depth
+## Video Content Depth — Grade-Aware Pacing
 
 Videos must go DEEPER than the text solution on the website. The text solution is a cheat sheet; the video is a lesson.
+
+**The audience is high school students and below.** The user will provide the grade and subject — adjust detail level accordingly. Lower grades need more hand-holding.
+
+### Never Skip Algebra Steps
+
+Every algebraic transformation must be shown as its own equation. Never combine multiple steps:
+
+- **Bad:** `x²+(x+1)²-25=0 ⇒ 2x²+2x-24=0 ⇒ (x-3)(x+4)=0`
+- **Good:** Show each step separately:
+  1. `x² + (x+1)² = 25` — substitution
+  2. `x² + x² + 2x + 1 = 25` — expand `(x+1)²`
+  3. `2x² + 2x + 1 - 25 = 0` — move 25 to the left
+  4. `2x² + 2x - 24 = 0` — simplify
+  5. `x² + x - 12 = 0` — divide by 2
+  6. Explain: "Two numbers that multiply to -12 and add to 1: that's 4 and -3"
+  7. `(x+4)(x-3) = 0` — factor
+
+### Add "Why" Text Before Non-Obvious Steps
+
+Before every non-trivial operation, show a brief explanatory text line:
+
+- Before expanding: `\text{Zhvillojmë katrorin e binomit:}`
+- Before factoring: `\text{Gjejmë dy numra që shumëzojnë -12 dhe mbledhin 1}`
+- Before quadratic formula: `\text{Përdorim formulën kuadratike me } a=5, b=4, c=-3`
+- Before substitution: `\text{Zëvendësojmë } x \text{ në ekuacionin e dytë}`
+- Before domain check: `\text{Kontrollojmë: argumenti i logaritmit duhet të jetë pozitiv}`
+
+### Show Arithmetic Details
+
+For high school level, show calculator-level computation:
+- Discriminant: `\Delta = b^2-4ac = 4-4(5)(-3) = 4+60 = 64`
+- Square root: `\sqrt{64} = 8`
+- Don't just write `cos(51°) ≈ 0.6293` — show the substitution and multiplication
+
+### General Content Principles
 
 - **Explain "why"** before applying any rule or formula
 - **Name the technique** so students recognize the pattern
