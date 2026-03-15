@@ -34,60 +34,89 @@ class Ushtrimi3(ExerciseScene):
     def part_a(self):
         self.show_part_header("a")
 
-        # Problem statement
+        # --- Screen 1: Problem statement ---
         prob = MathTex(r"x^2 + y^2 = 49", font_size=PROBLEM_MATH_SIZE + 4)
         prob.move_to(ORIGIN)
         self.play(FadeIn(prob, shift=UP * 0.3), run_time=T_SHAPE_CREATE)
-        self.wait(W_PROBLEM - 1)
+        self.wait(W_PROBLEM)
         self.play(FadeOut(prob), run_time=T_TRANSITION)
         self.wait(0.3)
 
-        # Explanation: identify as circle
-        exp_title = Text("Njohim ekuacionin:", font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR, weight=BOLD)
-        exp_txt = Text(
-            "Kjo është forma e rrethit me\nqendër në origjinë (0, 0).",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR, line_spacing=1.4,
+        # --- Screen 2: Identify as circle ---
+        exp_title = MathTex(
+            r"\text{Njohim ekuacionin:}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
+        )
+        exp_line1 = MathTex(
+            r"\text{Kjo \"{e}sht\"{e} forma e rrethit me}",
+            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
+        )
+        exp_line2 = MathTex(
+            r"\text{qend\"{e}r n\"{e} origjin\"{e} (0, 0).}",
+            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
         )
         exp_eq = MathTex(r"x^2 + y^2 = r^2", font_size=CALC_SIZE)
         exp_r = MathTex(r"r^2 = 49 \implies r = 7", font_size=CALC_SIZE, color=ANSWER_COLOR)
 
-        exp_group = VGroup(exp_title, exp_txt, exp_eq, exp_r).arrange(DOWN, buff=0.35).move_to(ORIGIN)
+        exp_group = VGroup(exp_title, exp_line1, exp_line2, exp_eq, exp_r).arrange(
+            DOWN, buff=0.35
+        ).move_to(ORIGIN)
 
         self.play(FadeIn(exp_group, shift=UP * 0.2), run_time=T_SHAPE_CREATE)
-        self.wait(W_AFTER_KEY)
+        self.wait(3.0)
         self.play(FadeOut(exp_group), run_time=T_TRANSITION)
         self.wait(0.3)
 
-        # Find axis intercepts (centered)
-        int_title = Text("Pikëprerjet me boshtet:", font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR, weight=BOLD)
+        # --- Screen 3: Find axis intercepts ---
+        int_title = MathTex(
+            r"\text{Pik\"{e}prerjet me boshtet:}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
+        )
 
-        int_x_title = Text("Me boshtin x (y = 0):", font_size=BODY_SIZE, color=BODY_TEXT_COLOR)
+        int_x_title = MathTex(
+            r"\text{Me boshtin } x \; (y = 0)\text{:}",
+            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
+        )
         int_x_eq = MathTex(r"x^2 = 49 \implies x = \pm 7", font_size=CALC_SIZE)
-        int_x_pts = MathTex(r"(-7,\,0) \quad \text{dhe} \quad (7,\,0)", font_size=CALC_SIZE, color=LABEL_COLOR)
+        int_x_pts = MathTex(
+            r"(-7,\,0) \quad \text{dhe} \quad (7,\,0)",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
 
-        int_y_title = Text("Me boshtin y (x = 0):", font_size=BODY_SIZE, color=BODY_TEXT_COLOR)
+        int_y_title = MathTex(
+            r"\text{Me boshtin } y \; (x = 0)\text{:}",
+            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
+        )
         int_y_eq = MathTex(r"y^2 = 49 \implies y = \pm 7", font_size=CALC_SIZE)
-        int_y_pts = MathTex(r"(0,\,-7) \quad \text{dhe} \quad (0,\,7)", font_size=CALC_SIZE, color=LABEL_COLOR)
+        int_y_pts = MathTex(
+            r"(0,\,-7) \quad \text{dhe} \quad (0,\,7)",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
 
-        int_group = VGroup(
-            int_title,
-            VGroup(int_x_title, int_x_eq, int_x_pts).arrange(DOWN, buff=0.2, aligned_edge=LEFT),
-            VGroup(int_y_title, int_y_eq, int_y_pts).arrange(DOWN, buff=0.2, aligned_edge=LEFT),
-        ).arrange(DOWN, buff=0.4).move_to(ORIGIN)
+        x_block = VGroup(int_x_title, int_x_eq, int_x_pts).arrange(
+            DOWN, buff=0.2, aligned_edge=LEFT
+        )
+        y_block = VGroup(int_y_title, int_y_eq, int_y_pts).arrange(
+            DOWN, buff=0.2, aligned_edge=LEFT
+        )
+        int_group = VGroup(int_title, x_block, y_block).arrange(
+            DOWN, buff=0.4
+        ).move_to(ORIGIN)
 
         self.play(FadeIn(int_title), run_time=T_STEP_TITLE)
+        self.wait(0.5)
         self.play(FadeIn(int_x_title), run_time=T_BODY_FADE)
         self.play(Write(int_x_eq), run_time=T_ROUTINE_EQUATION)
         self.play(Write(int_x_pts), run_time=T_ROUTINE_EQUATION)
-        self.wait(W_AFTER_ROUTINE)
+        self.wait(2.0)
         self.play(FadeIn(int_y_title), run_time=T_BODY_FADE)
         self.play(Write(int_y_eq), run_time=T_ROUTINE_EQUATION)
         self.play(Write(int_y_pts), run_time=T_ROUTINE_EQUATION)
-        self.wait(W_AFTER_KEY)
+        self.wait(3.0)
         self.play(FadeOut(int_group), run_time=T_TRANSITION)
         self.wait(0.3)
 
-        # Graph
+        # --- Screen 4: Graph ---
         self.show_circle_graph(
             r_val=7, r_sq=49,
             eq_str=r"x^2 + y^2 = 49",
@@ -104,18 +133,39 @@ class Ushtrimi3(ExerciseScene):
     def part_b(self):
         self.show_part_header("b")
 
-        # Problem + quick identify
+        # --- Screen 1: Problem + radius ---
         prob = MathTex(r"x^2 + y^2 = 64", font_size=PROBLEM_MATH_SIZE + 4)
         r_eq = MathTex(r"r^2 = 64 \implies r = 8", font_size=CALC_SIZE, color=ANSWER_COLOR)
-        VGroup(prob, r_eq).arrange(DOWN, buff=0.4).move_to(ORIGIN)
+        grp = VGroup(prob, r_eq).arrange(DOWN, buff=0.4).move_to(ORIGIN)
 
         self.play(FadeIn(prob), run_time=T_SHAPE_CREATE)
-        self.wait(0.8)
+        self.wait(2.0)
         self.play(Write(r_eq), run_time=T_KEY_EQUATION)
-        self.wait(W_AFTER_ROUTINE)
-        self.play(FadeOut(prob), FadeOut(r_eq), run_time=T_TRANSITION)
+        self.wait(2.5)
+        self.play(FadeOut(grp), run_time=T_TRANSITION)
         self.wait(0.3)
 
+        # --- Screen 2: Intercepts ---
+        int_title = MathTex(
+            r"\text{Pik\"{e}prerjet me boshtet:}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
+        )
+        int_x = MathTex(
+            r"x = \pm 8 \;\Rightarrow\; (-8,\,0),\; (8,\,0)",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
+        int_y = MathTex(
+            r"y = \pm 8 \;\Rightarrow\; (0,\,-8),\; (0,\,8)",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
+        int_grp = VGroup(int_title, int_x, int_y).arrange(DOWN, buff=0.4).move_to(ORIGIN)
+
+        self.play(FadeIn(int_grp, shift=UP * 0.2), run_time=T_SHAPE_CREATE)
+        self.wait(3.0)
+        self.play(FadeOut(int_grp), run_time=T_TRANSITION)
+        self.wait(0.3)
+
+        # --- Screen 3: Graph ---
         self.show_circle_graph(
             r_val=8, r_sq=64,
             eq_str=r"x^2 + y^2 = 64",
@@ -132,17 +182,42 @@ class Ushtrimi3(ExerciseScene):
     def part_c(self):
         self.show_part_header("c")
 
+        # --- Screen 1: Problem + radius ---
         prob = MathTex(r"x^2 + y^2 = 2", font_size=PROBLEM_MATH_SIZE + 4)
-        r_eq = MathTex(r"r^2 = 2 \implies r = \sqrt{2}", font_size=CALC_SIZE, color=ANSWER_COLOR)
-        VGroup(prob, r_eq).arrange(DOWN, buff=0.4).move_to(ORIGIN)
+        r_eq = MathTex(
+            r"r^2 = 2 \implies r = \sqrt{2}",
+            font_size=CALC_SIZE, color=ANSWER_COLOR,
+        )
+        grp = VGroup(prob, r_eq).arrange(DOWN, buff=0.4).move_to(ORIGIN)
 
         self.play(FadeIn(prob), run_time=T_SHAPE_CREATE)
-        self.wait(0.8)
+        self.wait(2.0)
         self.play(Write(r_eq), run_time=T_KEY_EQUATION)
-        self.wait(W_AFTER_ROUTINE)
-        self.play(FadeOut(prob), FadeOut(r_eq), run_time=T_TRANSITION)
+        self.wait(2.5)
+        self.play(FadeOut(grp), run_time=T_TRANSITION)
         self.wait(0.3)
 
+        # --- Screen 2: Intercepts ---
+        int_title = MathTex(
+            r"\text{Pik\"{e}prerjet me boshtet:}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
+        )
+        int_x = MathTex(
+            r"x = \pm\sqrt{2} \;\Rightarrow\; (-\sqrt{2},\,0),\; (\sqrt{2},\,0)",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
+        int_y = MathTex(
+            r"y = \pm\sqrt{2} \;\Rightarrow\; (0,\,-\sqrt{2}),\; (0,\,\sqrt{2})",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
+        int_grp = VGroup(int_title, int_x, int_y).arrange(DOWN, buff=0.4).move_to(ORIGIN)
+
+        self.play(FadeIn(int_grp, shift=UP * 0.2), run_time=T_SHAPE_CREATE)
+        self.wait(3.0)
+        self.play(FadeOut(int_grp), run_time=T_TRANSITION)
+        self.wait(0.3)
+
+        # --- Screen 3: Graph ---
         sqrt2 = np.sqrt(2)
         self.show_circle_graph(
             r_val=sqrt2, r_sq=2,
@@ -161,17 +236,42 @@ class Ushtrimi3(ExerciseScene):
     def part_d(self):
         self.show_part_header("d")
 
+        # --- Screen 1: Problem + radius ---
         prob = MathTex(r"x^2 + y^2 = 20", font_size=PROBLEM_MATH_SIZE + 4)
-        r_eq = MathTex(r"r^2 = 20 \implies r = 2\sqrt{5}", font_size=CALC_SIZE, color=ANSWER_COLOR)
-        VGroup(prob, r_eq).arrange(DOWN, buff=0.4).move_to(ORIGIN)
+        r_eq = MathTex(
+            r"r^2 = 20 \implies r = 2\sqrt{5}",
+            font_size=CALC_SIZE, color=ANSWER_COLOR,
+        )
+        grp = VGroup(prob, r_eq).arrange(DOWN, buff=0.4).move_to(ORIGIN)
 
         self.play(FadeIn(prob), run_time=T_SHAPE_CREATE)
-        self.wait(0.8)
+        self.wait(2.0)
         self.play(Write(r_eq), run_time=T_KEY_EQUATION)
-        self.wait(W_AFTER_ROUTINE)
-        self.play(FadeOut(prob), FadeOut(r_eq), run_time=T_TRANSITION)
+        self.wait(2.5)
+        self.play(FadeOut(grp), run_time=T_TRANSITION)
         self.wait(0.3)
 
+        # --- Screen 2: Intercepts ---
+        int_title = MathTex(
+            r"\text{Pik\"{e}prerjet me boshtet:}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
+        )
+        int_x = MathTex(
+            r"x = \pm 2\sqrt{5} \;\Rightarrow\; (-2\sqrt{5},\,0),\; (2\sqrt{5},\,0)",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
+        int_y = MathTex(
+            r"y = \pm 2\sqrt{5} \;\Rightarrow\; (0,\,-2\sqrt{5}),\; (0,\,2\sqrt{5})",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
+        int_grp = VGroup(int_title, int_x, int_y).arrange(DOWN, buff=0.4).move_to(ORIGIN)
+
+        self.play(FadeIn(int_grp, shift=UP * 0.2), run_time=T_SHAPE_CREATE)
+        self.wait(3.0)
+        self.play(FadeOut(int_grp), run_time=T_TRANSITION)
+        self.wait(0.3)
+
+        # --- Screen 3: Graph ---
         r = 2 * np.sqrt(5)
         self.show_circle_graph(
             r_val=r, r_sq=20,
@@ -190,21 +290,58 @@ class Ushtrimi3(ExerciseScene):
     def part_e(self):
         self.show_part_header("e")
 
-        # Show original form, then rewrite
+        # --- Screen 1: Show original form ---
         prob = MathTex(r"y^2 = 4 - x^2", font_size=PROBLEM_MATH_SIZE + 4)
-        rewrite = MathTex(r"\Rightarrow\; x^2 + y^2 = 4", font_size=CALC_SIZE, color=STEP_TITLE_COLOR)
-        r_eq = MathTex(r"r = 2", font_size=CALC_SIZE, color=ANSWER_COLOR)
-        VGroup(prob, rewrite, r_eq).arrange(DOWN, buff=0.4).move_to(ORIGIN)
-
+        prob.move_to(ORIGIN)
         self.play(FadeIn(prob), run_time=T_SHAPE_CREATE)
-        self.wait(0.8)
-        self.play(Write(rewrite), run_time=T_KEY_EQUATION)
-        self.wait(0.6)
-        self.play(Write(r_eq), run_time=T_ROUTINE_EQUATION)
-        self.wait(W_AFTER_ROUTINE)
-        self.play(FadeOut(prob), FadeOut(rewrite), FadeOut(r_eq), run_time=T_TRANSITION)
+        self.wait(2.5)
+        self.play(FadeOut(prob), run_time=T_TRANSITION)
         self.wait(0.3)
 
+        # --- Screen 2: Rewrite + radius ---
+        rewrite_title = MathTex(
+            r"\text{Rishkruajm\"{e} n\"{e} form\"{e}n standarde:}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
+        )
+        rewrite_eq = MathTex(
+            r"x^2 + y^2 = 4",
+            font_size=CALC_SIZE, color=WHITE,
+        )
+        r_eq = MathTex(r"r = 2", font_size=CALC_SIZE, color=ANSWER_COLOR)
+        rw_grp = VGroup(rewrite_title, rewrite_eq, r_eq).arrange(
+            DOWN, buff=0.4
+        ).move_to(ORIGIN)
+
+        self.play(FadeIn(rewrite_title), run_time=T_STEP_TITLE)
+        self.wait(0.5)
+        self.play(Write(rewrite_eq), run_time=T_KEY_EQUATION)
+        self.wait(2.0)
+        self.play(Write(r_eq), run_time=T_ROUTINE_EQUATION)
+        self.wait(3.0)
+        self.play(FadeOut(rw_grp), run_time=T_TRANSITION)
+        self.wait(0.3)
+
+        # --- Screen 3: Intercepts ---
+        int_title = MathTex(
+            r"\text{Pik\"{e}prerjet me boshtet:}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
+        )
+        int_x = MathTex(
+            r"x = \pm 2 \;\Rightarrow\; (-2,\,0),\; (2,\,0)",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
+        int_y = MathTex(
+            r"y = \pm 2 \;\Rightarrow\; (0,\,-2),\; (0,\,2)",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
+        int_grp = VGroup(int_title, int_x, int_y).arrange(DOWN, buff=0.4).move_to(ORIGIN)
+
+        self.play(FadeIn(int_grp, shift=UP * 0.2), run_time=T_SHAPE_CREATE)
+        self.wait(3.0)
+        self.play(FadeOut(int_grp), run_time=T_TRANSITION)
+        self.wait(0.3)
+
+        # --- Screen 4: Graph ---
         self.show_circle_graph(
             r_val=2, r_sq=4,
             eq_str=r"x^2 + y^2 = 4",
@@ -222,20 +359,58 @@ class Ushtrimi3(ExerciseScene):
     def part_f(self):
         self.show_part_header("f")
 
+        # --- Screen 1: Show original form ---
         prob = MathTex(r"y^2 = 16 - x^2", font_size=PROBLEM_MATH_SIZE + 4)
-        rewrite = MathTex(r"\Rightarrow\; x^2 + y^2 = 16", font_size=CALC_SIZE, color=STEP_TITLE_COLOR)
-        r_eq = MathTex(r"r = 4", font_size=CALC_SIZE, color=ANSWER_COLOR)
-        VGroup(prob, rewrite, r_eq).arrange(DOWN, buff=0.4).move_to(ORIGIN)
-
+        prob.move_to(ORIGIN)
         self.play(FadeIn(prob), run_time=T_SHAPE_CREATE)
-        self.wait(0.8)
-        self.play(Write(rewrite), run_time=T_KEY_EQUATION)
-        self.wait(0.6)
-        self.play(Write(r_eq), run_time=T_ROUTINE_EQUATION)
-        self.wait(W_AFTER_ROUTINE)
-        self.play(FadeOut(prob), FadeOut(rewrite), FadeOut(r_eq), run_time=T_TRANSITION)
+        self.wait(2.5)
+        self.play(FadeOut(prob), run_time=T_TRANSITION)
         self.wait(0.3)
 
+        # --- Screen 2: Rewrite + radius ---
+        rewrite_title = MathTex(
+            r"\text{Rishkruajm\"{e} n\"{e} form\"{e}n standarde:}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
+        )
+        rewrite_eq = MathTex(
+            r"x^2 + y^2 = 16",
+            font_size=CALC_SIZE, color=WHITE,
+        )
+        r_eq = MathTex(r"r = 4", font_size=CALC_SIZE, color=ANSWER_COLOR)
+        rw_grp = VGroup(rewrite_title, rewrite_eq, r_eq).arrange(
+            DOWN, buff=0.4
+        ).move_to(ORIGIN)
+
+        self.play(FadeIn(rewrite_title), run_time=T_STEP_TITLE)
+        self.wait(0.5)
+        self.play(Write(rewrite_eq), run_time=T_KEY_EQUATION)
+        self.wait(2.0)
+        self.play(Write(r_eq), run_time=T_ROUTINE_EQUATION)
+        self.wait(3.0)
+        self.play(FadeOut(rw_grp), run_time=T_TRANSITION)
+        self.wait(0.3)
+
+        # --- Screen 3: Intercepts ---
+        int_title = MathTex(
+            r"\text{Pik\"{e}prerjet me boshtet:}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
+        )
+        int_x = MathTex(
+            r"x = \pm 4 \;\Rightarrow\; (-4,\,0),\; (4,\,0)",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
+        int_y = MathTex(
+            r"y = \pm 4 \;\Rightarrow\; (0,\,-4),\; (0,\,4)",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
+        int_grp = VGroup(int_title, int_x, int_y).arrange(DOWN, buff=0.4).move_to(ORIGIN)
+
+        self.play(FadeIn(int_grp, shift=UP * 0.2), run_time=T_SHAPE_CREATE)
+        self.wait(3.0)
+        self.play(FadeOut(int_grp), run_time=T_TRANSITION)
+        self.wait(0.3)
+
+        # --- Screen 4: Graph ---
         self.show_circle_graph(
             r_val=4, r_sq=16,
             eq_str=r"x^2 + y^2 = 16",
