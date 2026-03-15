@@ -17,6 +17,9 @@ from style_guide import (
     CALC_TOP,
 )
 
+# Right-panel center x — all titles, text, and equations align here
+PX = 3.2
+
 
 class Ushtrimi4(ExerciseScene):
     """
@@ -29,6 +32,39 @@ class Ushtrimi4(ExerciseScene):
     exercise_number = 4
     unit = "7.2A"
     parts = ["a", "b"]
+
+    # ── Alignment helpers: every element centered at x = PX ──
+
+    def _title(self, text, ref=None, y_pos=None, buff=0.5):
+        t = MathTex(
+            r"\text{" + text + r"}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
+        )
+        if y_pos is not None:
+            t.move_to(np.array([PX, y_pos, 0]))
+        elif ref is not None:
+            t.next_to(ref, DOWN, buff=buff)
+            t.set_x(PX)
+        self.play(FadeIn(t), run_time=T_STEP_TITLE)
+        return t
+
+    def _text(self, lines, ref, buff=0.25):
+        parts = [MathTex(l, font_size=BODY_SIZE, color=BODY_TEXT_COLOR) for l in lines]
+        g = VGroup(*parts).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
+        g.next_to(ref, DOWN, buff=buff)
+        g.set_x(PX)
+        self.play(FadeIn(g), run_time=T_BODY_FADE)
+        return g
+
+    def _eq(self, tex, ref, buff=0.25, color=None, fs=None, key=False):
+        eq = MathTex(tex, font_size=fs or CALC_SIZE)
+        if color:
+            eq.set_color(color)
+        eq.next_to(ref, DOWN, buff=buff)
+        eq.set_x(PX)
+        self.play(Write(eq), run_time=T_KEY_EQUATION if key else T_ROUTINE_EQUATION)
+        self.wait(W_AFTER_KEY if key else 0.6)
+        return eq
 
     # ================================================================
     #  PART A — Given AB=AC=25, angle B=51°, find BC
@@ -104,109 +140,96 @@ class Ushtrimi4(ExerciseScene):
         div = make_divider()
         self.play(FadeIn(div), run_time=0.3)
 
-        # Step 1: Isosceles → ∠C = 51°
-        s1_title = self.show_step_title("Hapi 1: Këndet e bazës", position=CALC_TOP + UP * 0.2)
+        # ── Steps 1–3 ──
 
-        s1_line1 = MathTex(
+        s1t = self._title("Hapi 1: Këndet e bazës", y_pos=3.2)
+
+        s1txt = self._text([
             r"\text{Meqë } AB = AC\text{, trekëndëshi është}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
-        )
-        s1_line2 = MathTex(
             r"\text{dybrinjënjëshëm. Këndet e bazës}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
-        )
-        s1_line3 = MathTex(
             r"\text{janë të barabarta:}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
-        )
-        s1_txt = VGroup(s1_line1, s1_line2, s1_line3).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
-        s1_txt.next_to(s1_title, DOWN, buff=0.25, aligned_edge=LEFT)
-        self.play(FadeIn(s1_txt), run_time=T_BODY_FADE)
+        ], s1t)
         self.wait(2)
 
-        s1_eq = MathTex(r"\angle C = \angle B = 51^{\circ}", font_size=34, color=ANSWER_COLOR)
-        s1_eq.next_to(s1_txt, DOWN, buff=0.25)
+        s1eq = self._eq(
+            r"\angle C = \angle B = 51^{\circ}",
+            s1txt, color=ANSWER_COLOR, fs=34, key=True,
+        )
 
+        # Show angle C on triangle
         ang_C_arc = self.angle_arc(C, A, B, radius=0.45, color=ANSWER_COLOR)
         ang_C_lbl = MathTex("51^{\\circ}", font_size=24, color=ANSWER_COLOR)
         ang_C_lbl.move_to(self.angle_label_pos(C, A, B, 0.75))
-
-        self.play(Write(s1_eq), Create(ang_C_arc), FadeIn(ang_C_lbl), run_time=1)
-        self.wait(3)
+        self.play(Create(ang_C_arc), FadeIn(ang_C_lbl), run_time=1)
+        self.wait(2)
 
         # Step 2: ∠A = 78°
-        s2_title = self.show_step_title("Hapi 2: Këndi në kulm", reference=s1_eq)
+        s2t = self._title("Hapi 2: Këndi në kulm", ref=s1eq)
 
-        s2_eq = MathTex(
+        s2eq = self._eq(
             r"\angle A = 180^{\circ} - 51^{\circ} - 51^{\circ} = 78^{\circ}",
-            font_size=32,
+            s2t, fs=32,
         )
-        s2_eq.next_to(s2_title, DOWN, buff=0.2)
-        self.play(Write(s2_eq), run_time=1)
 
+        # Show angle A arc briefly on triangle
         ang_A_arc = self.angle_arc(A, B, C, radius=0.3, color=HIGHLIGHT_COLOR)
         ang_A_lbl = MathTex("78^{\\circ}", font_size=20, color=HIGHLIGHT_COLOR)
         ang_A_lbl.move_to(self.angle_label_pos(A, B, C, 0.55))
         self.play(Create(ang_A_arc), FadeIn(ang_A_lbl), run_time=0.6)
         self.wait(3)
 
-        # Step 3: Draw altitude AH
+        # Step 3: Altitude — fade angle A first to avoid overlap with dashed line
+        self.play(FadeOut(ang_A_arc), FadeOut(ang_A_lbl), run_time=0.4)
+
+        s3t = self._title("Hapi 3: Lartësia", ref=s2eq)
+
+        s3txt = self._text([
+            r"\text{Heqim lartësinë } AH \perp BC\text{.}",
+            r"\text{Ajo ndan bazën përgjysmë.}",
+        ], s3t, buff=0.2)
+
         alt = DashedLine(A, H, color=AUX_COLOR, dash_length=0.1, stroke_width=2.5)
         ra = self.right_angle_mark(H, C, A, size=0.2, color=AUX_COLOR)
-        lH = MathTex("H", font_size=32).next_to(H, DOWN, buff=0.15)
+        lH_mob = MathTex("H", font_size=32).next_to(H, DOWN, buff=0.15)
 
-        s3_title = self.show_step_title("Hapi 3: Lartësia", reference=s2_eq)
-
-        s3_line1 = MathTex(
-            r"\text{Heqim lartësinë } AH \perp BC\text{.}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
-        )
-        s3_line2 = MathTex(
-            r"\text{Ajo ndan bazën përgjysmë.}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
-        )
-        s3_txt = VGroup(s3_line1, s3_line2).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
-        s3_txt.next_to(s3_title, DOWN, buff=0.2, aligned_edge=LEFT)
-        self.play(FadeIn(s3_txt), run_time=0.6)
         self.play(Create(alt), run_time=0.8)
-        self.play(Create(ra), FadeIn(lH), run_time=0.5)
+        self.play(Create(ra), FadeIn(lH_mob), run_time=0.5)
         self.wait(2)
 
         # Transition: clear calc column
-        top_calc = VGroup(s1_title, s1_txt, s1_eq, s2_title, s2_eq, s3_title, s3_txt)
-        self.play(FadeOut(top_calc), FadeOut(div), run_time=0.6)
+        calc1 = VGroup(s1t, s1txt, s1eq, s2t, s2eq, s3t, s3txt)
+        self.play(FadeOut(calc1), FadeOut(div), run_time=0.6)
         self.wait(0.5)
 
         div2 = make_divider()
         self.play(FadeIn(div2), run_time=0.2)
 
-        # Step 4: cos → BH
-        s4_title = self.show_step_title("Hapi 4: Gjejmë BH", position=CALC_TOP)
+        # ── Steps 4–5 ──
 
-        s4_txt = MathTex(
+        s4t = self._title("Hapi 4: Gjejmë BH", y_pos=3.0)
+
+        s4txt = self._text([
             r"\text{Në trekëndëshin kënddrejtë } ABH\text{:}",
-            font_size=BODY_SIZE + 2, color=BODY_TEXT_COLOR,
-        )
-        s4_txt.next_to(s4_title, DOWN, buff=0.3, aligned_edge=LEFT)
-        self.play(FadeIn(s4_txt), run_time=0.6)
+        ], s4t, buff=0.3)
         self.wait(2)
 
-        eqs4 = self.show_equation_chain([
-            {"tex": r"\cos 51^{\circ} = \frac{BH}{AB}", "font_size": 36, "key": True},
-            {"tex": r"BH = 25 \cdot \cos 51^{\circ}", "font_size": 34},
-            {"tex": r"BH \approx 15{,}73 \text{ mm}", "color": LABEL_COLOR, "font_size": 36, "key": True},
-        ], start_reference=s4_txt, buff=0.3)
-        self.wait(3)
+        eq4a = self._eq(r"\cos 51^{\circ} = \frac{BH}{AB}", s4txt, key=True, fs=36)
+        eq4b = self._eq(r"BH = 25 \cdot \cos 51^{\circ}", eq4a, fs=34)
+        eq4c = self._eq(
+            r"BH \approx 15{,}73 \text{ mm}",
+            eq4b, color=LABEL_COLOR, fs=36, key=True,
+        )
 
         # Step 5: BC = 2·BH
-        s5_title = self.show_step_title("Hapi 5: Gjejmë BC", reference=eqs4[-1], buff=0.5)
+        s5t = self._title("Hapi 5: Gjejmë BC", ref=eq4c)
 
-        eqs5 = self.show_equation_chain([
-            {"tex": r"BC = 2 \times BH", "font_size": 34},
-            {"tex": r"BC = 2 \times 15{,}73 \approx 31{,}5 \text{ mm}", "color": ANSWER_COLOR, "font_size": 36, "key": True},
-        ], start_reference=s5_title, buff=0.3)
+        eq5a = self._eq(r"BC = 2 \times BH", s5t, fs=34)
+        eq5b = self._eq(
+            r"BC = 2 \times 15{,}73 \approx 31{,}5 \text{ mm}",
+            eq5a, color=ANSWER_COLOR, fs=36, key=True,
+        )
 
-        box = make_answer_box(eqs5[-1])
+        box = make_answer_box(eq5b)
         self.play(Create(box), run_time=0.6)
 
         # Label BC on triangle
@@ -284,111 +307,104 @@ class Ushtrimi4(ExerciseScene):
         div = make_divider()
         self.play(FadeIn(div), run_time=0.2)
 
-        # Step 1: Altitude
-        s1_title = self.show_step_title("Hapi 1: Lartësia", position=CALC_TOP)
+        # ── Steps 1–2 ──
 
-        s1_line1 = MathTex(
+        s1t = self._title("Hapi 1: Lartësia", y_pos=3.0)
+
+        s1txt = self._text([
             r"\text{Meqë } PQ = QR\text{, trekëndëshi është}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
-        )
-        s1_line2 = MathTex(
             r"\text{dybrinjënjëshëm. Heqim lartësinë}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
-        )
-        s1_line3 = MathTex(
             r"QH \perp PR\text{, që ndan bazën përgjysmë:}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
-        )
-        s1_txt = VGroup(s1_line1, s1_line2, s1_line3).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
-        s1_txt.next_to(s1_title, DOWN, buff=0.25, aligned_edge=LEFT)
-        self.play(FadeIn(s1_txt), run_time=0.8)
+        ], s1t)
         self.wait(2)
 
         alt = DashedLine(Q, H_pt, color=AUX_COLOR, dash_length=0.1, stroke_width=2.5)
         ra = self.right_angle_mark(H_pt, R, Q, size=0.2, color=AUX_COLOR)
-        lH = MathTex("H", font_size=32).next_to(H_pt, DOWN, buff=0.15)
+        lH_mob = MathTex("H", font_size=32).next_to(H_pt, DOWN, buff=0.15)
 
         self.play(Create(alt), run_time=0.8)
-        self.play(Create(ra), FadeIn(lH), run_time=0.5)
+        self.play(Create(ra), FadeIn(lH_mob), run_time=0.5)
         self.wait(2)
 
-        s1_eq = self.show_equation(r"PH = HR = \frac{4}{2} = 2 \text{ cm}",
-                                    reference=s1_txt, buff=0.3, font_size=32)
-        self.wait(3)
+        s1eq = self._eq(
+            r"PH = HR = \frac{4}{2} = 2 \text{ cm}",
+            s1txt, buff=0.3, fs=32,
+        )
+        self.wait(2)
 
         # Step 2: QH via Pythagorean
-        s2_title = self.show_step_title("Hapi 2: Gjejmë QH", reference=s1_eq, buff=0.45)
+        s2t = self._title("Hapi 2: Gjejmë QH", ref=s1eq, buff=0.45)
 
-        s2_txt = MathTex(
+        s2txt = self._text([
             r"\text{Teorema e Pitagorës në } \triangle QPH\text{:}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
-        )
-        s2_txt.next_to(s2_title, DOWN, buff=0.2, aligned_edge=LEFT)
-        self.play(FadeIn(s2_txt), run_time=0.5)
+        ], s2t, buff=0.2)
         self.wait(2)
 
-        eqs2 = self.show_equation_chain([
-            {"tex": r"QH^2 = PQ^2 - PH^2", "font_size": 32},
-            {"tex": r"QH^2 = 49 - 4 = 45", "font_size": 32},
-            {"tex": r"QH = \sqrt{45} = 3\sqrt{5} \approx 6{,}71 \text{ cm}", "color": LABEL_COLOR, "font_size": 32, "key": True},
-        ], start_reference=s2_txt)
-        self.wait(3)
+        eq2a = self._eq(r"QH^2 = PQ^2 - PH^2", s2txt, fs=32)
+        eq2b = self._eq(r"QH^2 = 49 - 4 = 45", eq2a, fs=32)
+        eq2c = self._eq(
+            r"QH = \sqrt{45} = 3\sqrt{5} \approx 6{,}71 \text{ cm}",
+            eq2b, color=LABEL_COLOR, fs=32, key=True,
+        )
 
         # Transition: clear calc column
-        old_calcs = VGroup(s1_title, s1_txt, s1_eq, s2_title, s2_txt, *eqs2)
-        self.play(FadeOut(old_calcs), run_time=0.6)
+        calc1 = VGroup(s1t, s1txt, s1eq, s2t, s2txt, eq2a, eq2b, eq2c)
+        self.play(FadeOut(calc1), run_time=0.6)
         self.wait(0.5)
 
-        # Step 3: Find angle P
-        s3_title = self.show_step_title("Hapi 3: Gjejmë këndin P", position=CALC_TOP)
+        # ── Steps 3–4 ──
 
-        s3_line1 = MathTex(
+        s3t = self._title("Hapi 3: Gjejmë këndin P", y_pos=3.0)
+
+        s3txt = self._text([
             r"\text{Në trekëndëshin kënddrejtë } QPH\text{,}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
-        )
-        s3_line2 = MathTex(
             r"\text{përdorim sinusin:}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
-        )
-        s3_txt = VGroup(s3_line1, s3_line2).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
-        s3_txt.next_to(s3_title, DOWN, buff=0.25, aligned_edge=LEFT)
-        self.play(FadeIn(s3_txt), run_time=0.6)
+        ], s3t)
         self.wait(2)
 
-        eqs3 = self.show_equation_chain([
-            {"tex": r"\sin P = \frac{QH}{PQ} = \frac{3\sqrt{5}}{7}", "font_size": 34, "key": True},
-            {"tex": r"\sin P \approx 0{,}9583", "font_size": 34},
-            {"tex": r"\angle P \approx 73{,}4^{\circ}", "color": ANSWER_COLOR, "font_size": 38, "key": True},
-        ], start_reference=s3_txt, buff=0.3)
-        self.wait(3)
+        eq3a = self._eq(
+            r"\sin P = \frac{QH}{PQ} = \frac{3\sqrt{5}}{7}",
+            s3txt, buff=0.3, fs=34, key=True,
+        )
+        eq3b = self._eq(r"\sin P \approx 0{,}9583", eq3a, fs=34)
+        eq3c = self._eq(
+            r"\angle P \approx 73{,}4^{\circ}",
+            eq3b, color=ANSWER_COLOR, fs=38, key=True,
+        )
 
-        # Transition: clear calc column before step 4
-        old_calcs_3 = VGroup(s3_title, s3_txt, *eqs3)
-        self.play(FadeOut(old_calcs_3), run_time=0.6)
+        # Transition: clear calc column
+        calc2 = VGroup(s3t, s3txt, eq3a, eq3b, eq3c)
+        self.play(FadeOut(calc2), run_time=0.6)
         self.wait(0.5)
 
         # Step 4: ∠R = ∠P, find ∠Q
-        s4_title = self.show_step_title("Hapi 4: Këndet e tjera", position=CALC_TOP)
+        s4t = self._title("Hapi 4: Këndet e tjera", y_pos=3.0)
 
-        s4_txt = MathTex(
+        s4txt = self._text([
             r"\text{Këndet e bazës janë të barabarta:}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
-        )
-        s4_txt.next_to(s4_title, DOWN, buff=0.25, aligned_edge=LEFT)
-        self.play(FadeIn(s4_txt), run_time=0.5)
+        ], s4t)
         self.wait(2)
 
-        eqs4 = self.show_equation_chain([
-            {"tex": r"\angle R = \angle P \approx 73{,}4^{\circ}", "color": ANSWER_COLOR, "font_size": 34, "key": True},
-            {"tex": r"\angle Q = 180^{\circ} - 73{,}4^{\circ} - 73{,}4^{\circ}", "font_size": 32},
-            {"tex": r"\angle Q \approx 33{,}2^{\circ}", "color": HIGHLIGHT_COLOR, "font_size": 38, "key": True},
-        ], start_reference=s4_txt)
-        self.wait(3)
+        eq4a = self._eq(
+            r"\angle R = \angle P \approx 73{,}4^{\circ}",
+            s4txt, color=ANSWER_COLOR, fs=34, key=True,
+        )
+        eq4b = self._eq(
+            r"\angle Q = 180^{\circ} - 73{,}4^{\circ} - 73{,}4^{\circ}",
+            eq4a, fs=32,
+        )
+        eq4c = self._eq(
+            r"\angle Q \approx 33{,}2^{\circ}",
+            eq4b, color=HIGHLIGHT_COLOR, fs=38, key=True,
+        )
 
-        # Transition: clear calc column, show angles on triangle
-        old_calcs_4 = VGroup(s4_title, s4_txt, *eqs4, div)
-        self.play(FadeOut(old_calcs_4), run_time=0.6)
+        # Transition: clear calc column and divider
+        calc3 = VGroup(s4t, s4txt, eq4a, eq4b, eq4c, div)
+        self.play(FadeOut(calc3), run_time=0.6)
         self.wait(0.5)
+
+        # Fade altitude before showing angle arcs to avoid overlap at vertex Q
+        self.play(FadeOut(alt), FadeOut(ra), FadeOut(lH_mob), run_time=0.4)
 
         # Angle arcs on triangle
         ang_P_arc = self.angle_arc(P, R, Q, radius=0.4, color=ANSWER_COLOR)
@@ -421,7 +437,7 @@ class Ushtrimi4(ExerciseScene):
 
         answer_block = VGroup(answer_title, ans_P, ans_R, ans_Q)
         answer_block.arrange(DOWN, buff=0.35, center=True)
-        answer_block.move_to(RIGHT * 3.2)
+        answer_block.move_to(RIGHT * PX)
 
         ans_box = make_answer_box(VGroup(ans_P, ans_R, ans_Q))
 

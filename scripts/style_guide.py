@@ -70,6 +70,19 @@ CALC_CENTER = RIGHT * 3.2
 CALC_TOP = RIGHT * 3.2 + UP * 3.0
 DIVIDER_X = -0.3
 
+# Right-panel center x — shorthand for alignment
+PX = 3.2
+
+# ──────────────────────────────────────────────
+#  OVERLAP PREVENTION — minimum spacing
+# ──────────────────────────────────────────────
+LABEL_BUFF_MIN = 0.15          # Minimum buff for any label
+SIDE_LABEL_PERP_OFFSET = 0.4   # Perpendicular offset for side length labels
+ANGLE_LABEL_DISTANCE = 0.65    # Distance from vertex for angle labels
+ANGLE_ARC_RADIUS_SMALL = 0.25  # For angles < 40°
+ANGLE_ARC_RADIUS_DEFAULT = 0.4 # For normal angles
+ANGLE_ARC_RADIUS_LARGE = 0.5   # For angles > 120°
+
 # ──────────────────────────────────────────────
 #  HELPER: Apply background
 # ──────────────────────────────────────────────

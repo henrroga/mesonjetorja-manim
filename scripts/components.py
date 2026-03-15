@@ -324,6 +324,9 @@ class ExerciseScene(Scene):
         """
         Show a step title (e.g. "Hapi 1: Zëvendësimi").
 
+        All titles are center-aligned at x = CALC_CENTER to maintain
+        a consistent vertical axis in the right panel.
+
         Args:
             text: Step title text.
             position: Absolute position (takes precedence).
@@ -339,8 +342,10 @@ class ExerciseScene(Scene):
         )
         if position is not None:
             title.move_to(position)
+            title.set_x(CALC_CENTER[0])
         elif reference is not None:
-            title.next_to(reference, DOWN, buff=buff, aligned_edge=LEFT)
+            title.next_to(reference, DOWN, buff=buff)
+            title.set_x(CALC_CENTER[0])
         else:
             title.move_to(CALC_TOP)
 
@@ -351,6 +356,9 @@ class ExerciseScene(Scene):
                       color=None, font_size=None):
         """
         Show a single equation below a reference.
+
+        Equations are center-aligned at x = CALC_CENTER to maintain
+        a consistent vertical axis in the right panel.
 
         Args:
             tex: LaTeX string.
@@ -368,6 +376,7 @@ class ExerciseScene(Scene):
             eq.set_color(color)
         if reference is not None:
             eq.next_to(reference, DOWN, buff=buff)
+            eq.set_x(CALC_CENTER[0])
 
         rt = T_KEY_EQUATION if key else T_ROUTINE_EQUATION
         self.play(Write(eq), run_time=rt)
@@ -381,6 +390,9 @@ class ExerciseScene(Scene):
                             buff=0.25, key_indices=None):
         """
         Show a chain of equations sequentially.
+
+        All equations are center-aligned at x = CALC_CENTER to maintain
+        a consistent vertical axis in the right panel.
 
         Args:
             equations: List of dicts with keys:
@@ -413,14 +425,17 @@ class ExerciseScene(Scene):
                     eq.set_color(color)
                 if start_position is not None:
                     eq.move_to(start_position)
+                    eq.set_x(CALC_CENTER[0])
                 elif ref is not None:
                     eq.next_to(ref, DOWN, buff=0.3)
+                    eq.set_x(CALC_CENTER[0])
             else:
                 ref = results[-1]
                 eq = MathTex(eq_spec["tex"], font_size=fs or CALC_SIZE)
                 if color:
                     eq.set_color(color)
                 eq.next_to(ref, DOWN, buff=buff)
+                eq.set_x(CALC_CENTER[0])
 
             rt = T_KEY_EQUATION if is_key else T_ROUTINE_EQUATION
             self.play(Write(eq), run_time=rt)
