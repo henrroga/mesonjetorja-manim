@@ -73,9 +73,9 @@ class Ushtrimi9(ExerciseScene):
         prob = MathTex(system_tex, font_size=PROBLEM_MATH_SIZE + 4)
         prob.move_to(ORIGIN)
         self.play(FadeIn(prob, shift=UP * 0.3), run_time=T_SHAPE_CREATE)
-        self.wait(W_PROBLEM - 1)
+        self.wait(W_PROBLEM)
         self.play(FadeOut(prob), run_time=T_TRANSITION)
-        self.wait(0.3)
+        self.wait(0.5)
 
     # ================================================================
     #  PART A  —  x² + y² = 25,  y = x + 1
@@ -85,7 +85,11 @@ class Ushtrimi9(ExerciseScene):
         self.show_part_header("a")
 
         # Problem Statement
-        prob_title = Text("Sistemi:", font_size=STEP_TITLE_SIZE + 2, color=STEP_TITLE_COLOR, weight=BOLD)
+        prob_title = MathTex(
+            r"\text{Sistemi:}",
+            font_size=STEP_TITLE_SIZE + 2,
+            color=STEP_TITLE_COLOR,
+        )
         prob_eq = MathTex(
             r"\begin{cases} x^2 + y^2 = 25 \\ y = x + 1 \end{cases}",
             font_size=PROBLEM_MATH_SIZE + 4,
@@ -120,20 +124,26 @@ class Ushtrimi9(ExerciseScene):
 
         # Split layout
         div = self.setup_split_layout(graph_group)
-        self.wait(0.3)
+        self.wait(0.5)
 
         # Step 1: Substitution
         s1_title = self.show_step_title("Hapi 1: Zëvendësimi")
 
-        s1_txt = Text(
-            "Zëvendësojmë y = x + 1\nnë ekuacionin e rrethit:",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR, line_spacing=1.4,
+        s1_line1 = MathTex(
+            r"\text{Zëvendësojmë } y = x + 1",
+            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
         )
+        s1_line2 = MathTex(
+            r"\text{në ekuacionin e rrethit:}",
+            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
+        )
+        s1_txt = VGroup(s1_line1, s1_line2).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
         s1_txt.next_to(s1_title, DOWN, buff=0.25, aligned_edge=LEFT)
         self.play(FadeIn(s1_txt), run_time=T_BODY_FADE)
-        self.wait(W_AFTER_ROUTINE)
+        self.wait(2.0)
 
         s1_eq1 = self.show_equation(r"x^2 + (x+1)^2 = 25", reference=s1_txt, buff=0.3, key=True)
+        self.wait(2.5)
 
         # Step 2: Expand & Simplify
         s2_title = self.show_step_title("Hapi 2: Thjeshtimi", reference=s1_eq1)
@@ -143,11 +153,12 @@ class Ushtrimi9(ExerciseScene):
             r"2x^2 + 2x - 24 = 0",
             {"tex": r"x^2 + x - 12 = 0", "color": LABEL_COLOR, "key": True},
         ], start_reference=s2_title)
+        self.wait(2.5)
 
         # Transition: clear top steps
         top_items = VGroup(s1_title, s1_txt, s1_eq1, s2_title, *eqs)
         self.play(FadeOut(top_items), run_time=T_TRANSITION)
-        self.wait(0.3)
+        self.wait(0.5)
 
         # Step 3: Factor
         s3_title = self.show_step_title("Hapi 3: Faktorizimi")
@@ -157,15 +168,21 @@ class Ushtrimi9(ExerciseScene):
             {"tex": r"(x - 3)(x + 4) = 0", "color": LABEL_COLOR, "key": True},
             {"tex": r"x_1 = 3 \qquad x_2 = -4", "color": ANSWER_COLOR, "font_size": CALC_SIZE + 2, "key": True},
         ], start_reference=s3_title)
+        self.wait(3.0)
+
+        # Transition: clear step 3
+        step3_items = VGroup(s3_title, *eqs3)
+        self.play(FadeOut(step3_items), run_time=T_TRANSITION)
+        self.wait(0.5)
 
         # Step 4: Find y
-        s4_title = self.show_step_title("Hapi 4: Gjejmë y", reference=eqs3[-1], buff=0.5)
+        s4_title = self.show_step_title("Hapi 4: Gjejmë y")
 
         y_eqs = self.show_equation_chain([
             r"y_1 = 3 + 1 = 4",
             r"y_2 = -4 + 1 = -3",
         ], start_reference=s4_title)
-        self.wait(W_AFTER_ROUTINE)
+        self.wait(2.5)
 
         # Answer box
         self.show_answer_below(
@@ -189,11 +206,16 @@ class Ushtrimi9(ExerciseScene):
         )
 
         div = self.setup_split_layout(graph_group)
+        self.wait(0.5)
 
         # Algebra
-        s1 = Text("Zëvendësojmë y = 2x − 5:", font_size=BODY_SIZE, color=BODY_TEXT_COLOR)
+        s1 = MathTex(
+            r"\text{Zëvendësojmë } y = 2x - 5\text{:}",
+            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
+        )
         s1.move_to(CALC_TOP)
         self.play(FadeIn(s1), run_time=T_STEP_TITLE)
+        self.wait(2.0)
 
         eqs = self.show_equation_chain([
             {"tex": r"x^2 + (2x-5)^2 = 25", "key": True},
@@ -202,9 +224,11 @@ class Ushtrimi9(ExerciseScene):
             r"5x(x - 4) = 0",
             {"tex": r"x_1 = 0 \qquad x_2 = 4", "color": ANSWER_COLOR, "font_size": CALC_SIZE + 2, "key": True},
         ], start_reference=s1)
+        self.wait(3.0)
 
         # Transition
         self.play(FadeOut(VGroup(s1, *eqs)), run_time=T_TRANSITION)
+        self.wait(0.5)
 
         # Find y
         y_title = self.show_step_title("Gjejmë y:")
@@ -212,7 +236,7 @@ class Ushtrimi9(ExerciseScene):
             r"y_1 = 2(0) - 5 = -5",
             r"y_2 = 2(4) - 5 = 3",
         ], start_reference=y_title)
-        self.wait(W_AFTER_ROUTINE)
+        self.wait(2.5)
 
         self.show_answer_below(
             r"(0,\,-5) \quad \text{dhe} \quad (4,\,3)",
@@ -234,11 +258,16 @@ class Ushtrimi9(ExerciseScene):
         )
 
         div = self.setup_split_layout(graph_group)
+        self.wait(0.5)
 
-        # Algebra (condensed)
-        s1 = Text("Zëvendësojmë y = −3/4 x:", font_size=BODY_SIZE, color=BODY_TEXT_COLOR)
+        # Algebra
+        s1 = MathTex(
+            r"\text{Zëvendësojmë } y = -\tfrac{3}{4}\,x\text{:}",
+            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
+        )
         s1.move_to(CALC_TOP)
         self.play(FadeIn(s1), run_time=T_STEP_TITLE)
+        self.wait(2.0)
 
         eqs = self.show_equation_chain([
             {"tex": r"x^2 + \frac{9}{16}x^2 = 100", "key": True},
@@ -246,19 +275,23 @@ class Ushtrimi9(ExerciseScene):
             {"tex": r"x^2 = 64", "color": LABEL_COLOR},
             {"tex": r"x = \pm 8", "color": ANSWER_COLOR, "font_size": CALC_SIZE + 2, "key": True},
         ], start_reference=s1)
+        self.wait(3.0)
 
-        # Find y & answer
-        y_txt = MathTex(
-            r"y_1 = -\frac{3}{4}(8) = -6 \qquad y_2 = -\frac{3}{4}(-8) = 6",
-            font_size=CALC_SIZE - 2,
-        )
-        y_txt.next_to(eqs[-1], DOWN, buff=0.4)
-        self.play(Write(y_txt), run_time=T_KEY_EQUATION)
-        self.wait(W_AFTER_ROUTINE)
+        # Transition: clear algebra
+        self.play(FadeOut(VGroup(s1, *eqs)), run_time=T_TRANSITION)
+        self.wait(0.5)
+
+        # Find y
+        y_title = self.show_step_title("Gjejmë y:")
+        y_eqs = self.show_equation_chain([
+            r"y_1 = -\frac{3}{4}(8) = -6",
+            r"y_2 = -\frac{3}{4}(-8) = 6",
+        ], start_reference=y_title)
+        self.wait(2.5)
 
         self.show_answer_below(
             r"(8,\,-6) \quad \text{dhe} \quad (-8,\,6)",
-            y_txt,
+            y_eqs[-1],
             buff=0.4,
         )
 
@@ -277,18 +310,34 @@ class Ushtrimi9(ExerciseScene):
         )
 
         div = self.setup_split_layout(graph_group)
+        self.wait(0.5)
 
-        # Quick algebra
+        # Algebra
+        s1_title = self.show_step_title("Zëvendësimi:")
+
         eqs = self.show_equation_chain([
             {"tex": r"x^2 + (3x-3)^2 = 169", "key": True},
             r"10x^2 - 18x - 160 = 0",
             {"tex": r"5x^2 - 9x - 80 = 0", "color": LABEL_COLOR},
             {"tex": r"x_1 = 5 \qquad x_2 = -3{,}2", "color": ANSWER_COLOR, "font_size": CALC_SIZE + 2, "key": True},
-        ], start_position=CALC_TOP)
+        ], start_reference=s1_title)
+        self.wait(3.0)
+
+        # Transition: clear algebra
+        self.play(FadeOut(VGroup(s1_title, *eqs)), run_time=T_TRANSITION)
+        self.wait(0.5)
+
+        # Find y
+        y_title = self.show_step_title("Gjejmë y:")
+        y_eqs = self.show_equation_chain([
+            r"y_1 = 3(5) - 3 = 12",
+            r"y_2 = 3(-3{,}2) - 3 = -12{,}6",
+        ], start_reference=y_title)
+        self.wait(2.5)
 
         self.show_answer_below(
             r"(5,\,12) \quad \text{dhe} \quad (-3{,}2;\;-12{,}6)",
-            eqs[-1],
+            y_eqs[-1],
         )
 
     # ================================================================
@@ -309,6 +358,10 @@ class Ushtrimi9(ExerciseScene):
         )
 
         div = self.setup_split_layout(graph_group)
+        self.wait(0.5)
+
+        # Algebra
+        s1_title = self.show_step_title("Zëvendësimi:")
 
         eqs = self.show_equation_chain([
             {"tex": r"x^2 + (x-2)^2 = 36", "key": True},
@@ -316,11 +369,24 @@ class Ushtrimi9(ExerciseScene):
             {"tex": r"x^2 - 2x - 16 = 0", "color": LABEL_COLOR},
             r"x = \frac{2 \pm \sqrt{68}}{2} = 1 \pm \sqrt{17}",
             {"tex": r"x_1 \approx 5{,}12 \qquad x_2 \approx -3{,}12", "color": ANSWER_COLOR, "key": True},
-        ], start_position=CALC_TOP)
+        ], start_reference=s1_title)
+        self.wait(3.0)
+
+        # Transition: clear algebra
+        self.play(FadeOut(VGroup(s1_title, *eqs)), run_time=T_TRANSITION)
+        self.wait(0.5)
+
+        # Find y
+        y_title = self.show_step_title("Gjejmë y:")
+        y_eqs = self.show_equation_chain([
+            r"y_1 = 5{,}12 - 2 = 3{,}12",
+            r"y_2 = -3{,}12 - 2 = -5{,}12",
+        ], start_reference=y_title)
+        self.wait(2.5)
 
         self.show_answer_below(
             r"(5{,}12;\;3{,}12) \quad \text{dhe} \quad (-3{,}12;\;-5{,}12)",
-            eqs[-1],
+            y_eqs[-1],
             buff=0.4,
         )
 
@@ -342,17 +408,34 @@ class Ushtrimi9(ExerciseScene):
         )
 
         div = self.setup_split_layout(graph_group)
+        self.wait(0.5)
+
+        # Algebra
+        s1_title = self.show_step_title("Zëvendësimi:")
 
         eqs = self.show_equation_chain([
             {"tex": r"x^2 + (2x+1)^2 = 4", "key": True},
             {"tex": r"5x^2 + 4x - 3 = 0", "color": LABEL_COLOR},
             r"x = \frac{-4 \pm \sqrt{76}}{10}",
             {"tex": r"x_1 \approx 0{,}47 \qquad x_2 \approx -1{,}27", "color": ANSWER_COLOR, "key": True},
-        ], start_position=CALC_TOP)
+        ], start_reference=s1_title)
+        self.wait(3.0)
+
+        # Transition: clear algebra
+        self.play(FadeOut(VGroup(s1_title, *eqs)), run_time=T_TRANSITION)
+        self.wait(0.5)
+
+        # Find y
+        y_title = self.show_step_title("Gjejmë y:")
+        y_eqs = self.show_equation_chain([
+            r"y_1 = 2(0{,}47) + 1 = 1{,}94",
+            r"y_2 = 2(-1{,}27) + 1 = -1{,}54",
+        ], start_reference=y_title)
+        self.wait(2.5)
 
         self.show_answer_below(
             r"(0{,}47;\;1{,}94) \quad \text{dhe} \quad (-1{,}27;\;-1{,}54)",
-            eqs[-1],
+            y_eqs[-1],
             buff=0.4,
         )
 
