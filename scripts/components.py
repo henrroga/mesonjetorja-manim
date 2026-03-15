@@ -441,6 +441,89 @@ class ExerciseScene(Scene):
     #  GEOMETRY HELPERS
     # ──────────────────────────────────────────
 
+    # ──────────────────────────────────────────
+    #  CIRCLE GRAPH WITH INTERCEPTS
+    # ──────────────────────────────────────────
+
+    def show_circle_graph(
+        self, r_val, r_sq, eq_str, r_str,
+        intercepts_x, intercepts_y,
+        x_labels, y_labels,
+        axis_bound=None,
+    ):
+        """
+        Draw a circle on axes with labeled axis intercepts.
+
+        Used for exercises about circle equations and their graphs.
+
+        Args:
+            r_val: Numeric radius value.
+            r_sq: Radius squared (for display).
+            eq_str: LaTeX for circle equation.
+            r_str: LaTeX for radius display.
+            intercepts_x: List of (x, y) tuples for x-axis intercepts.
+            intercepts_y: List of (x, y) tuples for y-axis intercepts.
+            x_labels: List of LaTeX strings for x-intercept labels.
+            y_labels: List of LaTeX strings for y-intercept labels.
+            axis_bound: Axis range (auto-calculated if None).
+        """
+        bound = axis_bound or int(r_val + 2)
+        step = max(1, bound // 4)
+
+        axes = self.create_axes(bound, bound, step=step, x_length=6, y_length=6)
+        axes_labels = axes.get_axis_labels(x_label="x", y_label="y")
+
+        circle = self.plot_circle(axes, r_val)
+
+        # Equation and radius labels
+        eq_label = MathTex(eq_str, font_size=24, color=SHAPE_COLOR)
+        eq_label.to_corner(UR, buff=0.5)
+        r_label = MathTex(r_str, font_size=24, color=ANSWER_COLOR)
+        r_label.next_to(eq_label, DOWN, buff=0.2)
+
+        # Radius line from origin to (r, 0)
+        r_line = DashedLine(
+            axes.c2p(0, 0), axes.c2p(r_val, 0),
+            color=ANSWER_COLOR, dash_length=0.08, stroke_width=2,
+        )
+        r_mid_label = MathTex(r_str, font_size=20, color=ANSWER_COLOR)
+        r_mid_label.next_to(r_line, UP, buff=0.15)
+
+        # Intercept dots and labels
+        dots_and_labels = VGroup()
+
+        for i, (pt, lbl_str) in enumerate(zip(intercepts_x, x_labels)):
+            dot = Dot(axes.c2p(pt[0], pt[1]), color=LABEL_COLOR, radius=0.08)
+            lbl = MathTex(lbl_str, font_size=20, color=LABEL_COLOR)
+            lbl.next_to(dot, DL if i == 0 else DR, buff=0.12)
+            dots_and_labels.add(dot, lbl)
+
+        for i, (pt, lbl_str) in enumerate(zip(intercepts_y, y_labels)):
+            dot = Dot(axes.c2p(pt[0], pt[1]), color=HIGHLIGHT_COLOR, radius=0.08)
+            lbl = MathTex(lbl_str, font_size=20, color=HIGHLIGHT_COLOR)
+            lbl.next_to(dot, DL if i == 0 else UL, buff=0.12)
+            dots_and_labels.add(dot, lbl)
+
+        # Animate
+        self.play(Create(axes), FadeIn(axes_labels), run_time=T_SHAPE_CREATE)
+        self.play(Create(circle), run_time=T_SHAPE_CREATE)
+        self.play(FadeIn(eq_label), FadeIn(r_label), run_time=T_BODY_FADE)
+        self.play(Create(r_line), FadeIn(r_mid_label), run_time=T_ROUTINE_EQUATION)
+        self.wait(W_AFTER_ROUTINE)
+
+        self.play(
+            LaggedStart(
+                *[FadeIn(obj, scale=1.3) for obj in dots_and_labels],
+                lag_ratio=0.1,
+            ),
+            run_time=1.5,
+        )
+        self.wait(W_AFTER_ANSWER)
+
+    # ──────────────────────────────────────────
+    #  GEOMETRY HELPERS
+    # ──────────────────────────────────────────
+
     @staticmethod
     def midpoint(p1, p2):
         """Calculate the midpoint of two points."""
