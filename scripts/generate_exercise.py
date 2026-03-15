@@ -306,7 +306,7 @@ def generate_script(exercise_json):
 
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 from manim import *
 import numpy as np
@@ -418,8 +418,38 @@ def main():
         if not output_path:
             unit = data["unit"]
             name = data["name"]
+            source = data.get("source", "")
+
+            # Determine subject from source
+            source_lower = source.lower()
+            if "fizik" in source_lower:
+                subject = "fizike"
+            elif "kimi" in source_lower:
+                kimie = "kimie"
+                subject = "kimie"
+            else:
+                subject = "matematike"
+
+            # Slugify textbook and unit
+            textbook_slug = source.lower().strip()
+            for char in [":", "(", ")", ",", "."]:
+                textbook_slug = textbook_slug.replace(char, "")
+            textbook_slug = textbook_slug.replace(" ", "-")
+            # Remove double hyphens
+            while "--" in textbook_slug:
+                textbook_slug = textbook_slug.replace("--", "-")
+            textbook_slug = textbook_slug.strip("-")
+
+            unit_slug = unit.lower().strip()
+            for char in [":", "(", ")", ",", "."]:
+                unit_slug = unit_slug.replace(char, "")
+            unit_slug = unit_slug.replace(" ", "-")
+            while "--" in unit_slug:
+                unit_slug = unit_slug.replace("--", "-")
+            unit_slug = unit_slug.strip("-")
+
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            unit_dir = os.path.join(base_dir, unit)
+            unit_dir = os.path.join(base_dir, subject, textbook_slug, unit_slug)
             os.makedirs(unit_dir, exist_ok=True)
             output_path = os.path.join(unit_dir, f"ushtrimi{name}.py")
 
