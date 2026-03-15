@@ -38,12 +38,12 @@ class Ushtrimi7(ExerciseScene):
         # Extra intro step before parts
         self.intro_method()
         fade_all(self)
-        self.wait(0.5)
+        self.wait(1.0)
 
         for part_name in self.parts:
             getattr(self, f"part_{part_name}")()
             fade_all(self)
-            self.wait(0.5)
+            self.wait(1.0)
 
         self.final_summary()
         self.wait(W_AFTER_ANSWER)
@@ -52,35 +52,73 @@ class Ushtrimi7(ExerciseScene):
     #  INTRO — explain the tangent method
     # ================================================================
     def intro_method(self):
-        prob_title = Text("Problemi:", font_size=STEP_TITLE_SIZE + 2, color=STEP_TITLE_COLOR, weight=BOLD)
-        prob_txt = Text(
-            "Një rreth ka ekuacionin x² + y² = 100.\nShkruani ekuacionin e tangjentes në pikat\n(6,8), (8,6), (10,0).",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR, line_spacing=1.4,
+        prob_title = MathTex(
+            r"\text{Problemi:}",
+            font_size=STEP_TITLE_SIZE + 2,
+            color=STEP_TITLE_COLOR,
         )
-        VGroup(prob_title, prob_txt).arrange(DOWN, buff=0.4).move_to(UP * 1)
+        prob_line1 = MathTex(
+            r"\text{Një rreth ka ekuacionin } x^2 + y^2 = 100.",
+            font_size=BODY_SIZE,
+            color=BODY_TEXT_COLOR,
+        )
+        prob_line2 = MathTex(
+            r"\text{Shkruani ekuacionin e tangjentes në pikat}",
+            font_size=BODY_SIZE,
+            color=BODY_TEXT_COLOR,
+        )
+        prob_line3 = MathTex(
+            r"(6,\,8),\quad (8,\,6),\quad (10,\,0).",
+            font_size=BODY_SIZE,
+            color=LABEL_COLOR,
+        )
+        prob_group = VGroup(prob_title, prob_line1, prob_line2, prob_line3)
+        prob_group.arrange(DOWN, buff=0.3).move_to(UP * 1.2)
 
         self.play(FadeIn(prob_title), run_time=T_STEP_TITLE)
-        self.play(FadeIn(prob_txt), run_time=T_BODY_FADE)
+        self.play(FadeIn(prob_line1), run_time=T_BODY_FADE)
+        self.play(FadeIn(prob_line2), run_time=T_BODY_FADE)
+        self.play(FadeIn(prob_line3), run_time=T_BODY_FADE)
         self.wait(W_PROBLEM)
 
+        # Fade out problem before showing method
+        self.play(FadeOut(prob_group), run_time=T_TRANSITION)
+        self.wait(0.5)
+
         # Method explanation
-        m_title = Text("Metoda:", font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR, weight=BOLD)
-        m_title.next_to(prob_txt, DOWN, buff=0.5)
+        m_title = MathTex(
+            r"\text{Metoda:}",
+            font_size=STEP_TITLE_SIZE,
+            color=STEP_TITLE_COLOR,
+        )
+        m_title.move_to(UP * 2.5)
 
-        eqs = [
-            MathTex(r"m_{\text{rreze}} = \frac{y_P - 0}{x_P - 0} = \frac{y_P}{x_P}", font_size=CALC_SIZE),
-            MathTex(r"m_{\text{tang}} = -\frac{1}{m_{\text{rreze}}} = -\frac{x_P}{y_P}", font_size=CALC_SIZE, color=LABEL_COLOR),
-        ]
-        eqs[0].next_to(m_title, DOWN, buff=0.3)
-        eqs[1].next_to(eqs[0], DOWN, buff=0.25)
+        eq_radius = MathTex(
+            r"m_{\text{rreze}} = \frac{y_P - 0}{x_P - 0} = \frac{y_P}{x_P}",
+            font_size=CALC_SIZE,
+        )
+        eq_radius.next_to(m_title, DOWN, buff=0.4)
 
-        m3_txt = Text("sepse rrezja ⊥ tangjentes", font_size=BODY_SIZE, color=BODY_TEXT_COLOR)
-        m3_txt.next_to(eqs[1], DOWN, buff=0.2)
+        eq_tangent = MathTex(
+            r"m_{\text{tang}} = -\frac{1}{m_{\text{rreze}}} = -\frac{x_P}{y_P}",
+            font_size=CALC_SIZE,
+            color=LABEL_COLOR,
+        )
+        eq_tangent.next_to(eq_radius, DOWN, buff=0.3)
+
+        m3_txt = MathTex(
+            r"\text{sepse rrezja} \perp \text{tangjentes}",
+            font_size=BODY_SIZE,
+            color=BODY_TEXT_COLOR,
+        )
+        m3_txt.next_to(eq_tangent, DOWN, buff=0.3)
 
         self.play(FadeIn(m_title), run_time=T_STEP_TITLE)
-        self.play(Write(eqs[0]), run_time=T_KEY_EQUATION)
+        self.wait(0.5)
+        self.play(Write(eq_radius), run_time=T_KEY_EQUATION)
         self.wait(W_AFTER_ROUTINE)
-        self.play(Write(eqs[1]), run_time=T_KEY_EQUATION)
+        self.play(Write(eq_tangent), run_time=T_KEY_EQUATION)
+        self.wait(2.0)
         self.play(FadeIn(m3_txt), run_time=T_BODY_FADE)
         self.wait(W_AFTER_KEY)
 
@@ -153,26 +191,39 @@ class Ushtrimi7(ExerciseScene):
         div = self.setup_split_layout(graph_group)
 
         # Algebra
-        s1 = Text("Koef. këndor i rrezes:", font_size=BODY_SIZE, color=BODY_TEXT_COLOR)
-        s1.move_to(CALC_TOP)
-        self.play(FadeIn(s1), run_time=T_STEP_TITLE)
+        s1 = self.show_step_title("Koef. këndor i rrezes:", position=CALC_TOP)
 
         eq1 = self.show_equation(r"m = \frac{8}{6} = \frac{4}{3}", reference=s1)
+        self.wait(2.0)
 
-        s2 = Text("Koef. këndor i tangjentes:", font_size=BODY_SIZE, color=BODY_TEXT_COLOR)
+        s2 = MathTex(
+            r"\text{Koef. këndor i tangjentes:}",
+            font_size=BODY_SIZE,
+            color=BODY_TEXT_COLOR,
+        )
         s2.next_to(eq1, DOWN, buff=0.35)
         self.play(FadeIn(s2), run_time=T_STEP_TITLE)
 
-        eq2 = self.show_equation(r"m' = -\frac{1}{\frac{4}{3}} = -\frac{3}{4}",
-                                  reference=s2, color=LABEL_COLOR, key=True)
+        eq2 = self.show_equation(
+            r"m' = -\frac{1}{\frac{4}{3}} = -\frac{3}{4}",
+            reference=s2, color=LABEL_COLOR, key=True,
+        )
+        self.wait(2.5)
 
-        s3 = Text("Gjejmë c (y = m'x + c):", font_size=BODY_SIZE, color=BODY_TEXT_COLOR)
+        s3 = MathTex(
+            r"\text{Gjejmë c } (y = m'x + c)\text{:}",
+            font_size=BODY_SIZE,
+            color=BODY_TEXT_COLOR,
+        )
         s3.next_to(eq2, DOWN, buff=0.35)
         self.play(FadeIn(s3), run_time=T_STEP_TITLE)
 
         eq3 = self.show_equation(r"8 = -\frac{3}{4} \cdot 6 + c", reference=s3)
-        eq4 = self.show_equation(r"c = 8 + \frac{18}{4} = \frac{50}{4} = \frac{25}{2}", reference=eq3)
-        self.wait(W_AFTER_ROUTINE)
+        eq4 = self.show_equation(
+            r"c = 8 + \frac{18}{4} = \frac{50}{4} = \frac{25}{2}",
+            reference=eq3,
+        )
+        self.wait(2.0)
 
         self.show_answer_below(r"y = -\frac{3}{4}x + \frac{25}{2}", eq4, buff=0.4)
 
@@ -196,6 +247,8 @@ class Ushtrimi7(ExerciseScene):
             {"tex": r"6 = -\frac{4}{3} \cdot 8 + c \;\Rightarrow\; c = \frac{50}{3}", "key": True},
         ], start_position=CALC_TOP)
 
+        self.wait(3.0)
+
         self.show_answer_below(r"y = -\frac{4}{3}x + \frac{50}{3}", eqs[-1])
 
     # ================================================================
@@ -212,20 +265,34 @@ class Ushtrimi7(ExerciseScene):
 
         div = self.setup_split_layout(graph_group)
 
-        txt1 = Text("Rrezja shtrihet përgjatë boshtit Ox.", font_size=BODY_SIZE, color=BODY_TEXT_COLOR)
-        txt1.move_to(CALC_TOP)
-        txt2 = Text(
-            "Tangjentja është pingulja e boshtit\nOx në pikën (10, 0).",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR, line_spacing=1.4,
+        txt1 = MathTex(
+            r"\text{Rrezja shtrihet përgjatë boshtit } Ox.",
+            font_size=BODY_SIZE,
+            color=BODY_TEXT_COLOR,
         )
-        txt2.next_to(txt1, DOWN, buff=0.3)
+        txt1.move_to(CALC_TOP)
+
+        txt2 = MathTex(
+            r"\text{Tangjentja është pingulja e boshtit}",
+            font_size=BODY_SIZE,
+            color=BODY_TEXT_COLOR,
+        )
+        txt2.next_to(txt1, DOWN, buff=0.25)
+
+        txt3 = MathTex(
+            r"Ox \text{ në pikën } (10,\,0).",
+            font_size=BODY_SIZE,
+            color=BODY_TEXT_COLOR,
+        )
+        txt3.next_to(txt2, DOWN, buff=0.2)
 
         self.play(FadeIn(txt1), run_time=T_BODY_FADE)
-        self.wait(W_AFTER_ROUTINE)
+        self.wait(2.0)
         self.play(FadeIn(txt2), run_time=T_BODY_FADE)
-        self.wait(W_AFTER_ROUTINE)
+        self.play(FadeIn(txt3), run_time=T_BODY_FADE)
+        self.wait(3.0)
 
-        self.show_answer_below(r"x = 10", txt2)
+        self.show_answer_below(r"x = 10", txt3)
 
     # ================================================================
     #  FINAL SUMMARY
