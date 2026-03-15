@@ -3,9 +3,98 @@
 This project generates educational math/physics video solutions using Manim Community Edition.
 Videos are published on mesonjetorja.com for Albanian students.
 
+**CRITICAL: These videos have NO voiceover. The visuals must tell the complete story on their own. Every calculation result must be reflected on the figure. Every step must be visually obvious.**
+
+## #1 Rule: Visual Storytelling — The Figure Is the Star
+
+The figure/diagram is NOT a static decoration. It is the primary teaching tool. The right-side calculation panel supports the figure, not the other way around.
+
+### Value Transfer Animations
+
+Every time a value is computed on the right panel, **animate it onto the figure**:
+
+```python
+# After computing BH ≈ 15.73 on the right side:
+bh_label = MathTex(r"15{,}73", font_size=22, color=LABEL_COLOR)
+bh_label.move_to(...)  # position on the diagram
+
+# Create a copy of the equation result and animate it flying to the figure
+value_copy = eq_result.copy()
+self.play(
+    value_copy.animate.move_to(bh_label).scale(0.6),
+    run_time=0.8,
+)
+self.play(FadeOut(value_copy), FadeIn(bh_label), run_time=0.3)
+```
+
+This creates a visual link between "we calculated this" and "here it is on the shape."
+
+### Sub-Shape Focus (Highlight, Extract, Enlarge)
+
+When working on a sub-part of a figure (e.g., right triangle ABH within triangle ABC):
+
+1. **Shade/highlight the sub-shape** with a semi-transparent fill:
+```python
+sub_tri = Polygon(A, B, H, fill_color=SHAPE_COLOR, fill_opacity=0.15,
+                  stroke_color=SHAPE_COLOR, stroke_width=2)
+self.play(FadeIn(sub_tri), run_time=0.6)
+```
+
+2. **Dim everything else** — reduce opacity of non-relevant parts:
+```python
+self.play(
+    tri.animate.set_stroke(opacity=0.3),
+    other_labels.animate.set_opacity(0.3),
+    run_time=0.5,
+)
+```
+
+3. **For complex sub-shapes, extract and enlarge**: duplicate the sub-shape, scale it up, and work on the larger copy:
+```python
+# Create enlarged copy of the right triangle
+big_sub = sub_tri_group.copy()
+self.play(
+    main_figure.animate.scale(0.5).shift(UP * 1.5 + LEFT * 1),
+    big_sub.animate.scale(1.5).move_to(LEFT * 3),
+    run_time=1.0,
+)
+```
+
+### Progressive Figure Labeling
+
+The figure should accumulate information as the solution progresses:
+- Step 1 finds ∠C = 51° → show 51° arc on the figure
+- Step 2 finds ∠A = 78° → show 78° arc on the figure
+- Step 3 draws altitude → show it on the figure
+- Step 4 finds BH ≈ 15.73 → animate the value onto the segment
+- Step 5 finds BC ≈ 31.5 → animate the final answer onto the base
+
+**The figure should visually grow richer as the student watches.**
+
+### Color Linking Between Panel and Figure
+
+When an equation references a specific element, **use the same color** on both:
+- If the equation shows `BH` in yellow, the BH segment label on the figure should also be yellow
+- If the answer `BC ≈ 31.5` is green, the BC label on the figure should be green
+- Flash/highlight the relevant figure element when its equation appears
+
+### Visual Cue Animations
+
+Since there is no voiceover, use animations to direct attention:
+
+- **Flash** a side/angle on the figure when it's referenced in a new equation
+- **Indicate** (brief arrow or glow) which part of the figure we're about to work on
+- **Circumscribe** a result to emphasize it
+- Use `Indicate(mobject)` or brief color pulses to say "look here"
+
+```python
+# Before using angle B in a calculation, flash it on the figure
+self.play(Indicate(ang_B_arc, color=YELLOW), run_time=0.5)
+```
+
 ## CRITICAL: Zero Overlap Rule
 
-**NOTHING may overlap ANYTHING on screen. This is the #1 quality rule.**
+**NOTHING may overlap ANYTHING on screen. This is the #2 quality rule.**
 
 Before placing any visual element, mentally check if it will overlap with existing elements:
 
@@ -22,6 +111,8 @@ Before placing any visual element, mentally check if it will overlap with existi
 6. **Step text vs previous step text** — **Always FadeOut previous calculation content before showing new content.** Never show two steps simultaneously unless they are intentionally designed to coexist and have been positioned to not overlap.
 
 7. **Labels near the screen edge** — If a triangle vertex is near the left/right edge after shifting, its label may be clipped. Check that shifted coordinates + label offset stay within x ∈ [-6.5, 6.5], y ∈ [-3.5, 3.5].
+
+8. **New labels on the figure vs existing labels** — When adding a computed value to the figure (e.g., BH ≈ 15.73), check it doesn't overlap with the vertex label, the side length label, or the angle label already there. If it would, fade or shift the conflicting element first.
 
 ## Right Panel Vertical Alignment
 
@@ -72,6 +163,8 @@ Before finishing any geometry diagram, verify ALL of these:
 - [ ] Right-angle marks don't overlap with nearby labels
 - [ ] After shifting the diagram left, all labels are still within screen bounds
 - [ ] No two elements occupy the same visual space
+- [ ] Every computed value is shown on the figure, not just on the right panel
+- [ ] Sub-shapes being worked on are visually highlighted or extracted
 
 ## File Structure
 
