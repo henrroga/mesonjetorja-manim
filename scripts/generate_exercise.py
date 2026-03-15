@@ -289,7 +289,22 @@ def generate_script(exercise_json):
     unit_dir = unit
 
     # Generate imports
-    script = f'''import sys
+    script = f'''# ╔══════════════════════════════════════════════════════════════╗
+# ║  AUTO-GENERATED SCAFFOLD — REVIEW BEFORE RENDERING          ║
+# ║                                                              ║
+# ║  This script was generated from exercise JSON. You MUST:     ║
+# ║  1. Add deeper "why" explanations (not just the algebra)     ║
+# ║  2. Name techniques so students learn to recognize patterns  ║
+# ║  3. Add intermediate steps the text solution may skip        ║
+# ║  4. Add domain checks with explanations (for log/root/etc)  ║
+# ║  5. Consider adding a graph or visual where it helps         ║
+# ║  6. Add screen transitions (FadeOut) when content overflows  ║
+# ║                                                              ║
+# ║  The provided text solution is a quick-read summary.         ║
+# ║  The VIDEO must be a lesson — teach, don't just show.        ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
