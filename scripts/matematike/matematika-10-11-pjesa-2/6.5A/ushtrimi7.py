@@ -35,49 +35,6 @@ class Ushtrimi7(ExerciseScene):
     unit = "6.5A"
     parts = ["a", "b", "c"]
 
-    # ── Right-panel alignment helpers (all centered at x = PX) ──
-
-    def _title(self, text, ref=None, y_pos=None, buff=0.5):
-        t = MathTex(
-            r"\text{" + text + r"}",
-            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
-        )
-        if y_pos is not None:
-            t.move_to(np.array([PX, y_pos, 0]))
-        elif ref is not None:
-            t.next_to(ref, DOWN, buff=buff)
-            t.set_x(PX)
-        self.play(FadeIn(t), run_time=T_STEP_TITLE)
-        return t
-
-    def _text(self, lines, ref, buff=0.25):
-        parts = [MathTex(l, font_size=BODY_SIZE, color=BODY_TEXT_COLOR) for l in lines]
-        g = VGroup(*parts).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
-        g.next_to(ref, DOWN, buff=buff)
-        g.set_x(PX)
-        self.play(FadeIn(g), run_time=T_BODY_FADE)
-        return g
-
-    def _eq(self, tex, ref, buff=0.25, color=None, fs=None, key=False):
-        eq = MathTex(tex, font_size=fs or CALC_SIZE)
-        if color:
-            eq.set_color(color)
-        eq.next_to(ref, DOWN, buff=buff)
-        eq.set_x(PX)
-        self.play(Write(eq), run_time=T_KEY_EQUATION if key else T_ROUTINE_EQUATION)
-        self.wait(W_AFTER_KEY if key else 0.6)
-        return eq
-
-    def _transfer_value(self, source_eq, target_mob):
-        """Animate a value 'flying' from the right panel to the figure."""
-        ghost = source_eq.copy()
-        self.play(
-            ghost.animate.move_to(target_mob).scale(0.65).set_opacity(0),
-            FadeIn(target_mob),
-            run_time=0.8,
-        )
-        self.remove(ghost)
-
     # ── Graph builder ──
 
     def _build_graph(self, px, py, show_tangent=False, tangent_func=None,
@@ -214,26 +171,26 @@ class Ushtrimi7(ExerciseScene):
         # ────────────────────────────────────────
         # Step 1: Radius slope
         # ────────────────────────────────────────
-        s1t = self._title("Koeficienti kendor i rrezes", y_pos=3.2)
+        s1t = self.panel_title("Koeficienti kendor i rrezes", y_pos=3.2)
 
         # Flash the radius on the figure
         self.play(Indicate(radius_line, color=YELLOW, scale_factor=1.05), run_time=0.6)
         self.wait(0.5)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Rrezja lidh qendren } (0,0)",
             r"\text{me piken } (6,\, 8)\text{:}",
         ], s1t)
         self.wait(1.5)
 
-        eq1a = self._eq(
+        eq1a = self.panel_eq(
             r"m = \frac{y_2 - y_1}{x_2 - x_1}",
-            s1txt, fs=30,
+            s1txt, font_size=30,
         )
 
-        eq1b = self._eq(
+        eq1b = self.panel_eq(
             r"m = \frac{8 - 0}{6 - 0} = \frac{8}{6} = \frac{4}{3}",
-            eq1a, fs=30, key=True,
+            eq1a, font_size=30, key=True,
         )
 
         # Transfer: label the radius on graph with its slope
@@ -242,7 +199,7 @@ class Ushtrimi7(ExerciseScene):
         rad_mid = (np.array(axes.c2p(0, 0)) + np.array(axes.c2p(6, 8))) / 2
 
         m_lbl.move_to(rad_mid + np.array([0.35, -0.25, 0]))
-        self._transfer_value(eq1b, m_lbl)
+        self.transfer_value(eq1b, m_lbl)
         self.wait(1.5)
 
         # ────────────────────────────────────────
@@ -252,17 +209,17 @@ class Ushtrimi7(ExerciseScene):
         calc1 = VGroup(s1t, s1txt, eq1a, eq1b)
         self.play(FadeOut(calc1), run_time=0.5)
 
-        s2t = self._title("Koeficienti kendor i tangjentes", y_pos=3.2)
+        s2t = self.panel_title("Koeficienti kendor i tangjentes", y_pos=3.2)
 
-        s2txt = self._text([
+        s2txt = self.panel_text([
             r"\text{Rrezja eshte pingule me tangjenten:}",
         ], s2t)
         self.wait(1.5)
 
         # Show perpendicularity rule
-        eq2a = self._eq(
+        eq2a = self.panel_eq(
             r"m \times m' = -1",
-            s2txt, fs=34, color=STEP_TITLE_COLOR, key=True,
+            s2txt, font_size=34, color=STEP_TITLE_COLOR, key=True,
         )
 
         # Draw right angle mark at tangent point on figure
@@ -270,14 +227,14 @@ class Ushtrimi7(ExerciseScene):
         self.wait(1.5)
 
         # Calculate tangent slope step by step
-        eq2b = self._eq(
+        eq2b = self.panel_eq(
             r"m' = -\frac{1}{m} = -\frac{1}{\frac{4}{3}}",
-            eq2a, fs=30,
+            eq2a, font_size=30,
         )
 
-        eq2c = self._eq(
+        eq2c = self.panel_eq(
             r"m' = -1 \times \frac{3}{4} = -\frac{3}{4}",
-            eq2b, fs=30, color=LABEL_COLOR, key=True,
+            eq2b, font_size=30, color=LABEL_COLOR, key=True,
         )
         self.wait(1.5)
 
@@ -288,9 +245,9 @@ class Ushtrimi7(ExerciseScene):
         calc2 = VGroup(s2t, s2txt, eq2a, eq2b, eq2c)
         self.play(FadeOut(calc2), run_time=0.5)
 
-        s3t = self._title("Gjejme c (pikeprerjen me Oy)", y_pos=3.2)
+        s3t = self.panel_title("Gjejme c (pikeprerjen me Oy)", y_pos=3.2)
 
-        s3txt = self._text([
+        s3txt = self.panel_text([
             r"\text{Zevendesojme piken } (6,\, 8)",
             r"\text{ne } y = m'x + c\text{:}",
         ], s3t)
@@ -300,24 +257,24 @@ class Ushtrimi7(ExerciseScene):
         self.play(Indicate(dot_p, color=YELLOW, scale_factor=1.5), run_time=0.5)
         self.wait(0.5)
 
-        eq3a = self._eq(
+        eq3a = self.panel_eq(
             r"8 = -\frac{3}{4} \cdot 6 + c",
-            s3txt, fs=30,
+            s3txt, font_size=30,
         )
 
-        eq3b = self._eq(
+        eq3b = self.panel_eq(
             r"8 = -\frac{18}{4} + c",
-            eq3a, fs=30,
+            eq3a, font_size=30,
         )
 
-        eq3c = self._eq(
+        eq3c = self.panel_eq(
             r"c = 8 + \frac{18}{4}",
-            eq3b, fs=30,
+            eq3b, font_size=30,
         )
 
-        eq3d = self._eq(
+        eq3d = self.panel_eq(
             r"c = \frac{32}{4} + \frac{18}{4} = \frac{50}{4} = \frac{25}{2}",
-            eq3c, fs=30, key=True,
+            eq3c, font_size=30, key=True,
         )
         self.wait(1.5)
 
@@ -328,12 +285,12 @@ class Ushtrimi7(ExerciseScene):
         calc3 = VGroup(s3t, s3txt, eq3a, eq3b, eq3c, eq3d)
         self.play(FadeOut(calc3), run_time=0.5)
 
-        s4t = self._title("Ekuacioni i tangjentes", y_pos=3.0)
+        s4t = self.panel_title("Ekuacioni i tangjentes", y_pos=3.0)
         self.wait(0.5)
 
-        eq_final = self._eq(
+        eq_final = self.panel_eq(
             r"y = -\frac{3}{4}x + \frac{25}{2}",
-            s4t, fs=ANSWER_SIZE, color=ANSWER_COLOR, key=True,
+            s4t, font_size=ANSWER_SIZE, color=ANSWER_COLOR, key=True,
         )
         box = make_answer_box(eq_final)
         self.play(Create(box), run_time=0.5)
@@ -356,7 +313,7 @@ class Ushtrimi7(ExerciseScene):
         )
         tang_point = np.array(axes.c2p(1, 12.5 - 0.75))
         tang_lbl.move_to(tang_point + UP * 0.35 + LEFT * 0.3)
-        self._transfer_value(eq_final, tang_lbl)
+        self.transfer_value(eq_final, tang_lbl)
         graph_group.add(tang_lbl)
         self.wait(3)
 
@@ -392,33 +349,33 @@ class Ushtrimi7(ExerciseScene):
         # ────────────────────────────────────────
         # Step 1: Radius slope
         # ────────────────────────────────────────
-        s1t = self._title("Koeficienti kendor i rrezes", y_pos=3.2)
+        s1t = self.panel_title("Koeficienti kendor i rrezes", y_pos=3.2)
 
         self.play(Indicate(radius_line, color=YELLOW, scale_factor=1.05), run_time=0.5)
 
-        eq1 = self._eq(
+        eq1 = self.panel_eq(
             r"m = \frac{6}{8} = \frac{3}{4}",
-            s1t, fs=32, key=True,
+            s1t, font_size=32, key=True,
         )
         self.wait(1)
 
         # ────────────────────────────────────────
         # Step 2: Tangent slope (perpendicularity)
         # ────────────────────────────────────────
-        s2t = self._title("Rrezja } \\perp \\text{ tangjentes", ref=eq1, buff=0.4)
+        s2t = self.panel_title("Rrezja } \\perp \\text{ tangjentes", ref=eq1, buff=0.4)
 
         # Show right angle mark on figure
         ra_mark = self._draw_right_angle_at_tangent(axes, 8, 6, 3/4, graph_group)
         self.wait(1)
 
-        eq2a = self._eq(
+        eq2a = self.panel_eq(
             r"m' = -\frac{1}{m} = -\frac{1}{\frac{3}{4}}",
-            s2t, fs=30,
+            s2t, font_size=30,
         )
 
-        eq2b = self._eq(
+        eq2b = self.panel_eq(
             r"m' = -\frac{4}{3}",
-            eq2a, fs=32, color=LABEL_COLOR, key=True,
+            eq2a, font_size=32, color=LABEL_COLOR, key=True,
         )
         self.wait(1)
 
@@ -429,28 +386,28 @@ class Ushtrimi7(ExerciseScene):
         calc1 = VGroup(s1t, eq1, s2t, eq2a, eq2b)
         self.play(FadeOut(calc1), run_time=0.5)
 
-        s3t = self._title("Gjejme c", y_pos=3.2)
+        s3t = self.panel_title("Gjejme c", y_pos=3.2)
 
-        s3txt = self._text([
+        s3txt = self.panel_text([
             r"\text{Zevendesojme piken } (8,\, 6)\text{:}",
         ], s3t)
 
         self.play(Indicate(dot_p, color=YELLOW, scale_factor=1.5), run_time=0.5)
         self.wait(0.5)
 
-        eq3a = self._eq(
+        eq3a = self.panel_eq(
             r"6 = -\frac{4}{3} \cdot 8 + c",
-            s3txt, fs=30,
+            s3txt, font_size=30,
         )
 
-        eq3b = self._eq(
+        eq3b = self.panel_eq(
             r"6 = -\frac{32}{3} + c",
-            eq3a, fs=30,
+            eq3a, font_size=30,
         )
 
-        eq3c = self._eq(
+        eq3c = self.panel_eq(
             r"c = 6 + \frac{32}{3} = \frac{18}{3} + \frac{32}{3} = \frac{50}{3}",
-            eq3b, fs=28, key=True,
+            eq3b, font_size=28, key=True,
         )
         self.wait(1)
 
@@ -460,11 +417,11 @@ class Ushtrimi7(ExerciseScene):
         calc2 = VGroup(s3t, s3txt, eq3a, eq3b, eq3c)
         self.play(FadeOut(calc2), run_time=0.5)
 
-        s4t = self._title("Ekuacioni i tangjentes", y_pos=3.0)
+        s4t = self.panel_title("Ekuacioni i tangjentes", y_pos=3.0)
 
-        eq_final = self._eq(
+        eq_final = self.panel_eq(
             r"y = -\frac{4}{3}x + \frac{50}{3}",
-            s4t, fs=ANSWER_SIZE, color=ANSWER_COLOR, key=True,
+            s4t, font_size=ANSWER_SIZE, color=ANSWER_COLOR, key=True,
         )
         box = make_answer_box(eq_final)
         self.play(Create(box), run_time=0.5)
@@ -487,7 +444,7 @@ class Ushtrimi7(ExerciseScene):
         )
         tang_point = np.array(axes.c2p(2, 50/3 - 8/3))
         tang_lbl.move_to(tang_point + UP * 0.35 + LEFT * 0.5)
-        self._transfer_value(eq_final, tang_lbl)
+        self.transfer_value(eq_final, tang_lbl)
         graph_group.add(tang_lbl)
         self.wait(3)
 
@@ -519,23 +476,23 @@ class Ushtrimi7(ExerciseScene):
         # ────────────────────────────────────────
         # Step 1: Observe the radius
         # ────────────────────────────────────────
-        s1t = self._title("Koeficienti kendor i rrezes", y_pos=3.2)
+        s1t = self.panel_title("Koeficienti kendor i rrezes", y_pos=3.2)
 
         self.play(Indicate(radius_line, color=YELLOW, scale_factor=1.05), run_time=0.6)
         self.wait(0.5)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Rrezja shkon nga } (0,0)",
             r"\text{ne } (10,\, 0)\text{, pergjate boshtit } Ox\text{.}",
         ], s1t)
         self.wait(2)
 
-        eq1 = self._eq(
+        eq1 = self.panel_eq(
             r"m = \frac{0 - 0}{10 - 0} = \frac{0}{10} = 0",
-            s1txt, fs=30, key=True,
+            s1txt, font_size=30, key=True,
         )
 
-        s1note = self._text([
+        s1note = self.panel_text([
             r"\text{Rrezja eshte horizontale } (m = 0)\text{.}",
         ], eq1, buff=0.3)
         self.wait(2)
@@ -546,9 +503,9 @@ class Ushtrimi7(ExerciseScene):
         calc1 = VGroup(s1t, s1txt, eq1, s1note)
         self.play(FadeOut(calc1), run_time=0.5)
 
-        s2t = self._title("Rrezja } \\perp \\text{ tangjentes", y_pos=3.2)
+        s2t = self.panel_title("Rrezja } \\perp \\text{ tangjentes", y_pos=3.2)
 
-        s2txt = self._text([
+        s2txt = self.panel_text([
             r"\text{Nje drejtez pingule me nje}",
             r"\text{drejtez horizontale eshte}",
             r"\text{nje drejtez vertikale.}",
@@ -567,19 +524,19 @@ class Ushtrimi7(ExerciseScene):
         graph_group.add(right_angle)
         self.wait(1.5)
 
-        s2note = self._text([
+        s2note = self.panel_text([
             r"\text{Tangjentja eshte vertikale.}",
             r"\text{Drejtezat vertikale kane formen:}",
         ], s2txt, buff=0.3)
         self.wait(1.5)
 
-        eq2 = self._eq(
+        eq2 = self.panel_eq(
             r"x = \text{konst.}",
-            s2note, fs=34, color=LABEL_COLOR,
+            s2note, font_size=34, color=LABEL_COLOR,
         )
         self.wait(1)
 
-        s2expl = self._text([
+        s2expl = self.panel_text([
             r"\text{Pika ka } x = 10\text{, pra:}",
         ], eq2, buff=0.3)
         self.wait(1)
@@ -590,11 +547,11 @@ class Ushtrimi7(ExerciseScene):
         calc2 = VGroup(s2t, s2txt, s2note, eq2, s2expl)
         self.play(FadeOut(calc2), run_time=0.5)
 
-        s3t = self._title("Ekuacioni i tangjentes", y_pos=3.0)
+        s3t = self.panel_title("Ekuacioni i tangjentes", y_pos=3.0)
 
-        eq_final = self._eq(
+        eq_final = self.panel_eq(
             r"x = 10",
-            s3t, fs=ANSWER_SIZE, color=ANSWER_COLOR, key=True,
+            s3t, font_size=ANSWER_SIZE, color=ANSWER_COLOR, key=True,
         )
         box = make_answer_box(eq_final)
         self.play(Create(box), run_time=0.5)
@@ -612,7 +569,7 @@ class Ushtrimi7(ExerciseScene):
         # Transfer label to graph
         tang_lbl = MathTex(r"x = 10", font_size=20, color=AUX_COLOR)
         tang_lbl.next_to(tangent, RIGHT, buff=0.15).shift(UP * 1.5)
-        self._transfer_value(eq_final, tang_lbl)
+        self.transfer_value(eq_final, tang_lbl)
         graph_group.add(tang_lbl)
         self.wait(3)
 

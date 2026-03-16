@@ -35,49 +35,6 @@ class Ushtrimi21_16(ExerciseScene):
     textbook = "Fizika 10-11: Pjesa e Dyte"
     parts = ["a", "b", "c"]
 
-    # ── Right-panel alignment helpers (all centered at x = PX) ──
-
-    def _title(self, text, ref=None, y_pos=None, buff=0.5):
-        t = MathTex(
-            r"\text{" + text + r"}",
-            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
-        )
-        if y_pos is not None:
-            t.move_to(np.array([PX, y_pos, 0]))
-        elif ref is not None:
-            t.next_to(ref, DOWN, buff=buff)
-            t.set_x(PX)
-        self.play(FadeIn(t), run_time=T_STEP_TITLE)
-        return t
-
-    def _text(self, lines, ref, buff=0.25):
-        parts = [MathTex(l, font_size=BODY_SIZE, color=BODY_TEXT_COLOR) for l in lines]
-        g = VGroup(*parts).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
-        g.next_to(ref, DOWN, buff=buff)
-        g.set_x(PX)
-        self.play(FadeIn(g), run_time=T_BODY_FADE)
-        return g
-
-    def _eq(self, tex, ref, buff=0.25, color=None, fs=None, key=False):
-        eq = MathTex(tex, font_size=fs or CALC_SIZE)
-        if color:
-            eq.set_color(color)
-        eq.next_to(ref, DOWN, buff=buff)
-        eq.set_x(PX)
-        self.play(Write(eq), run_time=T_KEY_EQUATION if key else T_ROUTINE_EQUATION)
-        self.wait(W_AFTER_KEY if key else 0.6)
-        return eq
-
-    def _transfer_value(self, source_eq, target_mob):
-        """Animate a value 'flying' from the right panel to the figure."""
-        ghost = source_eq.copy()
-        self.play(
-            ghost.animate.move_to(target_mob).scale(0.65).set_opacity(0),
-            FadeIn(target_mob),
-            run_time=0.8,
-        )
-        self.remove(ghost)
-
     # ── Transformer diagram builder ──
 
     def _build_transformer(self):
@@ -308,9 +265,9 @@ class Ushtrimi21_16(ExerciseScene):
         ns_mob = diagram[12]  # ns_label
 
         # ── Step 1: Show the turns ratio formula ──
-        s1t = self._title("Hapi 1: Raporti i mbeshtetjellave", y_pos=3.0)
+        s1t = self.panel_title("Hapi 1: Raporti i mbeshtetjellave", y_pos=3.0)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Tek nje transformator, raporti}",
             r"\text{i mbeshtetjellave eshte:}",
         ], s1t)
@@ -324,29 +281,29 @@ class Ushtrimi21_16(ExerciseScene):
         )
         self.wait(0.5)
 
-        eq1 = self._eq(
+        eq1 = self.panel_eq(
             r"\frac{V_p}{V_s} = \frac{N_p}{N_s}",
-            s1txt, fs=36, key=True,
+            s1txt, font_size=36, key=True,
         )
 
         # ── Step 2: Rearrange for Ns ──
-        s2txt = self._text([
+        s2txt = self.panel_text([
             r"\text{Risistemojme per } N_s\text{:}",
         ], eq1, buff=0.3)
         self.wait(1.5)
 
-        eq2 = self._eq(
+        eq2 = self.panel_eq(
             r"N_s = N_p \times \frac{V_s}{V_p}",
-            s2txt, fs=34, key=True,
+            s2txt, font_size=34, key=True,
         )
 
         # ── Step 3: Substitute ──
         # Flash Np on diagram
         self.play(Indicate(np_mob, color=YELLOW, scale_factor=1.3), run_time=0.5)
 
-        eq3 = self._eq(
+        eq3 = self.panel_eq(
             r"N_s = 6000 \times \frac{6{,}0}{230}",
-            eq2, fs=32,
+            eq2, font_size=32,
         )
 
         # ── Clear right panel for arithmetic ──
@@ -358,33 +315,33 @@ class Ushtrimi21_16(ExerciseScene):
         self.play(eq3.animate.move_to(np.array([PX, 2.8, 0])), run_time=0.5)
 
         # ── Step 4: Arithmetic detail ──
-        s4t = self._title("Hapi 2: Llogaritja", ref=eq3, buff=0.4)
+        s4t = self.panel_title("Hapi 2: Llogaritja", ref=eq3, buff=0.4)
 
-        eq4a = self._eq(
+        eq4a = self.panel_eq(
             r"\frac{6{,}0}{230} = 0{,}02609\ldots",
-            s4t, fs=30,
+            s4t, font_size=30,
         )
 
-        eq4b = self._eq(
+        eq4b = self.panel_eq(
             r"N_s = 6000 \times 0{,}02609",
-            eq4a, fs=30,
+            eq4a, font_size=30,
         )
 
-        eq4c = self._eq(
+        eq4c = self.panel_eq(
             r"N_s = 156{,}5",
-            eq4b, fs=32,
+            eq4b, font_size=32,
         )
 
         # ── Step 5: Rounding explanation ──
-        s5txt = self._text([
+        s5txt = self.panel_text([
             r"\text{Mbeshtetjellat duhet te jene}",
             r"\text{numer i plote, keshtu rrumbullakosim:}",
         ], eq4c, buff=0.3)
         self.wait(2)
 
-        eq5 = self._eq(
+        eq5 = self.panel_eq(
             r"N_s \approx 157 \text{ mbeshtetjella}",
-            s5txt, color=ANSWER_COLOR, fs=34, key=True,
+            s5txt, color=ANSWER_COLOR, font_size=34, key=True,
         )
 
         box = make_answer_box(eq5)
@@ -398,7 +355,7 @@ class Ushtrimi21_16(ExerciseScene):
         ).move_to(ns_mob.get_center())
         ns_new.shift(LEFT * 3.2)  # match diagram shift
 
-        self._transfer_value(eq5, ns_new)
+        self.transfer_value(eq5, ns_new)
         self.play(FadeOut(ns_mob), run_time=0.3)
         self.wait(W_AFTER_ANSWER)
 
@@ -468,37 +425,37 @@ class Ushtrimi21_16(ExerciseScene):
         self.wait(0.5)
 
         # ── Step 1: Explain power conservation ──
-        s1t = self._title("Hapi 1: Ruajtja e fuqise", y_pos=3.0)
+        s1t = self.panel_title("Hapi 1: Ruajtja e fuqise", y_pos=3.0)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Per nje transformator ideal,}",
             r"\text{fuqia hyn = fuqia del:}",
         ], s1t)
         self.wait(2)
 
-        eq1 = self._eq(
+        eq1 = self.panel_eq(
             r"P_p = P_s",
-            s1txt, fs=36, key=True, color=LABEL_COLOR,
+            s1txt, font_size=36, key=True, color=LABEL_COLOR,
         )
 
-        s1txt2 = self._text([
+        s1txt2 = self.panel_text([
             r"\text{Dmth:}",
         ], eq1, buff=0.2)
 
-        eq1b = self._eq(
+        eq1b = self.panel_eq(
             r"V_p \times I_p = V_s \times I_s",
-            s1txt2, fs=34, key=True,
+            s1txt2, font_size=34, key=True,
         )
 
         # ── Step 2: Rearrange for Is ──
-        s2txt = self._text([
+        s2txt = self.panel_text([
             r"\text{Risistemojme per } I_s\text{:}",
         ], eq1b, buff=0.3)
         self.wait(1.5)
 
-        eq2 = self._eq(
+        eq2 = self.panel_eq(
             r"I_s = I_p \times \frac{V_p}{V_s}",
-            s2txt, fs=34, key=True,
+            s2txt, font_size=34, key=True,
         )
 
         # ── Clear panel for arithmetic ──
@@ -510,30 +467,30 @@ class Ushtrimi21_16(ExerciseScene):
         self.play(eq2.animate.move_to(np.array([PX, 2.8, 0])), run_time=0.5)
 
         # ── Step 3: Substitute ──
-        s3t = self._title("Hapi 2: Zevendesimi", ref=eq2, buff=0.4)
+        s3t = self.panel_title("Hapi 2: Zevendesimi", ref=eq2, buff=0.4)
 
         # Flash Ip on diagram
         self.play(Indicate(ip_val, color=YELLOW, scale_factor=1.3), run_time=0.5)
 
-        eq3 = self._eq(
+        eq3 = self.panel_eq(
             r"I_s = 0{,}040 \times \frac{230}{6{,}0}",
-            s3t, fs=32,
+            s3t, font_size=32,
         )
 
         # ── Step 4: Arithmetic ──
-        eq4a = self._eq(
+        eq4a = self.panel_eq(
             r"\frac{230}{6{,}0} = 38{,}33\ldots",
-            eq3, fs=30,
+            eq3, font_size=30,
         )
 
-        eq4b = self._eq(
+        eq4b = self.panel_eq(
             r"I_s = 0{,}040 \times 38{,}33",
-            eq4a, fs=30,
+            eq4a, font_size=30,
         )
 
-        eq4c = self._eq(
+        eq4c = self.panel_eq(
             r"I_s \approx 1{,}53\,\text{A}",
-            eq4b, color=ANSWER_COLOR, fs=36, key=True,
+            eq4b, color=ANSWER_COLOR, font_size=36, key=True,
         )
 
         box = make_answer_box(eq4c)
@@ -545,7 +502,7 @@ class Ushtrimi21_16(ExerciseScene):
             r"I_s = 1{,}53\,\text{A}", font_size=18, color=ANSWER_COLOR,
         ).move_to(is_val.get_center())
 
-        self._transfer_value(eq4c, is_new)
+        self.transfer_value(eq4c, is_new)
         self.play(FadeOut(is_val), run_time=0.3)
         self.wait(1)
 
@@ -554,9 +511,9 @@ class Ushtrimi21_16(ExerciseScene):
         self.play(FadeOut(calc2), run_time=0.5)
         self.wait(0.3)
 
-        s5t = self._title("Kuptimi fizik:", y_pos=2.8)
+        s5t = self.panel_title("Kuptimi fizik:", y_pos=2.8)
 
-        s5txt = self._text([
+        s5txt = self.panel_text([
             r"\text{Tensioni ulet:}",
             r"230\,\text{V} \to 6{,}0\,\text{V}",
             r"\text{Rryma rritet:}",

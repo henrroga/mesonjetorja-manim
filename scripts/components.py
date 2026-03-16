@@ -449,6 +449,96 @@ class ExerciseScene(Scene):
         return results
 
     # ──────────────────────────────────────────
+    #  ALIGNED PANEL HELPERS (right-panel at PX)
+    # ──────────────────────────────────────────
+
+    def panel_title(self, text, ref=None, y_pos=None, buff=0.5):
+        """Show a step title centered at x=PX in the right panel."""
+        t = MathTex(
+            r"\text{" + text + r"}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
+        )
+        if y_pos is not None:
+            t.move_to(np.array([CALC_CENTER[0], y_pos, 0]))
+        elif ref is not None:
+            t.next_to(ref, DOWN, buff=buff)
+            t.set_x(CALC_CENTER[0])
+        self.play(FadeIn(t), run_time=T_STEP_TITLE)
+        return t
+
+    def panel_text(self, lines, ref, buff=0.25):
+        """Show multi-line body text centered at x=PX in the right panel."""
+        parts = [MathTex(l, font_size=BODY_SIZE, color=BODY_TEXT_COLOR) for l in lines]
+        g = VGroup(*parts).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
+        g.next_to(ref, DOWN, buff=buff)
+        g.set_x(CALC_CENTER[0])
+        self.play(FadeIn(g), run_time=T_BODY_FADE)
+        return g
+
+    def panel_eq(self, tex, ref, buff=0.25, color=None, font_size=None, key=False):
+        """Show an equation centered at x=PX in the right panel."""
+        fs = font_size or CALC_SIZE
+        eq = MathTex(tex, font_size=fs)
+        if color:
+            eq.set_color(color)
+        eq.next_to(ref, DOWN, buff=buff)
+        eq.set_x(CALC_CENTER[0])
+        rt = T_KEY_EQUATION if key else T_ROUTINE_EQUATION
+        self.play(Write(eq), run_time=rt)
+        self.wait(W_AFTER_KEY if key else 0.6)
+        return eq
+
+    def transfer_value(self, source_eq, target_mob):
+        """Animate a value flying from the right panel to the figure."""
+        ghost = source_eq.copy()
+        self.play(
+            ghost.animate.move_to(target_mob).scale(0.65).set_opacity(0),
+            FadeIn(target_mob),
+            run_time=0.8,
+        )
+        self.remove(ghost)
+
+    # ──────────────────────────────────────────
+    #  CENTERED HELPERS (full-screen, no split)
+    # ──────────────────────────────────────────
+
+    def centered_title(self, text, ref=None, y_pos=None, buff=0.5):
+        """Show a step title centered on screen (for full-screen algebra)."""
+        t = MathTex(
+            r"\text{" + text + r"}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
+        )
+        if y_pos is not None:
+            t.move_to(np.array([0, y_pos, 0]))
+        elif ref is not None:
+            t.next_to(ref, DOWN, buff=buff)
+            t.set_x(0)
+        self.play(FadeIn(t), run_time=T_STEP_TITLE)
+        return t
+
+    def centered_text(self, lines, ref, buff=0.25):
+        """Show multi-line body text centered on screen."""
+        parts = [MathTex(l, font_size=BODY_SIZE, color=BODY_TEXT_COLOR) for l in lines]
+        g = VGroup(*parts).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
+        g.next_to(ref, DOWN, buff=buff)
+        g.set_x(0)
+        self.play(FadeIn(g), run_time=T_BODY_FADE)
+        return g
+
+    def centered_eq(self, tex, ref, buff=0.25, color=None, font_size=None, key=False):
+        """Show an equation centered on screen."""
+        fs = font_size or CALC_SIZE
+        eq = MathTex(tex, font_size=fs)
+        if color:
+            eq.set_color(color)
+        eq.next_to(ref, DOWN, buff=buff)
+        eq.set_x(0)
+        rt = T_KEY_EQUATION if key else T_ROUTINE_EQUATION
+        self.play(Write(eq), run_time=rt)
+        self.wait(W_AFTER_KEY if key else 0.6)
+        return eq
+
+    # ──────────────────────────────────────────
     #  GEOMETRY HELPERS
     # ──────────────────────────────────────────
 

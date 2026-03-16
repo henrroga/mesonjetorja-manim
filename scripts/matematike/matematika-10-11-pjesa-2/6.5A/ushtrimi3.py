@@ -33,49 +33,6 @@ class Ushtrimi3(ExerciseScene):
     unit = "6.5A"
     parts = ["a", "b", "c", "d", "e", "f"]
 
-    # ── Right-panel alignment helpers (all centered at x = PX) ──
-
-    def _title(self, text, ref=None, y_pos=None, buff=0.5):
-        t = MathTex(
-            r"\text{" + text + r"}",
-            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
-        )
-        if y_pos is not None:
-            t.move_to(np.array([PX, y_pos, 0]))
-        elif ref is not None:
-            t.next_to(ref, DOWN, buff=buff)
-            t.set_x(PX)
-        self.play(FadeIn(t), run_time=T_STEP_TITLE)
-        return t
-
-    def _text(self, lines, ref, buff=0.25):
-        parts = [MathTex(l, font_size=BODY_SIZE, color=BODY_TEXT_COLOR) for l in lines]
-        g = VGroup(*parts).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
-        g.next_to(ref, DOWN, buff=buff)
-        g.set_x(PX)
-        self.play(FadeIn(g), run_time=T_BODY_FADE)
-        return g
-
-    def _eq(self, tex, ref, buff=0.25, color=None, fs=None, key=False):
-        eq = MathTex(tex, font_size=fs or CALC_SIZE)
-        if color:
-            eq.set_color(color)
-        eq.next_to(ref, DOWN, buff=buff)
-        eq.set_x(PX)
-        self.play(Write(eq), run_time=T_KEY_EQUATION if key else T_ROUTINE_EQUATION)
-        self.wait(W_AFTER_KEY if key else 0.6)
-        return eq
-
-    def _transfer_value(self, source_eq, target_mob):
-        """Animate a value flying from the right panel to the figure."""
-        ghost = source_eq.copy()
-        self.play(
-            ghost.animate.move_to(target_mob).scale(0.65).set_opacity(0),
-            FadeIn(target_mob),
-            run_time=0.8,
-        )
-        self.remove(ghost)
-
     # ── Graph builder: axes + circle on the left panel ──
 
     def _build_graph(self, r_val, axis_bound=None, step=None):
@@ -103,29 +60,29 @@ class Ushtrimi3(ExerciseScene):
         self.wait(0.3)
 
         # --- Identify the circle form ---
-        s1t = self._title("Njohim ekuacionin", y_pos=3.2)
+        s1t = self.panel_title("Njohim ekuacionin", y_pos=3.2)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Forma e pergjithshme e rrethit}",
             r"\text{me qender ne origjine:}",
         ], s1t)
         self.wait(1.5)
 
-        s1eq1 = self._eq(r"x^2 + y^2 = r^2", s1txt, key=True)
+        s1eq1 = self.panel_eq(r"x^2 + y^2 = r^2", s1txt, key=True)
 
-        s1txt2 = self._text([
+        s1txt2 = self.panel_text([
             r"\text{Krahasojme me ekuacionin tone:}",
         ], s1eq1, buff=0.3)
         self.wait(1)
 
-        s1eq2 = self._eq(r"x^2 + y^2 = 49", s1txt2)
+        s1eq2 = self.panel_eq(r"x^2 + y^2 = 49", s1txt2)
 
-        s1txt3 = self._text([
+        s1txt3 = self.panel_text([
             r"\text{Pra:}",
         ], s1eq2, buff=0.2)
 
-        s1eq3 = self._eq(r"r^2 = 49", s1txt3, buff=0.15)
-        s1eq4 = self._eq(r"r = \sqrt{49} = 7", s1eq3, color=ANSWER_COLOR, key=True)
+        s1eq3 = self.panel_eq(r"r^2 = 49", s1txt3, buff=0.15)
+        s1eq4 = self.panel_eq(r"r = \sqrt{49} = 7", s1eq3, color=ANSWER_COLOR, key=True)
 
         # Clean right panel
         calc1 = VGroup(s1t, s1txt, s1eq1, s1txt2, s1eq2, s1txt3, s1eq3, s1eq4)
@@ -133,21 +90,21 @@ class Ushtrimi3(ExerciseScene):
         self.wait(0.3)
 
         # --- Find x-intercepts ---
-        s2t = self._title("Pikeprerjet me boshtin x", y_pos=3.2)
+        s2t = self.panel_title("Pikeprerjet me boshtin x", y_pos=3.2)
 
-        s2txt = self._text([
+        s2txt = self.panel_text([
             r"\text{Per te gjetur pikeprerjet me}",
             r"\text{boshtin } x\text{, vendosim } y = 0\text{:}",
         ], s2t)
         self.wait(2)
 
-        s2eq1 = self._eq(r"x^2 + 0^2 = 49", s2txt)
-        s2eq2 = self._eq(r"x^2 = 49", s2eq1)
-        s2eq3 = self._eq(r"x = \pm 7", s2eq2, color=LABEL_COLOR, key=True)
+        s2eq1 = self.panel_eq(r"x^2 + 0^2 = 49", s2txt)
+        s2eq2 = self.panel_eq(r"x^2 = 49", s2eq1)
+        s2eq3 = self.panel_eq(r"x = \pm 7", s2eq2, color=LABEL_COLOR, key=True)
 
-        s2pts = self._eq(
+        s2pts = self.panel_eq(
             r"(-7,\,0) \quad \text{dhe} \quad (7,\,0)",
-            s2eq3, color=LABEL_COLOR, fs=28, buff=0.3,
+            s2eq3, color=LABEL_COLOR, font_size=28, buff=0.3,
         )
         self.wait(1.5)
 
@@ -157,21 +114,21 @@ class Ushtrimi3(ExerciseScene):
         self.play(FadeOut(calc2a), run_time=T_TRANSITION)
         self.wait(0.3)
 
-        s3t = self._title("Pikeprerjet me boshtin y", y_pos=3.2)
+        s3t = self.panel_title("Pikeprerjet me boshtin y", y_pos=3.2)
 
-        s3txt = self._text([
+        s3txt = self.panel_text([
             r"\text{Per te gjetur pikeprerjet me}",
             r"\text{boshtin } y\text{, vendosim } x = 0\text{:}",
         ], s3t)
         self.wait(2)
 
-        s3eq1 = self._eq(r"0^2 + y^2 = 49", s3txt)
-        s3eq2 = self._eq(r"y^2 = 49", s3eq1)
-        s3eq3 = self._eq(r"y = \pm 7", s3eq2, color=HIGHLIGHT_COLOR, key=True)
+        s3eq1 = self.panel_eq(r"0^2 + y^2 = 49", s3txt)
+        s3eq2 = self.panel_eq(r"y^2 = 49", s3eq1)
+        s3eq3 = self.panel_eq(r"y = \pm 7", s3eq2, color=HIGHLIGHT_COLOR, key=True)
 
-        s3pts = self._eq(
+        s3pts = self.panel_eq(
             r"(0,\,-7) \quad \text{dhe} \quad (0,\,7)",
-            s3eq3, color=HIGHLIGHT_COLOR, fs=28, buff=0.3,
+            s3eq3, color=HIGHLIGHT_COLOR, font_size=28, buff=0.3,
         )
         self.wait(1.5)
 
@@ -198,11 +155,11 @@ class Ushtrimi3(ExerciseScene):
         self.play(FadeIn(div), run_time=0.2)
 
         # Right panel: show intercept results and transfer to graph
-        res_t = self._title("Pikeprerjet", y_pos=3.0)
+        res_t = self.panel_title("Pikeprerjet", y_pos=3.0)
 
-        res_x = self._eq(
+        res_x = self.panel_eq(
             r"x\text{-boshti: } (-7,\,0),\; (7,\,0)",
-            res_t, color=LABEL_COLOR, fs=28, buff=0.4,
+            res_t, color=LABEL_COLOR, font_size=28, buff=0.4,
         )
 
         # Mark x-intercepts on graph
@@ -210,13 +167,13 @@ class Ushtrimi3(ExerciseScene):
                                   direction=DL, font_size=20)
         d2, l2 = self.mark_point(axes, 7, 0, r"(7,0)", color=LABEL_COLOR,
                                   direction=DR, font_size=20)
-        self._transfer_value(res_x, VGroup(d1, l1))
-        self._transfer_value(res_x, VGroup(d2, l2))
+        self.transfer_value(res_x, VGroup(d1, l1))
+        self.transfer_value(res_x, VGroup(d2, l2))
         self.wait(1)
 
-        res_y = self._eq(
+        res_y = self.panel_eq(
             r"y\text{-boshti: } (0,\,-7),\; (0,\,7)",
-            res_x, color=HIGHLIGHT_COLOR, fs=28, buff=0.3,
+            res_x, color=HIGHLIGHT_COLOR, font_size=28, buff=0.3,
         )
 
         # Mark y-intercepts on graph
@@ -224,12 +181,12 @@ class Ushtrimi3(ExerciseScene):
                                   direction=DL, font_size=20)
         d4, l4 = self.mark_point(axes, 0, 7, r"(0,7)", color=HIGHLIGHT_COLOR,
                                   direction=UL, font_size=20)
-        self._transfer_value(res_y, VGroup(d3, l3))
-        self._transfer_value(res_y, VGroup(d4, l4))
+        self.transfer_value(res_y, VGroup(d3, l3))
+        self.transfer_value(res_y, VGroup(d4, l4))
         self.wait(1)
 
         # Radius label
-        r_label = self._eq(r"r = 7", res_y, color=ANSWER_COLOR, fs=30, key=True)
+        r_label = self.panel_eq(r"r = 7", res_y, color=ANSWER_COLOR, font_size=30, key=True)
 
         # Radius dashed line on graph
         r_line = DashedLine(
@@ -238,7 +195,7 @@ class Ushtrimi3(ExerciseScene):
         )
         r_mid = MathTex("7", font_size=20, color=ANSWER_COLOR)
         r_mid.next_to(r_line, UP, buff=0.12)
-        self._transfer_value(r_label, VGroup(r_line, r_mid))
+        self.transfer_value(r_label, VGroup(r_line, r_mid))
 
         self.wait(W_AFTER_ANSWER)
 
@@ -257,16 +214,16 @@ class Ushtrimi3(ExerciseScene):
         self.wait(0.3)
 
         # --- Identify circle and radius ---
-        s1t = self._title("Njohim rrrethin", y_pos=3.2)
+        s1t = self.panel_title("Njohim rrrethin", y_pos=3.2)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Forma } x^2 + y^2 = r^2",
             r"\text{me qender ne origjine.}",
         ], s1t)
         self.wait(1.5)
 
-        s1eq1 = self._eq(r"r^2 = 64", s1txt)
-        s1eq2 = self._eq(r"r = \sqrt{64} = 8", s1eq1, color=ANSWER_COLOR, key=True)
+        s1eq1 = self.panel_eq(r"r^2 = 64", s1txt)
+        s1eq2 = self.panel_eq(r"r = \sqrt{64} = 8", s1eq1, color=ANSWER_COLOR, key=True)
         self.wait(1)
 
         # Clean
@@ -275,19 +232,19 @@ class Ushtrimi3(ExerciseScene):
         self.wait(0.3)
 
         # --- x-intercepts ---
-        s2t = self._title("Pikeprerjet me boshtin x", y_pos=3.2)
+        s2t = self.panel_title("Pikeprerjet me boshtin x", y_pos=3.2)
 
-        s2txt = self._text([
+        s2txt = self.panel_text([
             r"\text{Vendosim } y = 0\text{:}",
         ], s2t)
         self.wait(1.5)
 
-        s2eq1 = self._eq(r"x^2 + 0^2 = 64", s2txt)
-        s2eq2 = self._eq(r"x^2 = 64 \implies x = \pm 8", s2eq1, color=LABEL_COLOR, key=True)
+        s2eq1 = self.panel_eq(r"x^2 + 0^2 = 64", s2txt)
+        s2eq2 = self.panel_eq(r"x^2 = 64 \implies x = \pm 8", s2eq1, color=LABEL_COLOR, key=True)
 
-        s2pts = self._eq(
+        s2pts = self.panel_eq(
             r"(-8,\,0) \quad \text{dhe} \quad (8,\,0)",
-            s2eq2, color=LABEL_COLOR, fs=28,
+            s2eq2, color=LABEL_COLOR, font_size=28,
         )
         self.wait(1.5)
 
@@ -296,19 +253,19 @@ class Ushtrimi3(ExerciseScene):
         self.play(FadeOut(calc2a), run_time=T_TRANSITION)
         self.wait(0.3)
 
-        s3t = self._title("Pikeprerjet me boshtin y", y_pos=3.2)
+        s3t = self.panel_title("Pikeprerjet me boshtin y", y_pos=3.2)
 
-        s3txt = self._text([
+        s3txt = self.panel_text([
             r"\text{Vendosim } x = 0\text{:}",
         ], s3t)
         self.wait(1.5)
 
-        s3eq1 = self._eq(r"0^2 + y^2 = 64", s3txt)
-        s3eq2 = self._eq(r"y^2 = 64 \implies y = \pm 8", s3eq1, color=HIGHLIGHT_COLOR, key=True)
+        s3eq1 = self.panel_eq(r"0^2 + y^2 = 64", s3txt)
+        s3eq2 = self.panel_eq(r"y^2 = 64 \implies y = \pm 8", s3eq1, color=HIGHLIGHT_COLOR, key=True)
 
-        s3pts = self._eq(
+        s3pts = self.panel_eq(
             r"(0,\,-8) \quad \text{dhe} \quad (0,\,8)",
-            s3eq2, color=HIGHLIGHT_COLOR, fs=28,
+            s3eq2, color=HIGHLIGHT_COLOR, font_size=28,
         )
         self.wait(1.5)
 
@@ -330,35 +287,35 @@ class Ushtrimi3(ExerciseScene):
         div = make_divider()
         self.play(FadeIn(div), run_time=0.2)
 
-        res_t = self._title("Pikeprerjet", y_pos=3.0)
+        res_t = self.panel_title("Pikeprerjet", y_pos=3.0)
 
-        res_x = self._eq(
+        res_x = self.panel_eq(
             r"x\text{-boshti: } (-8,\,0),\; (8,\,0)",
-            res_t, color=LABEL_COLOR, fs=28, buff=0.4,
+            res_t, color=LABEL_COLOR, font_size=28, buff=0.4,
         )
 
         d1, l1 = self.mark_point(axes, -8, 0, r"(-8,0)", color=LABEL_COLOR,
                                   direction=DL, font_size=20)
         d2, l2 = self.mark_point(axes, 8, 0, r"(8,0)", color=LABEL_COLOR,
                                   direction=DR, font_size=20)
-        self._transfer_value(res_x, VGroup(d1, l1))
-        self._transfer_value(res_x, VGroup(d2, l2))
+        self.transfer_value(res_x, VGroup(d1, l1))
+        self.transfer_value(res_x, VGroup(d2, l2))
         self.wait(1)
 
-        res_y = self._eq(
+        res_y = self.panel_eq(
             r"y\text{-boshti: } (0,\,-8),\; (0,\,8)",
-            res_x, color=HIGHLIGHT_COLOR, fs=28, buff=0.3,
+            res_x, color=HIGHLIGHT_COLOR, font_size=28, buff=0.3,
         )
 
         d3, l3 = self.mark_point(axes, 0, -8, r"(0,-8)", color=HIGHLIGHT_COLOR,
                                   direction=DL, font_size=20)
         d4, l4 = self.mark_point(axes, 0, 8, r"(0,8)", color=HIGHLIGHT_COLOR,
                                   direction=UL, font_size=20)
-        self._transfer_value(res_y, VGroup(d3, l3))
-        self._transfer_value(res_y, VGroup(d4, l4))
+        self.transfer_value(res_y, VGroup(d3, l3))
+        self.transfer_value(res_y, VGroup(d4, l4))
         self.wait(1)
 
-        r_label = self._eq(r"r = 8", res_y, color=ANSWER_COLOR, fs=30, key=True)
+        r_label = self.panel_eq(r"r = 8", res_y, color=ANSWER_COLOR, font_size=30, key=True)
 
         r_line = DashedLine(
             axes.c2p(0, 0), axes.c2p(8, 0),
@@ -366,7 +323,7 @@ class Ushtrimi3(ExerciseScene):
         )
         r_mid = MathTex("8", font_size=20, color=ANSWER_COLOR)
         r_mid.next_to(r_line, UP, buff=0.12)
-        self._transfer_value(r_label, VGroup(r_line, r_mid))
+        self.transfer_value(r_label, VGroup(r_line, r_mid))
 
         self.wait(W_AFTER_ANSWER)
 
@@ -385,22 +342,22 @@ class Ushtrimi3(ExerciseScene):
         self.wait(0.3)
 
         # --- Radius ---
-        s1t = self._title("Gjejme rrezen", y_pos=3.2)
+        s1t = self.panel_title("Gjejme rrezen", y_pos=3.2)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Forma } x^2 + y^2 = r^2\text{:}",
         ], s1t)
         self.wait(1)
 
-        s1eq1 = self._eq(r"r^2 = 2", s1txt)
+        s1eq1 = self.panel_eq(r"r^2 = 2", s1txt)
 
-        s1txt2 = self._text([
+        s1txt2 = self.panel_text([
             r"\text{Meqe 2 nuk eshte katror}",
             r"\text{i plote, rrezja eshte irracionale:}",
         ], s1eq1, buff=0.3)
         self.wait(2)
 
-        s1eq2 = self._eq(r"r = \sqrt{2} \approx 1{,}41", s1eq1, color=ANSWER_COLOR,
+        s1eq2 = self.panel_eq(r"r = \sqrt{2} \approx 1{,}41", s1eq1, color=ANSWER_COLOR,
                           key=True, buff=0.25)
         # Reposition after text (text was added after eq1 but we want eq2 below text)
         # Actually let's fix the flow: eq2 below s1txt2
@@ -414,31 +371,31 @@ class Ushtrimi3(ExerciseScene):
         self.wait(0.3)
 
         # --- Intercepts (combined for moderate pace) ---
-        s2t = self._title("Pikeprerjet me boshtet", y_pos=3.2)
+        s2t = self.panel_title("Pikeprerjet me boshtet", y_pos=3.2)
 
-        s2txt = self._text([
+        s2txt = self.panel_text([
             r"\text{Vendosim } y = 0\text{:}",
         ], s2t)
         self.wait(1)
 
-        s2eq1 = self._eq(r"x^2 = 2 \implies x = \pm\sqrt{2}", s2txt, color=LABEL_COLOR)
+        s2eq1 = self.panel_eq(r"x^2 = 2 \implies x = \pm\sqrt{2}", s2txt, color=LABEL_COLOR)
 
-        s2pts = self._eq(
+        s2pts = self.panel_eq(
             r"(-\sqrt{2},\,0) \quad \text{dhe} \quad (\sqrt{2},\,0)",
-            s2eq1, color=LABEL_COLOR, fs=28,
+            s2eq1, color=LABEL_COLOR, font_size=28,
         )
         self.wait(1.5)
 
-        s2txt2 = self._text([
+        s2txt2 = self.panel_text([
             r"\text{Vendosim } x = 0\text{:}",
         ], s2pts, buff=0.3)
         self.wait(1)
 
-        s2eq2 = self._eq(r"y^2 = 2 \implies y = \pm\sqrt{2}", s2txt2, color=HIGHLIGHT_COLOR)
+        s2eq2 = self.panel_eq(r"y^2 = 2 \implies y = \pm\sqrt{2}", s2txt2, color=HIGHLIGHT_COLOR)
 
-        s2pts2 = self._eq(
+        s2pts2 = self.panel_eq(
             r"(0,\,-\sqrt{2}) \quad \text{dhe} \quad (0,\,\sqrt{2})",
-            s2eq2, color=HIGHLIGHT_COLOR, fs=28,
+            s2eq2, color=HIGHLIGHT_COLOR, font_size=28,
         )
         self.wait(1.5)
 
@@ -461,35 +418,35 @@ class Ushtrimi3(ExerciseScene):
         div = make_divider()
         self.play(FadeIn(div), run_time=0.2)
 
-        res_t = self._title("Pikeprerjet", y_pos=3.0)
+        res_t = self.panel_title("Pikeprerjet", y_pos=3.0)
 
-        res_x = self._eq(
+        res_x = self.panel_eq(
             r"(\pm\sqrt{2},\,0)",
-            res_t, color=LABEL_COLOR, fs=28, buff=0.4,
+            res_t, color=LABEL_COLOR, font_size=28, buff=0.4,
         )
 
         d1, l1 = self.mark_point(axes, -sqrt2, 0, r"(-\!\sqrt{2},0)",
                                   color=LABEL_COLOR, direction=DL, font_size=18)
         d2, l2 = self.mark_point(axes, sqrt2, 0, r"(\sqrt{2},0)",
                                   color=LABEL_COLOR, direction=DR, font_size=18)
-        self._transfer_value(res_x, VGroup(d1, l1))
-        self._transfer_value(res_x, VGroup(d2, l2))
+        self.transfer_value(res_x, VGroup(d1, l1))
+        self.transfer_value(res_x, VGroup(d2, l2))
         self.wait(1)
 
-        res_y = self._eq(
+        res_y = self.panel_eq(
             r"(0,\,\pm\sqrt{2})",
-            res_x, color=HIGHLIGHT_COLOR, fs=28, buff=0.3,
+            res_x, color=HIGHLIGHT_COLOR, font_size=28, buff=0.3,
         )
 
         d3, l3 = self.mark_point(axes, 0, -sqrt2, r"(0,-\!\sqrt{2})",
                                   color=HIGHLIGHT_COLOR, direction=DL, font_size=18)
         d4, l4 = self.mark_point(axes, 0, sqrt2, r"(0,\sqrt{2})",
                                   color=HIGHLIGHT_COLOR, direction=UL, font_size=18)
-        self._transfer_value(res_y, VGroup(d3, l3))
-        self._transfer_value(res_y, VGroup(d4, l4))
+        self.transfer_value(res_y, VGroup(d3, l3))
+        self.transfer_value(res_y, VGroup(d4, l4))
         self.wait(1)
 
-        r_label = self._eq(r"r = \sqrt{2}", res_y, color=ANSWER_COLOR, fs=30, key=True)
+        r_label = self.panel_eq(r"r = \sqrt{2}", res_y, color=ANSWER_COLOR, font_size=30, key=True)
 
         r_line = DashedLine(
             axes.c2p(0, 0), axes.c2p(sqrt2, 0),
@@ -497,7 +454,7 @@ class Ushtrimi3(ExerciseScene):
         )
         r_mid = MathTex(r"\sqrt{2}", font_size=18, color=ANSWER_COLOR)
         r_mid.next_to(r_line, UP, buff=0.12)
-        self._transfer_value(r_label, VGroup(r_line, r_mid))
+        self.transfer_value(r_label, VGroup(r_line, r_mid))
 
         self.wait(W_AFTER_ANSWER)
 
@@ -516,25 +473,25 @@ class Ushtrimi3(ExerciseScene):
         self.wait(0.3)
 
         # --- Radius with surd simplification ---
-        s1t = self._title("Gjejme rrezen", y_pos=3.2)
+        s1t = self.panel_title("Gjejme rrezen", y_pos=3.2)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Forma } x^2 + y^2 = r^2\text{:}",
         ], s1t)
         self.wait(1)
 
-        s1eq1 = self._eq(r"r^2 = 20", s1txt)
-        s1eq2 = self._eq(r"r = \sqrt{20}", s1eq1)
+        s1eq1 = self.panel_eq(r"r^2 = 20", s1txt)
+        s1eq2 = self.panel_eq(r"r = \sqrt{20}", s1eq1)
 
-        s1txt2 = self._text([
+        s1txt2 = self.panel_text([
             r"\text{Thjeshtojme rrenjen katrore:}",
         ], s1eq2, buff=0.3)
         self.wait(2)
 
-        s1eq3 = self._eq(r"\sqrt{20} = \sqrt{4 \times 5}", s1txt2)
-        s1eq4 = self._eq(r"= \sqrt{4} \cdot \sqrt{5} = 2\sqrt{5}", s1eq3)
+        s1eq3 = self.panel_eq(r"\sqrt{20} = \sqrt{4 \times 5}", s1txt2)
+        s1eq4 = self.panel_eq(r"= \sqrt{4} \cdot \sqrt{5} = 2\sqrt{5}", s1eq3)
 
-        s1res = self._eq(
+        s1res = self.panel_eq(
             r"r = 2\sqrt{5} \approx 4{,}47",
             s1eq4, color=ANSWER_COLOR, key=True,
         )
@@ -545,32 +502,32 @@ class Ushtrimi3(ExerciseScene):
         self.wait(0.3)
 
         # --- Intercepts (combined) ---
-        s2t = self._title("Pikeprerjet me boshtet", y_pos=3.2)
+        s2t = self.panel_title("Pikeprerjet me boshtet", y_pos=3.2)
 
-        s2txt = self._text([
+        s2txt = self.panel_text([
             r"\text{Vendosim } y = 0\text{:}",
         ], s2t)
         self.wait(1)
 
-        s2eq1 = self._eq(r"x^2 = 20 \implies x = \pm 2\sqrt{5}", s2txt, color=LABEL_COLOR)
+        s2eq1 = self.panel_eq(r"x^2 = 20 \implies x = \pm 2\sqrt{5}", s2txt, color=LABEL_COLOR)
 
-        s2pts = self._eq(
+        s2pts = self.panel_eq(
             r"(-2\sqrt{5},\,0),\; (2\sqrt{5},\,0)",
-            s2eq1, color=LABEL_COLOR, fs=26,
+            s2eq1, color=LABEL_COLOR, font_size=26,
         )
         self.wait(1.5)
 
-        s2txt2 = self._text([
+        s2txt2 = self.panel_text([
             r"\text{Vendosim } x = 0\text{:}",
         ], s2pts, buff=0.3)
         self.wait(1)
 
-        s2eq2 = self._eq(r"y^2 = 20 \implies y = \pm 2\sqrt{5}", s2txt2,
+        s2eq2 = self.panel_eq(r"y^2 = 20 \implies y = \pm 2\sqrt{5}", s2txt2,
                           color=HIGHLIGHT_COLOR)
 
-        s2pts2 = self._eq(
+        s2pts2 = self.panel_eq(
             r"(0,\,-2\sqrt{5}),\; (0,\,2\sqrt{5})",
-            s2eq2, color=HIGHLIGHT_COLOR, fs=26,
+            s2eq2, color=HIGHLIGHT_COLOR, font_size=26,
         )
         self.wait(1.5)
 
@@ -593,35 +550,35 @@ class Ushtrimi3(ExerciseScene):
         div = make_divider()
         self.play(FadeIn(div), run_time=0.2)
 
-        res_t = self._title("Pikeprerjet", y_pos=3.0)
+        res_t = self.panel_title("Pikeprerjet", y_pos=3.0)
 
-        res_x = self._eq(
+        res_x = self.panel_eq(
             r"(\pm 2\sqrt{5},\,0)",
-            res_t, color=LABEL_COLOR, fs=28, buff=0.4,
+            res_t, color=LABEL_COLOR, font_size=28, buff=0.4,
         )
 
         d1, l1 = self.mark_point(axes, -r_val, 0, r"(-2\!\sqrt{5},0)",
                                   color=LABEL_COLOR, direction=DL, font_size=18)
         d2, l2 = self.mark_point(axes, r_val, 0, r"(2\!\sqrt{5},0)",
                                   color=LABEL_COLOR, direction=DR, font_size=18)
-        self._transfer_value(res_x, VGroup(d1, l1))
-        self._transfer_value(res_x, VGroup(d2, l2))
+        self.transfer_value(res_x, VGroup(d1, l1))
+        self.transfer_value(res_x, VGroup(d2, l2))
         self.wait(1)
 
-        res_y = self._eq(
+        res_y = self.panel_eq(
             r"(0,\,\pm 2\sqrt{5})",
-            res_x, color=HIGHLIGHT_COLOR, fs=28, buff=0.3,
+            res_x, color=HIGHLIGHT_COLOR, font_size=28, buff=0.3,
         )
 
         d3, l3 = self.mark_point(axes, 0, -r_val, r"(0,-2\!\sqrt{5})",
                                   color=HIGHLIGHT_COLOR, direction=DL, font_size=18)
         d4, l4 = self.mark_point(axes, 0, r_val, r"(0,2\!\sqrt{5})",
                                   color=HIGHLIGHT_COLOR, direction=UL, font_size=18)
-        self._transfer_value(res_y, VGroup(d3, l3))
-        self._transfer_value(res_y, VGroup(d4, l4))
+        self.transfer_value(res_y, VGroup(d3, l3))
+        self.transfer_value(res_y, VGroup(d4, l4))
         self.wait(1)
 
-        r_label = self._eq(r"r = 2\sqrt{5}", res_y, color=ANSWER_COLOR, fs=30, key=True)
+        r_label = self.panel_eq(r"r = 2\sqrt{5}", res_y, color=ANSWER_COLOR, font_size=30, key=True)
 
         r_line = DashedLine(
             axes.c2p(0, 0), axes.c2p(r_val, 0),
@@ -629,7 +586,7 @@ class Ushtrimi3(ExerciseScene):
         )
         r_mid = MathTex(r"2\sqrt{5}", font_size=18, color=ANSWER_COLOR)
         r_mid.next_to(r_line, UP, buff=0.12)
-        self._transfer_value(r_label, VGroup(r_line, r_mid))
+        self.transfer_value(r_label, VGroup(r_line, r_mid))
 
         self.wait(W_AFTER_ANSWER)
 
@@ -648,26 +605,26 @@ class Ushtrimi3(ExerciseScene):
         self.wait(0.3)
 
         # --- Rewrite to standard form ---
-        s1t = self._title("Rishkruajme ne formen standarde", y_pos=3.2)
+        s1t = self.panel_title("Rishkruajme ne formen standarde", y_pos=3.2)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Ekuacioni i dhene:}",
         ], s1t)
         self.wait(1)
 
-        s1eq1 = self._eq(r"y^2 = 4 - x^2", s1txt)
+        s1eq1 = self.panel_eq(r"y^2 = 4 - x^2", s1txt)
 
-        s1txt2 = self._text([
+        s1txt2 = self.panel_text([
             r"\text{Shtojme } x^2 \text{ ne te dyja anet:}",
         ], s1eq1, buff=0.3)
         self.wait(2)
 
-        s1eq2 = self._eq(r"x^2 + y^2 = 4", s1txt2, key=True)
+        s1eq2 = self.panel_eq(r"x^2 + y^2 = 4", s1txt2, key=True)
 
         # Flash to emphasize this is a circle
         self.play(Indicate(s1eq2, color=SHAPE_COLOR, scale_factor=1.15), run_time=0.6)
 
-        s1txt3 = self._text([
+        s1txt3 = self.panel_text([
             r"\text{Kjo eshte forma } x^2 + y^2 = r^2",
             r"\text{me qender ne origjine!}",
         ], s1eq2, buff=0.3)
@@ -679,26 +636,26 @@ class Ushtrimi3(ExerciseScene):
         self.wait(0.3)
 
         # --- Radius ---
-        s2t = self._title("Gjejme rrezen", y_pos=3.2)
+        s2t = self.panel_title("Gjejme rrezen", y_pos=3.2)
 
-        s2eq1 = self._eq(r"r^2 = 4", s2t, buff=0.4)
-        s2eq2 = self._eq(r"r = \sqrt{4} = 2", s2eq1, color=ANSWER_COLOR, key=True)
+        s2eq1 = self.panel_eq(r"r^2 = 4", s2t, buff=0.4)
+        s2eq2 = self.panel_eq(r"r = \sqrt{4} = 2", s2eq1, color=ANSWER_COLOR, key=True)
         self.wait(1)
 
         # --- Intercepts ---
-        s2txt = self._text([
+        s2txt = self.panel_text([
             r"\text{Vendosim } y = 0\text{:}",
         ], s2eq2, buff=0.4)
         self.wait(1)
 
-        s2eq3 = self._eq(r"x^2 = 4 \implies x = \pm 2", s2txt, color=LABEL_COLOR)
+        s2eq3 = self.panel_eq(r"x^2 = 4 \implies x = \pm 2", s2txt, color=LABEL_COLOR)
 
-        s2txt2 = self._text([
+        s2txt2 = self.panel_text([
             r"\text{Vendosim } x = 0\text{:}",
         ], s2eq3, buff=0.3)
         self.wait(1)
 
-        s2eq4 = self._eq(r"y^2 = 4 \implies y = \pm 2", s2txt2, color=HIGHLIGHT_COLOR)
+        s2eq4 = self.panel_eq(r"y^2 = 4 \implies y = \pm 2", s2txt2, color=HIGHLIGHT_COLOR)
         self.wait(1.5)
 
         calc2 = VGroup(s2t, s2eq1, s2eq2, s2txt, s2eq3, s2txt2, s2eq4)
@@ -721,35 +678,35 @@ class Ushtrimi3(ExerciseScene):
         div = make_divider()
         self.play(FadeIn(div), run_time=0.2)
 
-        res_t = self._title("Pikeprerjet", y_pos=3.0)
+        res_t = self.panel_title("Pikeprerjet", y_pos=3.0)
 
-        res_x = self._eq(
+        res_x = self.panel_eq(
             r"x\text{-boshti: } (-2,\,0),\; (2,\,0)",
-            res_t, color=LABEL_COLOR, fs=28, buff=0.4,
+            res_t, color=LABEL_COLOR, font_size=28, buff=0.4,
         )
 
         d1, l1 = self.mark_point(axes, -2, 0, r"(-2,0)", color=LABEL_COLOR,
                                   direction=DL, font_size=20)
         d2, l2 = self.mark_point(axes, 2, 0, r"(2,0)", color=LABEL_COLOR,
                                   direction=DR, font_size=20)
-        self._transfer_value(res_x, VGroup(d1, l1))
-        self._transfer_value(res_x, VGroup(d2, l2))
+        self.transfer_value(res_x, VGroup(d1, l1))
+        self.transfer_value(res_x, VGroup(d2, l2))
         self.wait(1)
 
-        res_y = self._eq(
+        res_y = self.panel_eq(
             r"y\text{-boshti: } (0,\,-2),\; (0,\,2)",
-            res_x, color=HIGHLIGHT_COLOR, fs=28, buff=0.3,
+            res_x, color=HIGHLIGHT_COLOR, font_size=28, buff=0.3,
         )
 
         d3, l3 = self.mark_point(axes, 0, -2, r"(0,-2)", color=HIGHLIGHT_COLOR,
                                   direction=DL, font_size=20)
         d4, l4 = self.mark_point(axes, 0, 2, r"(0,2)", color=HIGHLIGHT_COLOR,
                                   direction=UL, font_size=20)
-        self._transfer_value(res_y, VGroup(d3, l3))
-        self._transfer_value(res_y, VGroup(d4, l4))
+        self.transfer_value(res_y, VGroup(d3, l3))
+        self.transfer_value(res_y, VGroup(d4, l4))
         self.wait(1)
 
-        r_label = self._eq(r"r = 2", res_y, color=ANSWER_COLOR, fs=30, key=True)
+        r_label = self.panel_eq(r"r = 2", res_y, color=ANSWER_COLOR, font_size=30, key=True)
 
         r_line = DashedLine(
             axes.c2p(0, 0), axes.c2p(2, 0),
@@ -757,7 +714,7 @@ class Ushtrimi3(ExerciseScene):
         )
         r_mid = MathTex("2", font_size=20, color=ANSWER_COLOR)
         r_mid.next_to(r_line, UP, buff=0.12)
-        self._transfer_value(r_label, VGroup(r_line, r_mid))
+        self.transfer_value(r_label, VGroup(r_line, r_mid))
 
         self.wait(W_AFTER_ANSWER)
 
@@ -776,25 +733,25 @@ class Ushtrimi3(ExerciseScene):
         self.wait(0.3)
 
         # --- Rewrite to standard form ---
-        s1t = self._title("Rishkruajme ne formen standarde", y_pos=3.2)
+        s1t = self.panel_title("Rishkruajme ne formen standarde", y_pos=3.2)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Ekuacioni i dhene:}",
         ], s1t)
         self.wait(1)
 
-        s1eq1 = self._eq(r"y^2 = 16 - x^2", s1txt)
+        s1eq1 = self.panel_eq(r"y^2 = 16 - x^2", s1txt)
 
-        s1txt2 = self._text([
+        s1txt2 = self.panel_text([
             r"\text{Shtojme } x^2 \text{ ne te dyja anet:}",
         ], s1eq1, buff=0.3)
         self.wait(2)
 
-        s1eq2 = self._eq(r"x^2 + y^2 = 16", s1txt2, key=True)
+        s1eq2 = self.panel_eq(r"x^2 + y^2 = 16", s1txt2, key=True)
 
         self.play(Indicate(s1eq2, color=SHAPE_COLOR, scale_factor=1.15), run_time=0.6)
 
-        s1txt3 = self._text([
+        s1txt3 = self.panel_text([
             r"\text{Rreth me qender ne origjine!}",
         ], s1eq2, buff=0.3)
         self.wait(2)
@@ -804,26 +761,26 @@ class Ushtrimi3(ExerciseScene):
         self.wait(0.3)
 
         # --- Radius ---
-        s2t = self._title("Gjejme rrezen", y_pos=3.2)
+        s2t = self.panel_title("Gjejme rrezen", y_pos=3.2)
 
-        s2eq1 = self._eq(r"r^2 = 16", s2t, buff=0.4)
-        s2eq2 = self._eq(r"r = \sqrt{16} = 4", s2eq1, color=ANSWER_COLOR, key=True)
+        s2eq1 = self.panel_eq(r"r^2 = 16", s2t, buff=0.4)
+        s2eq2 = self.panel_eq(r"r = \sqrt{16} = 4", s2eq1, color=ANSWER_COLOR, key=True)
         self.wait(1)
 
         # --- Intercepts ---
-        s2txt = self._text([
+        s2txt = self.panel_text([
             r"\text{Vendosim } y = 0\text{:}",
         ], s2eq2, buff=0.4)
         self.wait(1)
 
-        s2eq3 = self._eq(r"x^2 = 16 \implies x = \pm 4", s2txt, color=LABEL_COLOR)
+        s2eq3 = self.panel_eq(r"x^2 = 16 \implies x = \pm 4", s2txt, color=LABEL_COLOR)
 
-        s2txt2 = self._text([
+        s2txt2 = self.panel_text([
             r"\text{Vendosim } x = 0\text{:}",
         ], s2eq3, buff=0.3)
         self.wait(1)
 
-        s2eq4 = self._eq(r"y^2 = 16 \implies y = \pm 4", s2txt2, color=HIGHLIGHT_COLOR)
+        s2eq4 = self.panel_eq(r"y^2 = 16 \implies y = \pm 4", s2txt2, color=HIGHLIGHT_COLOR)
         self.wait(1.5)
 
         calc2 = VGroup(s2t, s2eq1, s2eq2, s2txt, s2eq3, s2txt2, s2eq4)
@@ -846,35 +803,35 @@ class Ushtrimi3(ExerciseScene):
         div = make_divider()
         self.play(FadeIn(div), run_time=0.2)
 
-        res_t = self._title("Pikeprerjet", y_pos=3.0)
+        res_t = self.panel_title("Pikeprerjet", y_pos=3.0)
 
-        res_x = self._eq(
+        res_x = self.panel_eq(
             r"x\text{-boshti: } (-4,\,0),\; (4,\,0)",
-            res_t, color=LABEL_COLOR, fs=28, buff=0.4,
+            res_t, color=LABEL_COLOR, font_size=28, buff=0.4,
         )
 
         d1, l1 = self.mark_point(axes, -4, 0, r"(-4,0)", color=LABEL_COLOR,
                                   direction=DL, font_size=20)
         d2, l2 = self.mark_point(axes, 4, 0, r"(4,0)", color=LABEL_COLOR,
                                   direction=DR, font_size=20)
-        self._transfer_value(res_x, VGroup(d1, l1))
-        self._transfer_value(res_x, VGroup(d2, l2))
+        self.transfer_value(res_x, VGroup(d1, l1))
+        self.transfer_value(res_x, VGroup(d2, l2))
         self.wait(1)
 
-        res_y = self._eq(
+        res_y = self.panel_eq(
             r"y\text{-boshti: } (0,\,-4),\; (0,\,4)",
-            res_x, color=HIGHLIGHT_COLOR, fs=28, buff=0.3,
+            res_x, color=HIGHLIGHT_COLOR, font_size=28, buff=0.3,
         )
 
         d3, l3 = self.mark_point(axes, 0, -4, r"(0,-4)", color=HIGHLIGHT_COLOR,
                                   direction=DL, font_size=20)
         d4, l4 = self.mark_point(axes, 0, 4, r"(0,4)", color=HIGHLIGHT_COLOR,
                                   direction=UL, font_size=20)
-        self._transfer_value(res_y, VGroup(d3, l3))
-        self._transfer_value(res_y, VGroup(d4, l4))
+        self.transfer_value(res_y, VGroup(d3, l3))
+        self.transfer_value(res_y, VGroup(d4, l4))
         self.wait(1)
 
-        r_label = self._eq(r"r = 4", res_y, color=ANSWER_COLOR, fs=30, key=True)
+        r_label = self.panel_eq(r"r = 4", res_y, color=ANSWER_COLOR, font_size=30, key=True)
 
         r_line = DashedLine(
             axes.c2p(0, 0), axes.c2p(4, 0),
@@ -882,7 +839,7 @@ class Ushtrimi3(ExerciseScene):
         )
         r_mid = MathTex("4", font_size=20, color=ANSWER_COLOR)
         r_mid.next_to(r_line, UP, buff=0.12)
-        self._transfer_value(r_label, VGroup(r_line, r_mid))
+        self.transfer_value(r_label, VGroup(r_line, r_mid))
 
         self.wait(W_AFTER_ANSWER)
 

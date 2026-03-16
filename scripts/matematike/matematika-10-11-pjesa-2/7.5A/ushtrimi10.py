@@ -33,73 +33,6 @@ class Ushtrimi10(ExerciseScene):
     unit = "7.5A"
     parts = ["a", "b"]
 
-    # ── Shared helpers (right-panel, centered at x = PX) ──
-
-    def _title(self, text, ref=None, y_pos=None, buff=0.5):
-        t = MathTex(
-            r"\text{" + text + r"}",
-            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
-        )
-        if y_pos is not None:
-            t.move_to(np.array([PX, y_pos, 0]))
-        elif ref is not None:
-            t.next_to(ref, DOWN, buff=buff)
-            t.set_x(PX)
-        self.play(FadeIn(t), run_time=T_STEP_TITLE)
-        return t
-
-    def _text(self, lines, ref, buff=0.25):
-        parts = [MathTex(l, font_size=BODY_SIZE, color=BODY_TEXT_COLOR) for l in lines]
-        g = VGroup(*parts).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
-        g.next_to(ref, DOWN, buff=buff)
-        g.set_x(PX)
-        self.play(FadeIn(g), run_time=T_BODY_FADE)
-        return g
-
-    def _eq(self, tex, ref, buff=0.25, color=None, fs=None, key=False):
-        eq = MathTex(tex, font_size=fs or CALC_SIZE)
-        if color:
-            eq.set_color(color)
-        eq.next_to(ref, DOWN, buff=buff)
-        eq.set_x(PX)
-        self.play(Write(eq), run_time=T_KEY_EQUATION if key else T_ROUTINE_EQUATION)
-        self.wait(W_AFTER_KEY if key else 0.6)
-        return eq
-
-    def _ceq(self, tex, ref=None, pos=None, buff=0.3, color=None, fs=None, key=False):
-        """Centered equation (full-screen, not right-panel)."""
-        eq = MathTex(tex, font_size=fs or CALC_SIZE)
-        if color:
-            eq.set_color(color)
-        if pos is not None:
-            eq.move_to(pos)
-        elif ref is not None:
-            eq.next_to(ref, DOWN, buff=buff)
-        self.play(Write(eq), run_time=T_KEY_EQUATION if key else T_ROUTINE_EQUATION)
-        self.wait(W_AFTER_KEY if key else 0.6)
-        return eq
-
-    def _ctext(self, lines, ref, buff=0.25):
-        """Centered text block (full-screen)."""
-        parts = [MathTex(l, font_size=BODY_SIZE, color=BODY_TEXT_COLOR) for l in lines]
-        g = VGroup(*parts).arrange(DOWN, buff=0.15)
-        g.next_to(ref, DOWN, buff=buff)
-        self.play(FadeIn(g), run_time=T_BODY_FADE)
-        return g
-
-    def _ctitle(self, text, ref=None, y_pos=None, buff=0.5):
-        """Centered title (full-screen)."""
-        t = MathTex(
-            r"\text{" + text + r"}",
-            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
-        )
-        if y_pos is not None:
-            t.move_to(np.array([0, y_pos, 0]))
-        elif ref is not None:
-            t.next_to(ref, DOWN, buff=buff)
-        self.play(FadeIn(t), run_time=T_STEP_TITLE)
-        return t
-
     # ── Vector arrow helper ──
 
     def _vec_arrow(self, start, end, color=SHAPE_COLOR, stroke_width=4,
@@ -175,31 +108,31 @@ class Ushtrimi10(ExerciseScene):
 
     def _part_a_i(self):
         # Problem
-        t0 = self._ctitle("i)  Gjeni:", y_pos=3.2)
-        eq0 = self._ceq(
+        t0 = self.centered_title("i)  Gjeni:", y_pos=3.2)
+        eq0 = self.centered_eq(
             r"\vec{p} + 2\vec{q} = \text{ ?}",
-            t0, fs=36, buff=0.4,
+            t0, font_size=36, buff=0.4,
         )
         self.wait(2)
 
         # Step 1: Substitute definitions
-        t1 = self._ctitle("Zevendesojme vlerat e vektoreve:", ref=eq0, buff=0.5)
+        t1 = self.centered_title("Zevendesojme vlerat e vektoreve:", ref=eq0, buff=0.5)
         self.wait(1.5)
 
-        eq1 = self._ceq(
+        eq1 = self.centered_eq(
             r"\vec{p} + 2\vec{q} = "
             r"(3\vec{a} + 4\vec{b}) + 2(\vec{a} - 2\vec{b})",
-            t1, fs=30,
+            t1, font_size=30,
         )
         self.wait(2)
 
         # Step 2: Distribute the 2
-        t2 = self._ctitle("Shumezojme 2 me secilin term:", ref=eq1, buff=0.45)
+        t2 = self.centered_title("Shumezojme 2 me secilin term:", ref=eq1, buff=0.45)
         self.wait(1.5)
 
-        eq2 = self._ceq(
+        eq2 = self.centered_eq(
             r"= 3\vec{a} + 4\vec{b} + 2\vec{a} - 4\vec{b}",
-            t2, fs=32,
+            t2, font_size=32,
         )
         self.wait(2)
 
@@ -212,7 +145,7 @@ class Ushtrimi10(ExerciseScene):
         self.wait(0.5)
 
         # Step 3: Group like terms
-        t3 = self._ctitle("Mbledhim termat e ngjashme:", ref=eq2, buff=0.45)
+        t3 = self.centered_title("Mbledhim termat e ngjashme:", ref=eq2, buff=0.45)
         self.wait(1.5)
 
         # Show grouping with colors
@@ -377,28 +310,28 @@ class Ushtrimi10(ExerciseScene):
     # ── Sub-part ii: q + 2r ──
 
     def _part_a_ii(self):
-        t0 = self._ctitle("ii)  Gjeni:", y_pos=3.2)
-        eq0 = self._ceq(
+        t0 = self.centered_title("ii)  Gjeni:", y_pos=3.2)
+        eq0 = self.centered_eq(
             r"\vec{q} + 2\vec{r} = \text{ ?}",
-            t0, fs=36, buff=0.4,
+            t0, font_size=36, buff=0.4,
         )
         self.wait(1.5)
 
         # Substitute
-        t1 = self._ctitle("Zevendesojme:", ref=eq0, buff=0.45)
+        t1 = self.centered_title("Zevendesojme:", ref=eq0, buff=0.45)
 
-        eq1 = self._ceq(
+        eq1 = self.centered_eq(
             r"= (\vec{a} - 2\vec{b}) + 2(\vec{b} - \vec{a})",
-            t1, fs=30,
+            t1, font_size=30,
         )
         self.wait(1.5)
 
         # Distribute
-        t2 = self._ctitle("Shprehim:", ref=eq1, buff=0.4)
+        t2 = self.centered_title("Shprehim:", ref=eq1, buff=0.4)
 
-        eq2 = self._ceq(
+        eq2 = self.centered_eq(
             r"= \vec{a} - 2\vec{b} + 2\vec{b} - 2\vec{a}",
-            t2, fs=32,
+            t2, font_size=32,
         )
         self.wait(2)
 
@@ -443,25 +376,25 @@ class Ushtrimi10(ExerciseScene):
     # ── Sub-part iii: q + r ──
 
     def _part_a_iii(self):
-        t0 = self._ctitle("iii)  Gjeni:", y_pos=3.2)
-        eq0 = self._ceq(
+        t0 = self.centered_title("iii)  Gjeni:", y_pos=3.2)
+        eq0 = self.centered_eq(
             r"\vec{q} + \vec{r} = \text{ ?}",
-            t0, fs=36, buff=0.4,
+            t0, font_size=36, buff=0.4,
         )
         self.wait(1.5)
 
         # Substitute + distribute (combined since pattern is established)
-        t1 = self._ctitle("Zevendesojme dhe shprehim:", ref=eq0, buff=0.45)
+        t1 = self.centered_title("Zevendesojme dhe shprehim:", ref=eq0, buff=0.45)
 
-        eq1 = self._ceq(
+        eq1 = self.centered_eq(
             r"= (\vec{a} - 2\vec{b}) + (\vec{b} - \vec{a})",
-            t1, fs=30,
+            t1, font_size=30,
         )
         self.wait(1.5)
 
-        eq2 = self._ceq(
+        eq2 = self.centered_eq(
             r"= \vec{a} - 2\vec{b} + \vec{b} - \vec{a}",
-            eq1, fs=32,
+            eq1, font_size=32,
         )
         self.wait(1.5)
 
@@ -506,28 +439,28 @@ class Ushtrimi10(ExerciseScene):
     # ── Sub-part iv: 3q - p ──
 
     def _part_a_iv(self):
-        t0 = self._ctitle("iv)  Gjeni:", y_pos=3.2)
-        eq0 = self._ceq(
+        t0 = self.centered_title("iv)  Gjeni:", y_pos=3.2)
+        eq0 = self.centered_eq(
             r"3\vec{q} - \vec{p} = \text{ ?}",
-            t0, fs=36, buff=0.4,
+            t0, font_size=36, buff=0.4,
         )
         self.wait(1.5)
 
         # Substitute
-        t1 = self._ctitle("Zevendesojme:", ref=eq0, buff=0.45)
+        t1 = self.centered_title("Zevendesojme:", ref=eq0, buff=0.45)
 
-        eq1 = self._ceq(
+        eq1 = self.centered_eq(
             r"= 3(\vec{a} - 2\vec{b}) - (3\vec{a} + 4\vec{b})",
-            t1, fs=30,
+            t1, font_size=30,
         )
         self.wait(1.5)
 
         # Distribute
-        t2 = self._ctitle("Shprehim:", ref=eq1, buff=0.4)
+        t2 = self.centered_title("Shprehim:", ref=eq1, buff=0.4)
 
-        eq2 = self._ceq(
+        eq2 = self.centered_eq(
             r"= 3\vec{a} - 6\vec{b} - 3\vec{a} - 4\vec{b}",
-            t2, fs=32,
+            t2, font_size=32,
         )
         self.wait(2)
 

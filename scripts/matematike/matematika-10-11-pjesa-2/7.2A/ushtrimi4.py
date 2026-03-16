@@ -31,49 +31,6 @@ class Ushtrimi4(ExerciseScene):
     unit = "7.2A"
     parts = ["a", "b"]
 
-    # ── Right-panel alignment helpers (all centered at x = PX) ──
-
-    def _title(self, text, ref=None, y_pos=None, buff=0.5):
-        t = MathTex(
-            r"\text{" + text + r"}",
-            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
-        )
-        if y_pos is not None:
-            t.move_to(np.array([PX, y_pos, 0]))
-        elif ref is not None:
-            t.next_to(ref, DOWN, buff=buff)
-            t.set_x(PX)
-        self.play(FadeIn(t), run_time=T_STEP_TITLE)
-        return t
-
-    def _text(self, lines, ref, buff=0.25):
-        parts = [MathTex(l, font_size=BODY_SIZE, color=BODY_TEXT_COLOR) for l in lines]
-        g = VGroup(*parts).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
-        g.next_to(ref, DOWN, buff=buff)
-        g.set_x(PX)
-        self.play(FadeIn(g), run_time=T_BODY_FADE)
-        return g
-
-    def _eq(self, tex, ref, buff=0.25, color=None, fs=None, key=False):
-        eq = MathTex(tex, font_size=fs or CALC_SIZE)
-        if color:
-            eq.set_color(color)
-        eq.next_to(ref, DOWN, buff=buff)
-        eq.set_x(PX)
-        self.play(Write(eq), run_time=T_KEY_EQUATION if key else T_ROUTINE_EQUATION)
-        self.wait(W_AFTER_KEY if key else 0.6)
-        return eq
-
-    def _transfer_value(self, source_eq, target_mob):
-        """Animate a value 'flying' from the right panel to the figure."""
-        ghost = source_eq.copy()
-        self.play(
-            ghost.animate.move_to(target_mob).scale(0.65).set_opacity(0),
-            FadeIn(target_mob),
-            run_time=0.8,
-        )
-        self.remove(ghost)
-
     # ================================================================
     #  PART A — Triangle ABC: AB = AC = 25 mm, ∠B = 51°, find BC
     # ================================================================
@@ -151,9 +108,9 @@ class Ushtrimi4(ExerciseScene):
         # ────────────────────────────────────────────
         # Step 1: Base angles — with visual feedback on figure
         # ────────────────────────────────────────────
-        s1t = self._title("Hapi 1: Këndet e bazës", y_pos=3.2)
+        s1t = self.panel_title("Hapi 1: Këndet e bazës", y_pos=3.2)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Meqë } AB = AC\text{, trekëndëshi}",
             r"\text{është dybrinjënjëshëm.}",
             r"\text{Këndet e bazës janë të barabarta:}",
@@ -168,38 +125,38 @@ class Ushtrimi4(ExerciseScene):
         )
         self.wait(0.5)
 
-        s1eq = self._eq(
+        s1eq = self.panel_eq(
             r"\angle C = \angle B = 51^{\circ}",
-            s1txt, color=ANSWER_COLOR, fs=34, key=True,
+            s1txt, color=ANSWER_COLOR, font_size=34, key=True,
         )
 
         # Transfer: show angle C appearing on figure
         ang_C_arc = self.angle_arc(C, A, B, radius=0.45, color=ANSWER_COLOR)
         ang_C_lbl = MathTex("51^{\\circ}", font_size=22, color=ANSWER_COLOR)
         ang_C_lbl.move_to(self.angle_label_pos(C, A, B, 0.78))
-        self._transfer_value(s1eq, VGroup(ang_C_arc, ang_C_lbl))
+        self.transfer_value(s1eq, VGroup(ang_C_arc, ang_C_lbl))
         self.wait(2)
 
         # ────────────────────────────────────────────
         # Step 2: Vertex angle
         # ────────────────────────────────────────────
-        s2t = self._title("Hapi 2: Këndi në kulm", ref=s1eq)
+        s2t = self.panel_title("Hapi 2: Këndi në kulm", ref=s1eq)
 
-        s2txt = self._text([
+        s2txt = self.panel_text([
             r"\text{Shuma e këndeve} = 180^{\circ}\text{:}",
         ], s2t, buff=0.2)
         self.wait(1.5)
 
-        s2eq = self._eq(
+        s2eq = self.panel_eq(
             r"\angle A = 180^{\circ} - 51^{\circ} - 51^{\circ} = 78^{\circ}",
-            s2txt, fs=30,
+            s2txt, font_size=30,
         )
 
         # Transfer angle A to figure (briefly — will fade before altitude)
         ang_A_arc = self.angle_arc(A, B, C, radius=0.28, color=HIGHLIGHT_COLOR)
         ang_A_lbl = MathTex("78^{\\circ}", font_size=18, color=HIGHLIGHT_COLOR)
         ang_A_lbl.move_to(self.angle_label_pos(A, B, C, 0.55))
-        self._transfer_value(s2eq, VGroup(ang_A_arc, ang_A_lbl))
+        self.transfer_value(s2eq, VGroup(ang_A_arc, ang_A_lbl))
         self.wait(2.5)
 
         # ────────────────────────────────────────────
@@ -208,9 +165,9 @@ class Ushtrimi4(ExerciseScene):
         # Fade angle A (altitude will pass through it)
         self.play(FadeOut(ang_A_arc), FadeOut(ang_A_lbl), run_time=0.4)
 
-        s3t = self._title("Hapi 3: Lartësia", ref=s2eq)
+        s3t = self.panel_title("Hapi 3: Lartësia", ref=s2eq)
 
-        s3txt = self._text([
+        s3txt = self.panel_text([
             r"\text{Heqim lartësinë } AH \perp BC\text{.}",
             r"\text{Ajo ndan bazën përgjysmë.}",
         ], s3t, buff=0.2)
@@ -253,9 +210,9 @@ class Ushtrimi4(ExerciseScene):
         )
         self.wait(1)
 
-        s4t = self._title("Hapi 4: Gjejmë BH", y_pos=3.0)
+        s4t = self.panel_title("Hapi 4: Gjejmë BH", y_pos=3.0)
 
-        s4txt = self._text([
+        s4txt = self.panel_text([
             r"\text{Në trekëndëshin kënddrejtë } ABH\text{:}",
         ], s4t, buff=0.3)
         self.wait(1.5)
@@ -263,33 +220,33 @@ class Ushtrimi4(ExerciseScene):
         # Flash angle B on figure before using it
         self.play(Indicate(ang_B_arc, color=YELLOW), run_time=0.5)
 
-        eq4a = self._eq(
+        eq4a = self.panel_eq(
             r"\cos 51^{\circ} = \frac{BH}{AB}",
-            s4txt, key=True, fs=36,
+            s4txt, key=True, font_size=36,
         )
 
         # Flash AB side (the hypotenuse we know)
         self.play(Indicate(s_AB, color=YELLOW, scale_factor=1.3), run_time=0.5)
 
-        eq4b = self._eq(r"BH = 25 \cdot \cos 51^{\circ}", eq4a, fs=34)
-        eq4c = self._eq(
+        eq4b = self.panel_eq(r"BH = 25 \cdot \cos 51^{\circ}", eq4a, font_size=34)
+        eq4c = self.panel_eq(
             r"BH \approx 15{,}73 \text{ mm}",
-            eq4b, color=LABEL_COLOR, fs=36, key=True,
+            eq4b, color=LABEL_COLOR, font_size=36, key=True,
         )
 
         # Transfer BH value to figure — place it on segment BH
         bh_lbl = MathTex("15{,}73", font_size=20, color=LABEL_COLOR)
         bh_mid = self.midpoint(B, H)
         bh_lbl.move_to(bh_mid + DOWN * 0.25)
-        self._transfer_value(eq4c, bh_lbl)
+        self.transfer_value(eq4c, bh_lbl)
         self.wait(1.5)
 
         # ────────────────────────────────────────────
         # Step 5: BC = 2·BH — restore full triangle
         # ────────────────────────────────────────────
-        s5t = self._title("Hapi 5: Gjejmë BC", ref=eq4c)
+        s5t = self.panel_title("Hapi 5: Gjejmë BC", ref=eq4c)
 
-        s5txt = self._text([
+        s5txt = self.panel_text([
             r"\text{Meqë } H \text{ ndan bazën përgjysmë:}",
         ], s5t, buff=0.2)
         self.wait(1)
@@ -306,10 +263,10 @@ class Ushtrimi4(ExerciseScene):
             run_time=0.5,
         )
 
-        eq5a = self._eq(r"BC = 2 \times BH", s5txt, fs=34)
-        eq5b = self._eq(
+        eq5a = self.panel_eq(r"BC = 2 \times BH", s5txt, font_size=34)
+        eq5b = self.panel_eq(
             r"BC = 2 \times 15{,}73 \approx 31{,}5 \text{ mm}",
-            eq5a, color=ANSWER_COLOR, fs=34, key=True,
+            eq5a, color=ANSWER_COLOR, font_size=34, key=True,
         )
 
         box = make_answer_box(eq5b)
@@ -322,7 +279,7 @@ class Ushtrimi4(ExerciseScene):
         # Transfer final BC value to figure
         s_BC = MathTex(r"BC \approx 31{,}5 \text{ mm}", font_size=22, color=ANSWER_COLOR)
         s_BC.next_to(Line(B, C), DOWN, buff=0.25)
-        self._transfer_value(eq5b, s_BC)
+        self.transfer_value(eq5b, s_BC)
 
         # Highlight the base to emphasize the answer
         base_highlight = Line(B, C, color=ANSWER_COLOR, stroke_width=5)
@@ -409,9 +366,9 @@ class Ushtrimi4(ExerciseScene):
         # ────────────────────────────────────────────
         # Step 1: Altitude — draw on figure with explanation
         # ────────────────────────────────────────────
-        s1t = self._title("Hapi 1: Lartësia", y_pos=3.0)
+        s1t = self.panel_title("Hapi 1: Lartësia", y_pos=3.0)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Meqë } PQ = QR\text{, trekëndëshi}",
             r"\text{është dybrinjënjëshëm.}",
             r"\text{Heqim lartësinë } QH \perp PR\text{.}",
@@ -436,9 +393,9 @@ class Ushtrimi4(ExerciseScene):
         self.play(Create(ra), FadeIn(lH_mob), run_time=0.5)
         self.wait(2)
 
-        s1eq = self._eq(
+        s1eq = self.panel_eq(
             r"PH = HR = \frac{4}{2} = 2 \text{ cm}",
-            s1txt, buff=0.3, fs=32,
+            s1txt, buff=0.3, font_size=32,
         )
 
         # Transfer: show "2" labels on PH and HR segments
@@ -446,13 +403,13 @@ class Ushtrimi4(ExerciseScene):
         ph_lbl.move_to(self.midpoint(P, H_pt) + DOWN * 0.22)
         hr_lbl = MathTex("2", font_size=20, color=LABEL_COLOR)
         hr_lbl.move_to(self.midpoint(H_pt, R) + DOWN * 0.22)
-        self._transfer_value(s1eq, VGroup(ph_lbl, hr_lbl))
+        self.transfer_value(s1eq, VGroup(ph_lbl, hr_lbl))
         self.wait(2)
 
         # ────────────────────────────────────────────
         # Step 2: QH via Pythagorean — highlight right triangle QPH
         # ────────────────────────────────────────────
-        s2t = self._title("Hapi 2: Gjejmë QH", ref=s1eq, buff=0.45)
+        s2t = self.panel_title("Hapi 2: Gjejmë QH", ref=s1eq, buff=0.45)
 
         # Highlight left right-triangle QPH
         sub_QPH = Polygon(Q, P, H_pt,
@@ -467,27 +424,27 @@ class Ushtrimi4(ExerciseScene):
             run_time=0.6,
         )
 
-        s2txt = self._text([
+        s2txt = self.panel_text([
             r"\text{Teorema e Pitagorës në } \triangle QPH\text{:}",
         ], s2t, buff=0.2)
         self.wait(2)
 
-        eq2a = self._eq(r"QH^2 = PQ^2 - PH^2", s2txt, fs=32)
+        eq2a = self.panel_eq(r"QH^2 = PQ^2 - PH^2", s2txt, font_size=32)
 
         # Flash PQ and PH on figure when used
         self.play(Indicate(s_PQ, color=YELLOW), run_time=0.4)
 
-        eq2b = self._eq(r"QH^2 = 49 - 4 = 45", eq2a, fs=32)
-        eq2c = self._eq(
+        eq2b = self.panel_eq(r"QH^2 = 49 - 4 = 45", eq2a, font_size=32)
+        eq2c = self.panel_eq(
             r"QH = \sqrt{45} = 3\sqrt{5} \approx 6{,}71 \text{ cm}",
-            eq2b, color=LABEL_COLOR, fs=30, key=True,
+            eq2b, color=LABEL_COLOR, font_size=30, key=True,
         )
 
         # Transfer QH value to figure
         qh_lbl = MathTex("6{,}71", font_size=20, color=LABEL_COLOR)
         qh_mid = self.midpoint(Q, H_pt)
         qh_lbl.move_to(qh_mid + RIGHT * 0.35)
-        self._transfer_value(eq2c, qh_lbl)
+        self.transfer_value(eq2c, qh_lbl)
         self.wait(1.5)
 
         # Restore full triangle
@@ -508,7 +465,7 @@ class Ushtrimi4(ExerciseScene):
         # ────────────────────────────────────────────
         # Step 3: angle P via sine — highlight right triangle again
         # ────────────────────────────────────────────
-        s3t = self._title("Hapi 3: Gjejmë këndin P", y_pos=3.0)
+        s3t = self.panel_title("Hapi 3: Gjejmë këndin P", y_pos=3.0)
 
         # Highlight right triangle QPH again
         sub_QPH2 = Polygon(Q, P, H_pt,
@@ -523,7 +480,7 @@ class Ushtrimi4(ExerciseScene):
             run_time=0.5,
         )
 
-        s3txt = self._text([
+        s3txt = self.panel_text([
             r"\text{Në trekëndëshin kënddrejtë } QPH\text{,}",
             r"\text{përdorim sinusin:}",
         ], s3t)
@@ -533,14 +490,14 @@ class Ushtrimi4(ExerciseScene):
         self.play(Indicate(qh_lbl, color=YELLOW), run_time=0.4)
         self.play(Indicate(s_PQ, color=YELLOW), run_time=0.4)
 
-        eq3a = self._eq(
+        eq3a = self.panel_eq(
             r"\sin P = \frac{QH}{PQ} = \frac{3\sqrt{5}}{7}",
-            s3txt, buff=0.3, fs=34, key=True,
+            s3txt, buff=0.3, font_size=34, key=True,
         )
-        eq3b = self._eq(r"\sin P \approx 0{,}9583", eq3a, fs=34)
-        eq3c = self._eq(
+        eq3b = self.panel_eq(r"\sin P \approx 0{,}9583", eq3a, font_size=34)
+        eq3c = self.panel_eq(
             r"\angle P \approx 73{,}4^{\circ}",
-            eq3b, color=ANSWER_COLOR, fs=36, key=True,
+            eq3b, color=ANSWER_COLOR, font_size=36, key=True,
         )
 
         # Transfer angle P to figure
@@ -557,7 +514,7 @@ class Ushtrimi4(ExerciseScene):
             hr_lbl.animate.set_opacity(1),
             run_time=0.4,
         )
-        self._transfer_value(eq3c, VGroup(ang_P_arc, ang_P_lbl))
+        self.transfer_value(eq3c, VGroup(ang_P_arc, ang_P_lbl))
         self.wait(1.5)
 
         # ── Clear right panel ──
@@ -568,37 +525,37 @@ class Ushtrimi4(ExerciseScene):
         # ────────────────────────────────────────────
         # Step 4: remaining angles
         # ────────────────────────────────────────────
-        s4t = self._title("Hapi 4: Këndet e tjera", y_pos=3.0)
+        s4t = self.panel_title("Hapi 4: Këndet e tjera", y_pos=3.0)
 
-        s4txt = self._text([
+        s4txt = self.panel_text([
             r"\text{Këndet e bazës janë të barabarta:}",
         ], s4t)
         self.wait(2)
 
-        eq4a = self._eq(
+        eq4a = self.panel_eq(
             r"\angle R = \angle P \approx 73{,}4^{\circ}",
-            s4txt, color=ANSWER_COLOR, fs=34, key=True,
+            s4txt, color=ANSWER_COLOR, font_size=34, key=True,
         )
 
         # Transfer angle R to figure
         ang_R_arc = self.angle_arc(R, Q, P, radius=0.40, color=ANSWER_COLOR)
         ang_R_lbl = MathTex("73{,}4^{\\circ}", font_size=20, color=ANSWER_COLOR)
         ang_R_lbl.move_to(self.angle_label_pos(R, Q, P, 0.72))
-        self._transfer_value(eq4a, VGroup(ang_R_arc, ang_R_lbl))
+        self.transfer_value(eq4a, VGroup(ang_R_arc, ang_R_lbl))
         self.wait(1)
 
-        eq4b_txt = self._text([
+        eq4b_txt = self.panel_text([
             r"\text{Këndi në kulm:}",
         ], eq4a, buff=0.3)
         self.wait(1)
 
-        eq4b = self._eq(
+        eq4b = self.panel_eq(
             r"\angle Q = 180^{\circ} - 73{,}4^{\circ} - 73{,}4^{\circ}",
-            eq4b_txt, fs=32,
+            eq4b_txt, font_size=32,
         )
-        eq4c = self._eq(
+        eq4c = self.panel_eq(
             r"\angle Q \approx 33{,}2^{\circ}",
-            eq4b, color=HIGHLIGHT_COLOR, fs=36, key=True,
+            eq4b, color=HIGHLIGHT_COLOR, font_size=36, key=True,
         )
 
         # Fade altitude before showing angle Q arc (they overlap at vertex Q)
@@ -612,7 +569,7 @@ class Ushtrimi4(ExerciseScene):
         ang_Q_arc = self.angle_arc(Q, P, R, radius=0.25, color=HIGHLIGHT_COLOR)
         ang_Q_lbl = MathTex("33{,}2^{\\circ}", font_size=18, color=HIGHLIGHT_COLOR)
         ang_Q_lbl.move_to(self.angle_label_pos(Q, P, R, 0.85))
-        self._transfer_value(eq4c, VGroup(ang_Q_arc, ang_Q_lbl))
+        self.transfer_value(eq4c, VGroup(ang_Q_arc, ang_Q_lbl))
         self.wait(2)
 
         # ── Clear right panel + divider ──

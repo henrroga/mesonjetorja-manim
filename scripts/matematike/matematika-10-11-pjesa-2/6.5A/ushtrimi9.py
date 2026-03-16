@@ -32,49 +32,6 @@ class Ushtrimi9(ExerciseScene):
     unit = "6.5A"
     parts = ["a", "b", "c", "d", "e", "f"]
 
-    # ── Right-panel alignment helpers (all centered at x = PX) ──
-
-    def _title(self, text, ref=None, y_pos=None, buff=0.5):
-        t = MathTex(
-            r"\text{" + text + r"}",
-            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
-        )
-        if y_pos is not None:
-            t.move_to(np.array([PX, y_pos, 0]))
-        elif ref is not None:
-            t.next_to(ref, DOWN, buff=buff)
-            t.set_x(PX)
-        self.play(FadeIn(t), run_time=T_STEP_TITLE)
-        return t
-
-    def _text(self, lines, ref, buff=0.25):
-        parts = [MathTex(l, font_size=BODY_SIZE, color=BODY_TEXT_COLOR) for l in lines]
-        g = VGroup(*parts).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
-        g.next_to(ref, DOWN, buff=buff)
-        g.set_x(PX)
-        self.play(FadeIn(g), run_time=T_BODY_FADE)
-        return g
-
-    def _eq(self, tex, ref, buff=0.25, color=None, fs=None, key=False):
-        eq = MathTex(tex, font_size=fs or CALC_SIZE)
-        if color:
-            eq.set_color(color)
-        eq.next_to(ref, DOWN, buff=buff)
-        eq.set_x(PX)
-        self.play(Write(eq), run_time=T_KEY_EQUATION if key else T_ROUTINE_EQUATION)
-        self.wait(W_AFTER_KEY if key else 0.6)
-        return eq
-
-    def _transfer_value(self, source_eq, target_mob):
-        """Animate a value 'flying' from the right panel to the figure."""
-        ghost = source_eq.copy()
-        self.play(
-            ghost.animate.move_to(target_mob).scale(0.65).set_opacity(0),
-            FadeIn(target_mob),
-            run_time=0.8,
-        )
-        self.remove(ghost)
-
     # ================================================================
     #  GRAPH BUILDER — circle + line, NO dots yet (dots come from algebra)
     # ================================================================
@@ -152,9 +109,9 @@ class Ushtrimi9(ExerciseScene):
         self.wait(0.5)
 
         # ── Step 1: Substitution ──
-        s1t = self._title("Hapi 1: Zevendesimi", y_pos=3.2)
+        s1t = self.panel_title("Hapi 1: Zevendesimi", y_pos=3.2)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Zevendesojme } y = x + 1",
             r"\text{ne ekuacionin e rrethit:}",
         ], s1t)
@@ -164,14 +121,14 @@ class Ushtrimi9(ExerciseScene):
         line_mob = graph_group[3]  # line is 4th element
         self.play(Indicate(line_mob, color=YELLOW, scale_factor=1.05), run_time=0.5)
 
-        s1eq = self._eq(r"x^2 + (x+1)^2 = 25", s1txt, key=True)
+        s1eq = self.panel_eq(r"x^2 + (x+1)^2 = 25", s1txt, key=True)
 
         # ── Step 2: Expand & simplify ──
-        s2t = self._title("Hapi 2: Thjeshtimi", ref=s1eq)
+        s2t = self.panel_title("Hapi 2: Thjeshtimi", ref=s1eq)
 
-        s2eq1 = self._eq(r"x^2 + x^2 + 2x + 1 = 25", s2t)
-        s2eq2 = self._eq(r"2x^2 + 2x - 24 = 0", s2eq1)
-        s2eq3 = self._eq(r"x^2 + x - 12 = 0", s2eq2, color=LABEL_COLOR, key=True)
+        s2eq1 = self.panel_eq(r"x^2 + x^2 + 2x + 1 = 25", s2t)
+        s2eq2 = self.panel_eq(r"2x^2 + 2x - 24 = 0", s2eq1)
+        s2eq3 = self.panel_eq(r"x^2 + x - 12 = 0", s2eq2, color=LABEL_COLOR, key=True)
         self.wait(1.5)
 
         # ── Clear right panel for next steps ──
@@ -180,20 +137,20 @@ class Ushtrimi9(ExerciseScene):
         self.wait(0.5)
 
         # ── Step 3: Factor ──
-        s3t = self._title("Hapi 3: Faktorizimi", y_pos=3.2)
+        s3t = self.panel_title("Hapi 3: Faktorizimi", y_pos=3.2)
 
-        s3eq1 = self._eq(r"x^2 + x - 12 = 0", s3t)
-        s3eq2 = self._eq(r"(x - 3)(x + 4) = 0", s3eq1, color=LABEL_COLOR, key=True)
-        s3eq3 = self._eq(
+        s3eq1 = self.panel_eq(r"x^2 + x - 12 = 0", s3t)
+        s3eq2 = self.panel_eq(r"(x - 3)(x + 4) = 0", s3eq1, color=LABEL_COLOR, key=True)
+        s3eq3 = self.panel_eq(
             r"x_1 = 3 \qquad x_2 = -4",
-            s3eq2, color=ANSWER_COLOR, fs=CALC_SIZE + 2, key=True,
+            s3eq2, color=ANSWER_COLOR, font_size=CALC_SIZE + 2, key=True,
         )
         self.wait(1.5)
 
         # ── Step 4: Find y values ──
-        s4t = self._title("Hapi 4: Gjejme y", ref=s3eq3)
+        s4t = self.panel_title("Hapi 4: Gjejme y", ref=s3eq3)
 
-        s4eq1 = self._eq(r"y_1 = 3 + 1 = 4", s4t)
+        s4eq1 = self.panel_eq(r"y_1 = 3 + 1 = 4", s4t)
 
         # Flash the line equation on graph as reminder
         self.play(Indicate(line_mob, color=YELLOW, scale_factor=1.05), run_time=0.4)
@@ -203,17 +160,17 @@ class Ushtrimi9(ExerciseScene):
                                       color=LABEL_COLOR, direction=UR)
         pt1_group = VGroup(dot1, lbl1)
         # Shift to match graph position (graph was shifted left)
-        self._transfer_value(s4eq1, pt1_group)
+        self.transfer_value(s4eq1, pt1_group)
         self.play(Indicate(dot1, color=YELLOW, scale_factor=1.5), run_time=0.5)
         self.wait(1.0)
 
-        s4eq2 = self._eq(r"y_2 = -4 + 1 = -3", s4eq1)
+        s4eq2 = self.panel_eq(r"y_2 = -4 + 1 = -3", s4eq1)
 
         # SECOND INTERSECTION: transfer dot (-4, -3) to graph
         dot2, lbl2 = self.mark_point(axes, -4, -3, "(-4,\\,-3)",
                                       color=HIGHLIGHT_COLOR, direction=DL)
         pt2_group = VGroup(dot2, lbl2)
-        self._transfer_value(s4eq2, pt2_group)
+        self.transfer_value(s4eq2, pt2_group)
         self.play(Indicate(dot2, color=YELLOW, scale_factor=1.5), run_time=0.5)
         self.wait(1.5)
 
@@ -223,7 +180,7 @@ class Ushtrimi9(ExerciseScene):
         self.wait(0.5)
 
         # ── Answer ──
-        ans_title = self._title("Pergjigja:", y_pos=1.0)
+        ans_title = self.panel_title("Pergjigja:", y_pos=1.0)
         ans_eq = MathTex(
             r"(3,\,4) \quad \text{dhe} \quad (-4,\,-3)",
             font_size=ANSWER_SIZE, color=ANSWER_COLOR,
@@ -270,22 +227,22 @@ class Ushtrimi9(ExerciseScene):
         line_mob = graph_group[3]
 
         # ── Substitution + simplification ──
-        s1t = self._title("Zevendesimi dhe thjeshtimi", y_pos=3.2)
+        s1t = self.panel_title("Zevendesimi dhe thjeshtimi", y_pos=3.2)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Zevendesojme } y = 2x - 5\text{:}",
         ], s1t)
         self.wait(1.0)
 
         self.play(Indicate(line_mob, color=YELLOW, scale_factor=1.05), run_time=0.4)
 
-        s1eq1 = self._eq(r"x^2 + (2x-5)^2 = 25", s1txt, key=True)
-        s1eq2 = self._eq(r"x^2 + 4x^2 - 20x + 25 = 25", s1eq1)
-        s1eq3 = self._eq(r"5x^2 - 20x = 0", s1eq2, color=LABEL_COLOR)
-        s1eq4 = self._eq(r"5x(x - 4) = 0", s1eq3)
-        s1eq5 = self._eq(
+        s1eq1 = self.panel_eq(r"x^2 + (2x-5)^2 = 25", s1txt, key=True)
+        s1eq2 = self.panel_eq(r"x^2 + 4x^2 - 20x + 25 = 25", s1eq1)
+        s1eq3 = self.panel_eq(r"5x^2 - 20x = 0", s1eq2, color=LABEL_COLOR)
+        s1eq4 = self.panel_eq(r"5x(x - 4) = 0", s1eq3)
+        s1eq5 = self.panel_eq(
             r"x_1 = 0 \qquad x_2 = 4",
-            s1eq4, color=ANSWER_COLOR, fs=CALC_SIZE + 2, key=True,
+            s1eq4, color=ANSWER_COLOR, font_size=CALC_SIZE + 2, key=True,
         )
         self.wait(1.5)
 
@@ -295,23 +252,23 @@ class Ushtrimi9(ExerciseScene):
         self.wait(0.5)
 
         # ── Find y + transfer dots ──
-        s2t = self._title("Gjejme y:", y_pos=3.2)
+        s2t = self.panel_title("Gjejme y:", y_pos=3.2)
 
-        s2eq1 = self._eq(r"y_1 = 2(0) - 5 = -5", s2t)
+        s2eq1 = self.panel_eq(r"y_1 = 2(0) - 5 = -5", s2t)
 
         # Transfer first dot
         dot1, lbl1 = self.mark_point(axes, 0, -5, "(0,\\,-5)",
                                       color=LABEL_COLOR, direction=DL)
-        self._transfer_value(s2eq1, VGroup(dot1, lbl1))
+        self.transfer_value(s2eq1, VGroup(dot1, lbl1))
         self.play(Indicate(dot1, color=YELLOW, scale_factor=1.5), run_time=0.5)
         self.wait(0.8)
 
-        s2eq2 = self._eq(r"y_2 = 2(4) - 5 = 3", s2eq1)
+        s2eq2 = self.panel_eq(r"y_2 = 2(4) - 5 = 3", s2eq1)
 
         # Transfer second dot
         dot2, lbl2 = self.mark_point(axes, 4, 3, "(4,\\,3)",
                                       color=HIGHLIGHT_COLOR, direction=UR)
-        self._transfer_value(s2eq2, VGroup(dot2, lbl2))
+        self.transfer_value(s2eq2, VGroup(dot2, lbl2))
         self.play(Indicate(dot2, color=YELLOW, scale_factor=1.5), run_time=0.5)
         self.wait(1.5)
 
@@ -320,7 +277,7 @@ class Ushtrimi9(ExerciseScene):
         self.play(FadeOut(calc2), run_time=T_TRANSITION)
         self.wait(0.3)
 
-        ans_title = self._title("Pergjigja:", y_pos=1.0)
+        ans_title = self.panel_title("Pergjigja:", y_pos=1.0)
         ans_eq = MathTex(
             r"(0,\,-5) \quad \text{dhe} \quad (4,\,3)",
             font_size=ANSWER_SIZE, color=ANSWER_COLOR,
@@ -364,21 +321,21 @@ class Ushtrimi9(ExerciseScene):
         line_mob = graph_group[3]
 
         # ── Algebra ──
-        s1t = self._title("Zevendesimi dhe thjeshtimi", y_pos=3.2)
+        s1t = self.panel_title("Zevendesimi dhe thjeshtimi", y_pos=3.2)
 
-        s1txt = self._text([
+        s1txt = self.panel_text([
             r"\text{Zevendesojme } y = -\tfrac{3}{4}\,x\text{:}",
         ], s1t)
         self.wait(1.0)
 
         self.play(Indicate(line_mob, color=YELLOW, scale_factor=1.05), run_time=0.4)
 
-        s1eq1 = self._eq(r"x^2 + \frac{9}{16}x^2 = 100", s1txt, key=True)
-        s1eq2 = self._eq(r"\frac{25}{16}x^2 = 100", s1eq1)
-        s1eq3 = self._eq(r"x^2 = 64", s1eq2, color=LABEL_COLOR)
-        s1eq4 = self._eq(
+        s1eq1 = self.panel_eq(r"x^2 + \frac{9}{16}x^2 = 100", s1txt, key=True)
+        s1eq2 = self.panel_eq(r"\frac{25}{16}x^2 = 100", s1eq1)
+        s1eq3 = self.panel_eq(r"x^2 = 64", s1eq2, color=LABEL_COLOR)
+        s1eq4 = self.panel_eq(
             r"x = \pm 8",
-            s1eq3, color=ANSWER_COLOR, fs=CALC_SIZE + 2, key=True,
+            s1eq3, color=ANSWER_COLOR, font_size=CALC_SIZE + 2, key=True,
         )
         self.wait(1.5)
 
@@ -388,21 +345,21 @@ class Ushtrimi9(ExerciseScene):
         self.wait(0.5)
 
         # ── Find y + transfer dots ──
-        s2t = self._title("Gjejme y:", y_pos=3.2)
+        s2t = self.panel_title("Gjejme y:", y_pos=3.2)
 
-        s2eq1 = self._eq(r"y_1 = -\frac{3}{4}(8) = -6", s2t)
+        s2eq1 = self.panel_eq(r"y_1 = -\frac{3}{4}(8) = -6", s2t)
 
         dot1, lbl1 = self.mark_point(axes, 8, -6, "(8,\\,-6)",
                                       color=LABEL_COLOR, direction=DR)
-        self._transfer_value(s2eq1, VGroup(dot1, lbl1))
+        self.transfer_value(s2eq1, VGroup(dot1, lbl1))
         self.play(Indicate(dot1, color=YELLOW, scale_factor=1.5), run_time=0.5)
         self.wait(0.8)
 
-        s2eq2 = self._eq(r"y_2 = -\frac{3}{4}(-8) = 6", s2eq1)
+        s2eq2 = self.panel_eq(r"y_2 = -\frac{3}{4}(-8) = 6", s2eq1)
 
         dot2, lbl2 = self.mark_point(axes, -8, 6, "(-8,\\,6)",
                                       color=HIGHLIGHT_COLOR, direction=UL)
-        self._transfer_value(s2eq2, VGroup(dot2, lbl2))
+        self.transfer_value(s2eq2, VGroup(dot2, lbl2))
         self.play(Indicate(dot2, color=YELLOW, scale_factor=1.5), run_time=0.5)
         self.wait(1.5)
 
@@ -411,7 +368,7 @@ class Ushtrimi9(ExerciseScene):
         self.play(FadeOut(calc2), run_time=T_TRANSITION)
         self.wait(0.3)
 
-        ans_title = self._title("Pergjigja:", y_pos=1.0)
+        ans_title = self.panel_title("Pergjigja:", y_pos=1.0)
         ans_eq = MathTex(
             r"(8,\,-6) \quad \text{dhe} \quad (-8,\,6)",
             font_size=ANSWER_SIZE, color=ANSWER_COLOR,
@@ -455,23 +412,23 @@ class Ushtrimi9(ExerciseScene):
         line_mob = graph_group[3]
 
         # ── Condensed algebra ──
-        s1t = self._title("Zevendesimi:", y_pos=3.2)
+        s1t = self.panel_title("Zevendesimi:", y_pos=3.2)
 
         self.play(Indicate(line_mob, color=YELLOW, scale_factor=1.05), run_time=0.4)
 
-        s1eq1 = self._eq(r"x^2 + (3x-3)^2 = 169", s1t, key=True)
-        s1eq2 = self._eq(r"10x^2 - 18x - 160 = 0", s1eq1)
-        s1eq3 = self._eq(r"5x^2 - 9x - 80 = 0", s1eq2, color=LABEL_COLOR, key=True)
-        s1eq4 = self._eq(
+        s1eq1 = self.panel_eq(r"x^2 + (3x-3)^2 = 169", s1t, key=True)
+        s1eq2 = self.panel_eq(r"10x^2 - 18x - 160 = 0", s1eq1)
+        s1eq3 = self.panel_eq(r"5x^2 - 9x - 80 = 0", s1eq2, color=LABEL_COLOR, key=True)
+        s1eq4 = self.panel_eq(
             r"x_1 = 5 \qquad x_2 = -3{,}2",
-            s1eq3, color=ANSWER_COLOR, fs=CALC_SIZE + 2, key=True,
+            s1eq3, color=ANSWER_COLOR, font_size=CALC_SIZE + 2, key=True,
         )
         self.wait(1.0)
 
         # Transfer first dot immediately
         dot1, lbl1 = self.mark_point(axes, 5, 12, "(5,\\,12)",
                                       color=LABEL_COLOR, direction=UR)
-        self._transfer_value(s1eq4, VGroup(dot1, lbl1))
+        self.transfer_value(s1eq4, VGroup(dot1, lbl1))
         self.wait(0.5)
 
         # ── Clear + find y ──
@@ -479,16 +436,16 @@ class Ushtrimi9(ExerciseScene):
         self.play(FadeOut(calc1), run_time=T_TRANSITION)
         self.wait(0.3)
 
-        s2t = self._title("Gjejme y:", y_pos=3.2)
+        s2t = self.panel_title("Gjejme y:", y_pos=3.2)
 
-        s2eq1 = self._eq(r"y_1 = 3(5) - 3 = 12", s2t)
-        s2eq2 = self._eq(r"y_2 = 3(-3{,}2) - 3 = -12{,}6", s2eq1)
+        s2eq1 = self.panel_eq(r"y_1 = 3(5) - 3 = 12", s2t)
+        s2eq2 = self.panel_eq(r"y_2 = 3(-3{,}2) - 3 = -12{,}6", s2eq1)
 
         # Transfer second dot
         dot2, lbl2 = self.mark_point(axes, -3.2, -12.6, "(-3{,}2;\\,-12{,}6)",
                                       color=HIGHLIGHT_COLOR, direction=DL,
                                       font_size=20)
-        self._transfer_value(s2eq2, VGroup(dot2, lbl2))
+        self.transfer_value(s2eq2, VGroup(dot2, lbl2))
         self.play(Indicate(dot2, color=YELLOW, scale_factor=1.5), run_time=0.5)
         self.wait(1.0)
 
@@ -497,7 +454,7 @@ class Ushtrimi9(ExerciseScene):
         self.play(FadeOut(calc2), run_time=T_TRANSITION)
         self.wait(0.3)
 
-        ans_title = self._title("Pergjigja:", y_pos=1.0)
+        ans_title = self.panel_title("Pergjigja:", y_pos=1.0)
         ans_eq = MathTex(
             r"(5,\,12) \quad \text{dhe} \quad (-3{,}2;\;-12{,}6)",
             font_size=ANSWER_SIZE - 2, color=ANSWER_COLOR,
@@ -541,16 +498,16 @@ class Ushtrimi9(ExerciseScene):
         line_mob = graph_group[3]
 
         # ── Quick algebra ──
-        s1t = self._title("Zevendesimi:", y_pos=3.2)
+        s1t = self.panel_title("Zevendesimi:", y_pos=3.2)
 
         self.play(Indicate(line_mob, color=YELLOW, scale_factor=1.05), run_time=0.4)
 
-        s1eq1 = self._eq(r"x^2 + (x-2)^2 = 36", s1t, key=True)
-        s1eq2 = self._eq(r"2x^2 - 4x - 32 = 0", s1eq1)
-        s1eq3 = self._eq(r"x^2 - 2x - 16 = 0", s1eq2, color=LABEL_COLOR)
-        s1eq4 = self._eq(
+        s1eq1 = self.panel_eq(r"x^2 + (x-2)^2 = 36", s1t, key=True)
+        s1eq2 = self.panel_eq(r"2x^2 - 4x - 32 = 0", s1eq1)
+        s1eq3 = self.panel_eq(r"x^2 - 2x - 16 = 0", s1eq2, color=LABEL_COLOR)
+        s1eq4 = self.panel_eq(
             r"x = 1 \pm \sqrt{17}",
-            s1eq3, color=ANSWER_COLOR, fs=CALC_SIZE + 2, key=True,
+            s1eq3, color=ANSWER_COLOR, font_size=CALC_SIZE + 2, key=True,
         )
         self.wait(1.0)
 
@@ -564,22 +521,22 @@ class Ushtrimi9(ExerciseScene):
         x2 = 1 - np.sqrt(17)
         y2 = x2 - 2
 
-        s2t = self._title("Gjejme y:", y_pos=3.2)
+        s2t = self.panel_title("Gjejme y:", y_pos=3.2)
 
-        s2eq1 = self._eq(r"y_1 = 5{,}12 - 2 = 3{,}12", s2t)
+        s2eq1 = self.panel_eq(r"y_1 = 5{,}12 - 2 = 3{,}12", s2t)
 
         dot1, lbl1 = self.mark_point(axes, x1, y1, "(5{,}12;\\,3{,}12)",
                                       color=LABEL_COLOR, direction=UR,
                                       font_size=20)
-        self._transfer_value(s2eq1, VGroup(dot1, lbl1))
+        self.transfer_value(s2eq1, VGroup(dot1, lbl1))
         self.wait(0.5)
 
-        s2eq2 = self._eq(r"y_2 = -3{,}12 - 2 = -5{,}12", s2eq1)
+        s2eq2 = self.panel_eq(r"y_2 = -3{,}12 - 2 = -5{,}12", s2eq1)
 
         dot2, lbl2 = self.mark_point(axes, x2, y2, "(-3{,}12;\\,-5{,}12)",
                                       color=HIGHLIGHT_COLOR, direction=DL,
                                       font_size=20)
-        self._transfer_value(s2eq2, VGroup(dot2, lbl2))
+        self.transfer_value(s2eq2, VGroup(dot2, lbl2))
         self.wait(1.0)
 
         # ── Clear + answer ──
@@ -587,7 +544,7 @@ class Ushtrimi9(ExerciseScene):
         self.play(FadeOut(calc2), run_time=T_TRANSITION)
         self.wait(0.3)
 
-        ans_title = self._title("Pergjigja:", y_pos=1.0)
+        ans_title = self.panel_title("Pergjigja:", y_pos=1.0)
         ans_eq = MathTex(
             r"(5{,}12;\;3{,}12) \quad \text{dhe} \quad (-3{,}12;\;-5{,}12)",
             font_size=ANSWER_SIZE - 4, color=ANSWER_COLOR,
@@ -631,15 +588,15 @@ class Ushtrimi9(ExerciseScene):
         line_mob = graph_group[3]
 
         # ── Quick algebra ──
-        s1t = self._title("Zevendesimi:", y_pos=3.2)
+        s1t = self.panel_title("Zevendesimi:", y_pos=3.2)
 
         self.play(Indicate(line_mob, color=YELLOW, scale_factor=1.05), run_time=0.4)
 
-        s1eq1 = self._eq(r"x^2 + (2x+1)^2 = 4", s1t, key=True)
-        s1eq2 = self._eq(r"5x^2 + 4x - 3 = 0", s1eq1, color=LABEL_COLOR)
-        s1eq3 = self._eq(
+        s1eq1 = self.panel_eq(r"x^2 + (2x+1)^2 = 4", s1t, key=True)
+        s1eq2 = self.panel_eq(r"5x^2 + 4x - 3 = 0", s1eq1, color=LABEL_COLOR)
+        s1eq3 = self.panel_eq(
             r"x = \frac{-4 \pm \sqrt{76}}{10}",
-            s1eq2, color=ANSWER_COLOR, fs=CALC_SIZE + 2, key=True,
+            s1eq2, color=ANSWER_COLOR, font_size=CALC_SIZE + 2, key=True,
         )
         self.wait(1.0)
 
@@ -653,24 +610,24 @@ class Ushtrimi9(ExerciseScene):
         x2_val = (-4 - np.sqrt(76)) / 10
         y2_val = 2 * x2_val + 1
 
-        s2t = self._title("Gjejme y:", y_pos=3.2)
+        s2t = self.panel_title("Gjejme y:", y_pos=3.2)
 
-        s2eq1 = self._eq(r"y_1 = 2(0{,}47) + 1 = 1{,}94", s2t)
+        s2eq1 = self.panel_eq(r"y_1 = 2(0{,}47) + 1 = 1{,}94", s2t)
 
         dot1, lbl1 = self.mark_point(axes, x1_val, y1_val,
                                       "(0{,}47;\\,1{,}94)",
                                       color=LABEL_COLOR, direction=UR,
                                       font_size=20)
-        self._transfer_value(s2eq1, VGroup(dot1, lbl1))
+        self.transfer_value(s2eq1, VGroup(dot1, lbl1))
         self.wait(0.5)
 
-        s2eq2 = self._eq(r"y_2 = 2(-1{,}27) + 1 = -1{,}54", s2eq1)
+        s2eq2 = self.panel_eq(r"y_2 = 2(-1{,}27) + 1 = -1{,}54", s2eq1)
 
         dot2, lbl2 = self.mark_point(axes, x2_val, y2_val,
                                       "(-1{,}27;\\,-1{,}54)",
                                       color=HIGHLIGHT_COLOR, direction=DL,
                                       font_size=20)
-        self._transfer_value(s2eq2, VGroup(dot2, lbl2))
+        self.transfer_value(s2eq2, VGroup(dot2, lbl2))
         self.wait(1.0)
 
         # ── Clear + answer ──
@@ -678,7 +635,7 @@ class Ushtrimi9(ExerciseScene):
         self.play(FadeOut(calc2), run_time=T_TRANSITION)
         self.wait(0.3)
 
-        ans_title = self._title("Pergjigja:", y_pos=1.0)
+        ans_title = self.panel_title("Pergjigja:", y_pos=1.0)
         ans_eq = MathTex(
             r"(0{,}47;\;1{,}94) \quad \text{dhe} \quad (-1{,}27;\;-1{,}54)",
             font_size=ANSWER_SIZE - 4, color=ANSWER_COLOR,
