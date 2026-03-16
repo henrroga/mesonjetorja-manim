@@ -6,300 +6,622 @@ from manim import *
 import numpy as np
 from components import ExerciseScene
 from style_guide import (
-    make_answer_box, fade_all,
+    make_answer_box, make_divider, fade_all,
     STEP_TITLE_COLOR, BODY_TEXT_COLOR, LABEL_COLOR,
     ANSWER_COLOR, SHAPE_COLOR, AUX_COLOR, HIGHLIGHT_COLOR, DIVIDER_COLOR,
-    BODY_SIZE, CALC_SIZE, ANSWER_SIZE, STEP_TITLE_SIZE,
+    PART_HEADER_SIZE, STEP_TITLE_SIZE,
+    BODY_SIZE, CALC_SIZE, ANSWER_SIZE,
     T_STEP_TITLE, T_BODY_FADE, T_KEY_EQUATION, T_ROUTINE_EQUATION,
     T_SHAPE_CREATE, T_LAYOUT_SHIFT, T_TRANSITION,
     W_AFTER_KEY, W_AFTER_ROUTINE, W_AFTER_ANSWER, W_PROBLEM,
-    CALC_TOP,
+    CALC_TOP, PX,
 )
 
 
 class Ushtrimi7(ExerciseScene):
     """
-    Ushtrimi 7 — Njësia 6.5A
+    Ushtrimi 7 — Njesia 6.5A
     Matematika 10-11: Pjesa II
 
-    Tangjente ndaj rrethit x² + y² = 100 në pika të dhëna.
+    Gjeni ekuacionin e tangjentes ndaj rrethit x^2 + y^2 = 100
+    ne pikat (6,8), (8,6), (10,0).
+
+    Visual storytelling — no voiceover.
+    Every computed value animates onto the figure.
+    Perpendicularity of radius and tangent shown visually.
     """
 
     exercise_number = 7
     unit = "6.5A"
     parts = ["a", "b", "c"]
 
-    def construct(self):
-        from style_guide import apply_style
-        apply_style(self)
+    # ── Right-panel alignment helpers (all centered at x = PX) ──
 
-        self.title_screen()
-
-        # Extra intro step before parts
-        self.intro_method()
-        fade_all(self)
-        self.wait(1.0)
-
-        for part_name in self.parts:
-            getattr(self, f"part_{part_name}")()
-            fade_all(self)
-            self.wait(1.0)
-
-        self.final_summary()
-        self.wait(W_AFTER_ANSWER)
-
-    # ================================================================
-    #  INTRO — explain the tangent method
-    # ================================================================
-    def intro_method(self):
-        prob_title = MathTex(
-            r"\text{Problemi:}",
-            font_size=STEP_TITLE_SIZE + 2,
-            color=STEP_TITLE_COLOR,
+    def _title(self, text, ref=None, y_pos=None, buff=0.5):
+        t = MathTex(
+            r"\text{" + text + r"}",
+            font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
         )
-        prob_line1 = MathTex(
-            r"\text{Një rreth ka ekuacionin } x^2 + y^2 = 100.",
-            font_size=BODY_SIZE,
-            color=BODY_TEXT_COLOR,
+        if y_pos is not None:
+            t.move_to(np.array([PX, y_pos, 0]))
+        elif ref is not None:
+            t.next_to(ref, DOWN, buff=buff)
+            t.set_x(PX)
+        self.play(FadeIn(t), run_time=T_STEP_TITLE)
+        return t
+
+    def _text(self, lines, ref, buff=0.25):
+        parts = [MathTex(l, font_size=BODY_SIZE, color=BODY_TEXT_COLOR) for l in lines]
+        g = VGroup(*parts).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
+        g.next_to(ref, DOWN, buff=buff)
+        g.set_x(PX)
+        self.play(FadeIn(g), run_time=T_BODY_FADE)
+        return g
+
+    def _eq(self, tex, ref, buff=0.25, color=None, fs=None, key=False):
+        eq = MathTex(tex, font_size=fs or CALC_SIZE)
+        if color:
+            eq.set_color(color)
+        eq.next_to(ref, DOWN, buff=buff)
+        eq.set_x(PX)
+        self.play(Write(eq), run_time=T_KEY_EQUATION if key else T_ROUTINE_EQUATION)
+        self.wait(W_AFTER_KEY if key else 0.6)
+        return eq
+
+    def _transfer_value(self, source_eq, target_mob):
+        """Animate a value 'flying' from the right panel to the figure."""
+        ghost = source_eq.copy()
+        self.play(
+            ghost.animate.move_to(target_mob).scale(0.65).set_opacity(0),
+            FadeIn(target_mob),
+            run_time=0.8,
         )
-        prob_line2 = MathTex(
-            r"\text{Shkruani ekuacionin e tangjentes në pikat}",
-            font_size=BODY_SIZE,
-            color=BODY_TEXT_COLOR,
-        )
-        prob_line3 = MathTex(
-            r"(6,\,8),\quad (8,\,6),\quad (10,\,0).",
-            font_size=BODY_SIZE,
-            color=LABEL_COLOR,
-        )
-        prob_group = VGroup(prob_title, prob_line1, prob_line2, prob_line3)
-        prob_group.arrange(DOWN, buff=0.3).move_to(UP * 1.2)
+        self.remove(ghost)
 
-        self.play(FadeIn(prob_title), run_time=T_STEP_TITLE)
-        self.play(FadeIn(prob_line1), run_time=T_BODY_FADE)
-        self.play(FadeIn(prob_line2), run_time=T_BODY_FADE)
-        self.play(FadeIn(prob_line3), run_time=T_BODY_FADE)
-        self.wait(W_PROBLEM)
+    # ── Graph builder ──
 
-        # Fade out problem before showing method
-        self.play(FadeOut(prob_group), run_time=T_TRANSITION)
-        self.wait(0.5)
-
-        # Method explanation
-        m_title = MathTex(
-            r"\text{Metoda:}",
-            font_size=STEP_TITLE_SIZE,
-            color=STEP_TITLE_COLOR,
-        )
-        m_title.move_to(UP * 2.5)
-
-        eq_radius = MathTex(
-            r"m_{\text{rreze}} = \frac{y_P - 0}{x_P - 0} = \frac{y_P}{x_P}",
-            font_size=CALC_SIZE,
-        )
-        eq_radius.next_to(m_title, DOWN, buff=0.4)
-
-        eq_tangent = MathTex(
-            r"m_{\text{tang}} = -\frac{1}{m_{\text{rreze}}} = -\frac{x_P}{y_P}",
-            font_size=CALC_SIZE,
-            color=LABEL_COLOR,
-        )
-        eq_tangent.next_to(eq_radius, DOWN, buff=0.3)
-
-        m3_txt = MathTex(
-            r"\text{sepse rrezja} \perp \text{tangjentes}",
-            font_size=BODY_SIZE,
-            color=BODY_TEXT_COLOR,
-        )
-        m3_txt.next_to(eq_tangent, DOWN, buff=0.3)
-
-        self.play(FadeIn(m_title), run_time=T_STEP_TITLE)
-        self.wait(0.5)
-        self.play(Write(eq_radius), run_time=T_KEY_EQUATION)
-        self.wait(W_AFTER_ROUTINE)
-        self.play(Write(eq_tangent), run_time=T_KEY_EQUATION)
-        self.wait(2.0)
-        self.play(FadeIn(m3_txt), run_time=T_BODY_FADE)
-        self.wait(W_AFTER_KEY)
-
-    # ================================================================
-    #  HELPER: build tangent graph
-    # ================================================================
-    def _build_tangent_graph(self, point, tangent_func=None, tangent_range=None,
-                              tangent_dashed=False, tangent_label=None):
-        """Build circle graph with radius + tangent at a point."""
+    def _build_graph(self, px, py, show_tangent=False, tangent_func=None,
+                     tangent_range=None, vertical_tangent=False):
+        """
+        Build the circle x^2+y^2=100 on axes with the tangent point marked
+        and radius drawn. Returns (axes, graph_group, radius_line, dot, dot_label).
+        Tangent line is NOT drawn here — it will be animated later.
+        """
         axes = Axes(
-            x_range=[-12, 14, 2], y_range=[-12, 14, 2],
+            x_range=[-13, 14, 2], y_range=[-13, 14, 2],
             x_length=5.5, y_length=5.5,
-            axis_config={"include_tip": True, "include_numbers": True,
-                         "font_size": 16, "color": DIVIDER_COLOR},
+            axis_config={
+                "include_tip": True, "include_numbers": True,
+                "font_size": 16, "color": DIVIDER_COLOR,
+            },
         )
         axes_labels = axes.get_axis_labels(x_label="x", y_label="y")
         circle = self.plot_circle(axes, 10)
 
-        px, py = point
-        radius = Line(axes.c2p(0, 0), axes.c2p(px, py),
-                       color=HIGHLIGHT_COLOR, stroke_width=2.5)
-        dot_p, lbl_p = self.mark_point(axes, px, py,
-                                        f"({px},\\,{py})",
-                                        color=LABEL_COLOR,
-                                        direction=UR if py > 0 else DR)
+        # Origin dot
+        origin_dot = Dot(axes.c2p(0, 0), color=WHITE, radius=0.05)
 
-        elements = [axes, axes_labels, circle, radius, dot_p, lbl_p]
+        # Tangent point
+        dot_dir = UR
+        if py == 0:
+            dot_dir = DR
+        dot_p = Dot(axes.c2p(px, py), color=LABEL_COLOR, radius=0.1)
+        lbl_p = MathTex(
+            f"({px},\\,{py})", font_size=22, color=LABEL_COLOR,
+        )
+        lbl_p.next_to(dot_p, dot_dir, buff=0.15)
 
-        if tangent_dashed:
-            tangent = DashedLine(
-                axes.c2p(px, -11), axes.c2p(px, 11),
-                color=AUX_COLOR, stroke_width=2.5, dash_length=0.1,
-            )
-            elements.append(tangent)
-            if tangent_label:
-                tang_lbl = MathTex(tangent_label, font_size=22, color=AUX_COLOR)
-                tang_lbl.next_to(tangent, RIGHT, buff=0.15).shift(UP * 2)
-                elements.append(tang_lbl)
-        elif tangent_func:
-            tangent = axes.plot(tangent_func, x_range=tangent_range or [-1, 13],
-                                color=AUX_COLOR, stroke_width=2.5)
-            elements.append(tangent)
+        # Radius line from origin to tangent point
+        radius_line = Line(
+            axes.c2p(0, 0), axes.c2p(px, py),
+            color=HIGHLIGHT_COLOR, stroke_width=2.5,
+        )
 
-        graph_group = VGroup(*elements)
+        graph_group = VGroup(axes, axes_labels, circle, origin_dot,
+                             radius_line, dot_p, lbl_p)
 
+        # Animate: axes first, then circle, then radius + point
         self.play(Create(axes), FadeIn(axes_labels), run_time=T_SHAPE_CREATE)
         self.play(Create(circle), run_time=T_SHAPE_CREATE * 0.8)
-        self.play(Create(radius), FadeIn(dot_p), FadeIn(lbl_p), run_time=T_KEY_EQUATION)
-        if tangent_dashed:
-            extra = [FadeIn(e) for e in elements[6:]]
-        else:
-            extra = [Create(tangent)]
-        self.play(*extra, run_time=T_KEY_EQUATION)
+        self.wait(0.5)
+        self.play(FadeIn(origin_dot), run_time=0.3)
+        self.play(FadeIn(dot_p), FadeIn(lbl_p), run_time=0.5)
+        self.wait(0.5)
+        self.play(Create(radius_line), run_time=T_KEY_EQUATION)
         self.wait(W_AFTER_ROUTINE)
 
-        return graph_group
+        return axes, graph_group, radius_line, dot_p, lbl_p
+
+    def _draw_right_angle_at_tangent(self, axes, px, py, m_radius, graph_group):
+        """
+        Draw a small right-angle mark at the tangent point between
+        the radius direction and the tangent direction.
+        Returns the right-angle mark mobject.
+        """
+        # Tangent point in scene coordinates
+        tp = axes.c2p(px, py)
+        op = axes.c2p(0, 0)
+
+        # Direction from tangent point TOWARD the origin (along radius, inward)
+        rad_vec = np.array(op) - np.array(tp)
+        rad_vec = rad_vec / np.linalg.norm(rad_vec)
+
+        # Tangent direction: perpendicular to radius, pick one
+        tang_vec = np.array([-rad_vec[1], rad_vec[0], 0])
+
+        size = 0.2
+        corner = np.array(tp) + size * rad_vec + size * tang_vec
+        p1 = np.array(tp) + size * rad_vec
+        p2 = np.array(tp) + size * tang_vec
+
+        right_angle = VMobject(color=AUX_COLOR, stroke_width=2)
+        right_angle.set_points_as_corners([p1, corner, p2])
+
+        self.play(Create(right_angle), run_time=0.5)
+        graph_group.add(right_angle)
+        return right_angle
+
+    def _draw_tangent_line(self, axes, tangent_func, tangent_range, graph_group):
+        """Draw the tangent line on the graph and add to group."""
+        tangent = axes.plot(
+            tangent_func, x_range=tangent_range,
+            color=AUX_COLOR, stroke_width=2.5,
+        )
+        self.play(Create(tangent), run_time=T_KEY_EQUATION)
+        graph_group.add(tangent)
+        return tangent
+
+    def _draw_vertical_tangent(self, axes, x_val, graph_group):
+        """Draw a vertical tangent line x = constant."""
+        tangent = DashedLine(
+            axes.c2p(x_val, -12), axes.c2p(x_val, 12),
+            color=AUX_COLOR, stroke_width=2.5, dash_length=0.1,
+        )
+        self.play(Create(tangent), run_time=T_KEY_EQUATION)
+        graph_group.add(tangent)
+        return tangent
 
     # ================================================================
-    #  PART A — tangent at (6, 8)
+    #  PART A — tangent at (6, 8) — FULL DETAIL
     # ================================================================
     def part_a(self):
-        self.show_part_header("a) — Pika (6, 8)")
+        header = self.show_part_header("a")
 
-        graph_group = self._build_tangent_graph(
-            point=(6, 8),
-            tangent_func=lambda x: -0.75 * x + 12.5,
-            tangent_range=[-1, 13],
+        # ── Problem statement ──
+        prob_title = MathTex(
+            r"\text{Gjeni tangjenten ndaj rrethit}",
+            font_size=BODY_SIZE + 4, color=STEP_TITLE_COLOR,
+        )
+        prob_eq = MathTex(
+            r"x^2 + y^2 = 100",
+            font_size=CALC_SIZE + 4,
+        )
+        prob_point = MathTex(
+            r"\text{ne piken } (6,\, 8)",
+            font_size=CALC_SIZE, color=LABEL_COLOR,
+        )
+        self.show_problem(prob_title, prob_eq, prob_point)
+
+        # ── Build graph: circle + radius + tangent point ──
+        axes, graph_group, radius_line, dot_p, lbl_p = self._build_graph(6, 8)
+
+        # ── Shift graph left, add divider ──
+        self.play(graph_group.animate.shift(LEFT * 3.2), run_time=T_LAYOUT_SHIFT)
+        div = make_divider()
+        self.play(FadeIn(div), run_time=0.2)
+        self.wait(0.5)
+
+        # ────────────────────────────────────────
+        # Step 1: Radius slope
+        # ────────────────────────────────────────
+        s1t = self._title("Koeficienti kendor i rrezes", y_pos=3.2)
+
+        # Flash the radius on the figure
+        self.play(Indicate(radius_line, color=YELLOW, scale_factor=1.05), run_time=0.6)
+        self.wait(0.5)
+
+        s1txt = self._text([
+            r"\text{Rrezja lidh qendren } (0,0)",
+            r"\text{me piken } (6,\, 8)\text{:}",
+        ], s1t)
+        self.wait(1.5)
+
+        eq1a = self._eq(
+            r"m = \frac{y_2 - y_1}{x_2 - x_1}",
+            s1txt, fs=30,
         )
 
-        div = self.setup_split_layout(graph_group)
-
-        # Algebra
-        s1 = self.show_step_title("Koef. këndor i rrezes:", position=CALC_TOP)
-
-        eq1 = self.show_equation(r"m = \frac{8}{6} = \frac{4}{3}", reference=s1)
-        self.wait(2.0)
-
-        s2 = MathTex(
-            r"\text{Koef. këndor i tangjentes:}",
-            font_size=BODY_SIZE,
-            color=BODY_TEXT_COLOR,
+        eq1b = self._eq(
+            r"m = \frac{8 - 0}{6 - 0} = \frac{8}{6} = \frac{4}{3}",
+            eq1a, fs=30, key=True,
         )
-        s2.next_to(eq1, DOWN, buff=0.35)
-        self.play(FadeIn(s2), run_time=T_STEP_TITLE)
 
-        eq2 = self.show_equation(
-            r"m' = -\frac{1}{\frac{4}{3}} = -\frac{3}{4}",
-            reference=s2, color=LABEL_COLOR, key=True,
+        # Transfer: label the radius on graph with its slope
+        m_lbl = MathTex(r"m = \tfrac{4}{3}", font_size=20, color=HIGHLIGHT_COLOR)
+        # Place near midpoint of radius
+        rad_mid = (np.array(axes.c2p(0, 0)) + np.array(axes.c2p(6, 8))) / 2
+
+        m_lbl.move_to(rad_mid + np.array([0.35, -0.25, 0]))
+        self._transfer_value(eq1b, m_lbl)
+        self.wait(1.5)
+
+        # ────────────────────────────────────────
+        # Step 2: Perpendicularity + tangent slope
+        # ────────────────────────────────────────
+        # Clear step 1 content
+        calc1 = VGroup(s1t, s1txt, eq1a, eq1b)
+        self.play(FadeOut(calc1), run_time=0.5)
+
+        s2t = self._title("Koeficienti kendor i tangjentes", y_pos=3.2)
+
+        s2txt = self._text([
+            r"\text{Rrezja eshte pingule me tangjenten:}",
+        ], s2t)
+        self.wait(1.5)
+
+        # Show perpendicularity rule
+        eq2a = self._eq(
+            r"m \times m' = -1",
+            s2txt, fs=34, color=STEP_TITLE_COLOR, key=True,
         )
-        self.wait(2.5)
 
-        s3 = MathTex(
-            r"\text{Gjejmë c } (y = m'x + c)\text{:}",
-            font_size=BODY_SIZE,
-            color=BODY_TEXT_COLOR,
+        # Draw right angle mark at tangent point on figure
+        ra_mark = self._draw_right_angle_at_tangent(axes, 6, 8, 4/3, graph_group)
+        self.wait(1.5)
+
+        # Calculate tangent slope step by step
+        eq2b = self._eq(
+            r"m' = -\frac{1}{m} = -\frac{1}{\frac{4}{3}}",
+            eq2a, fs=30,
         )
-        s3.next_to(eq2, DOWN, buff=0.35)
-        self.play(FadeIn(s3), run_time=T_STEP_TITLE)
 
-        eq3 = self.show_equation(r"8 = -\frac{3}{4} \cdot 6 + c", reference=s3)
-        eq4 = self.show_equation(
-            r"c = 8 + \frac{18}{4} = \frac{50}{4} = \frac{25}{2}",
-            reference=eq3,
+        eq2c = self._eq(
+            r"m' = -1 \times \frac{3}{4} = -\frac{3}{4}",
+            eq2b, fs=30, color=LABEL_COLOR, key=True,
         )
-        self.wait(2.0)
+        self.wait(1.5)
 
-        self.show_answer_below(r"y = -\frac{3}{4}x + \frac{25}{2}", eq4, buff=0.4)
+        # ────────────────────────────────────────
+        # Step 3: Find c (y-intercept)
+        # ────────────────────────────────────────
+        # Clear step 2 content
+        calc2 = VGroup(s2t, s2txt, eq2a, eq2b, eq2c)
+        self.play(FadeOut(calc2), run_time=0.5)
+
+        s3t = self._title("Gjejme c (pikeprerjen me Oy)", y_pos=3.2)
+
+        s3txt = self._text([
+            r"\text{Zevendesojme piken } (6,\, 8)",
+            r"\text{ne } y = m'x + c\text{:}",
+        ], s3t)
+        self.wait(1.5)
+
+        # Flash the tangent point on the figure
+        self.play(Indicate(dot_p, color=YELLOW, scale_factor=1.5), run_time=0.5)
+        self.wait(0.5)
+
+        eq3a = self._eq(
+            r"8 = -\frac{3}{4} \cdot 6 + c",
+            s3txt, fs=30,
+        )
+
+        eq3b = self._eq(
+            r"8 = -\frac{18}{4} + c",
+            eq3a, fs=30,
+        )
+
+        eq3c = self._eq(
+            r"c = 8 + \frac{18}{4}",
+            eq3b, fs=30,
+        )
+
+        eq3d = self._eq(
+            r"c = \frac{32}{4} + \frac{18}{4} = \frac{50}{4} = \frac{25}{2}",
+            eq3c, fs=30, key=True,
+        )
+        self.wait(1.5)
+
+        # ────────────────────────────────────────
+        # Step 4: Final tangent equation + draw on graph
+        # ────────────────────────────────────────
+        # Clear step 3 content
+        calc3 = VGroup(s3t, s3txt, eq3a, eq3b, eq3c, eq3d)
+        self.play(FadeOut(calc3), run_time=0.5)
+
+        s4t = self._title("Ekuacioni i tangjentes", y_pos=3.0)
+        self.wait(0.5)
+
+        eq_final = self._eq(
+            r"y = -\frac{3}{4}x + \frac{25}{2}",
+            s4t, fs=ANSWER_SIZE, color=ANSWER_COLOR, key=True,
+        )
+        box = make_answer_box(eq_final)
+        self.play(Create(box), run_time=0.5)
+        self.wait(1.5)
+
+        # Draw tangent line on the graph
+        tangent = axes.plot(
+            lambda x: -0.75 * x + 12.5,
+            x_range=[-4, 12],
+            color=AUX_COLOR, stroke_width=2.5,
+        )
+        self.play(Create(tangent), run_time=T_KEY_EQUATION)
+        graph_group.add(tangent)
+        self.wait(1)
+
+        # Transfer tangent equation label to the graph
+        tang_lbl = MathTex(
+            r"y = -\tfrac{3}{4}x + \tfrac{25}{2}",
+            font_size=18, color=AUX_COLOR,
+        )
+        tang_point = np.array(axes.c2p(1, 12.5 - 0.75))
+        tang_lbl.move_to(tang_point + UP * 0.35 + LEFT * 0.3)
+        self._transfer_value(eq_final, tang_lbl)
+        graph_group.add(tang_lbl)
+        self.wait(3)
+
+        # Fade radius slope label
+        self.play(FadeOut(m_lbl), run_time=0.3)
+        self.wait(1)
 
     # ================================================================
-    #  PART B — tangent at (8, 6)
+    #  PART B — tangent at (8, 6) — MODERATE DETAIL
     # ================================================================
     def part_b(self):
-        self.show_part_header("b) — Pika (8, 6)")
+        header = self.show_part_header("b")
 
-        graph_group = self._build_tangent_graph(
-            point=(8, 6),
-            tangent_func=lambda x: -4 / 3 * x + 50 / 3,
-            tangent_range=[-1, 13],
+        # ── Problem statement (brief) ──
+        prob_title = MathTex(
+            r"\text{Tangjentja ne piken}",
+            font_size=BODY_SIZE + 4, color=STEP_TITLE_COLOR,
+        )
+        prob_point = MathTex(
+            r"(8,\, 6)", font_size=CALC_SIZE + 4, color=LABEL_COLOR,
+        )
+        self.show_problem(prob_title, prob_point, wait_time=2.0)
+
+        # ── Build graph ──
+        axes, graph_group, radius_line, dot_p, lbl_p = self._build_graph(8, 6)
+
+        # ── Shift graph left ──
+        self.play(graph_group.animate.shift(LEFT * 3.2), run_time=T_LAYOUT_SHIFT)
+        div = make_divider()
+        self.play(FadeIn(div), run_time=0.2)
+        self.wait(0.5)
+
+        # ────────────────────────────────────────
+        # Step 1: Radius slope
+        # ────────────────────────────────────────
+        s1t = self._title("Koeficienti kendor i rrezes", y_pos=3.2)
+
+        self.play(Indicate(radius_line, color=YELLOW, scale_factor=1.05), run_time=0.5)
+
+        eq1 = self._eq(
+            r"m = \frac{6}{8} = \frac{3}{4}",
+            s1t, fs=32, key=True,
+        )
+        self.wait(1)
+
+        # ────────────────────────────────────────
+        # Step 2: Tangent slope (perpendicularity)
+        # ────────────────────────────────────────
+        s2t = self._title("Rrezja } \\perp \\text{ tangjentes", ref=eq1, buff=0.4)
+
+        # Show right angle mark on figure
+        ra_mark = self._draw_right_angle_at_tangent(axes, 8, 6, 3/4, graph_group)
+        self.wait(1)
+
+        eq2a = self._eq(
+            r"m' = -\frac{1}{m} = -\frac{1}{\frac{3}{4}}",
+            s2t, fs=30,
         )
 
-        div = self.setup_split_layout(graph_group)
+        eq2b = self._eq(
+            r"m' = -\frac{4}{3}",
+            eq2a, fs=32, color=LABEL_COLOR, key=True,
+        )
+        self.wait(1)
 
-        eqs = self.show_equation_chain([
-            r"m = \frac{6}{8} = \frac{3}{4}",
-            {"tex": r"m' = -\frac{4}{3}", "color": LABEL_COLOR},
-            {"tex": r"6 = -\frac{4}{3} \cdot 8 + c \;\Rightarrow\; c = \frac{50}{3}", "key": True},
-        ], start_position=CALC_TOP)
+        # ────────────────────────────────────────
+        # Step 3: Find c
+        # ────────────────────────────────────────
+        # Clear steps 1-2
+        calc1 = VGroup(s1t, eq1, s2t, eq2a, eq2b)
+        self.play(FadeOut(calc1), run_time=0.5)
 
-        self.wait(3.0)
+        s3t = self._title("Gjejme c", y_pos=3.2)
 
-        self.show_answer_below(r"y = -\frac{4}{3}x + \frac{50}{3}", eqs[-1])
+        s3txt = self._text([
+            r"\text{Zevendesojme piken } (8,\, 6)\text{:}",
+        ], s3t)
+
+        self.play(Indicate(dot_p, color=YELLOW, scale_factor=1.5), run_time=0.5)
+        self.wait(0.5)
+
+        eq3a = self._eq(
+            r"6 = -\frac{4}{3} \cdot 8 + c",
+            s3txt, fs=30,
+        )
+
+        eq3b = self._eq(
+            r"6 = -\frac{32}{3} + c",
+            eq3a, fs=30,
+        )
+
+        eq3c = self._eq(
+            r"c = 6 + \frac{32}{3} = \frac{18}{3} + \frac{32}{3} = \frac{50}{3}",
+            eq3b, fs=28, key=True,
+        )
+        self.wait(1)
+
+        # ────────────────────────────────────────
+        # Step 4: Final answer + draw tangent
+        # ────────────────────────────────────────
+        calc2 = VGroup(s3t, s3txt, eq3a, eq3b, eq3c)
+        self.play(FadeOut(calc2), run_time=0.5)
+
+        s4t = self._title("Ekuacioni i tangjentes", y_pos=3.0)
+
+        eq_final = self._eq(
+            r"y = -\frac{4}{3}x + \frac{50}{3}",
+            s4t, fs=ANSWER_SIZE, color=ANSWER_COLOR, key=True,
+        )
+        box = make_answer_box(eq_final)
+        self.play(Create(box), run_time=0.5)
+        self.wait(1.5)
+
+        # Draw tangent on graph
+        tangent = axes.plot(
+            lambda x: -4/3 * x + 50/3,
+            x_range=[-4, 12],
+            color=AUX_COLOR, stroke_width=2.5,
+        )
+        self.play(Create(tangent), run_time=T_KEY_EQUATION)
+        graph_group.add(tangent)
+        self.wait(1)
+
+        # Transfer label to graph
+        tang_lbl = MathTex(
+            r"y = -\tfrac{4}{3}x + \tfrac{50}{3}",
+            font_size=18, color=AUX_COLOR,
+        )
+        tang_point = np.array(axes.c2p(2, 50/3 - 8/3))
+        tang_lbl.move_to(tang_point + UP * 0.35 + LEFT * 0.5)
+        self._transfer_value(eq_final, tang_lbl)
+        graph_group.add(tang_lbl)
+        self.wait(3)
 
     # ================================================================
-    #  PART C — tangent at (10, 0) — vertical line
+    #  PART C — tangent at (10, 0) — SPECIAL CASE: vertical tangent
     # ================================================================
     def part_c(self):
-        self.show_part_header("c) — Pika (10, 0)")
+        header = self.show_part_header("c")
 
-        graph_group = self._build_tangent_graph(
-            point=(10, 0),
-            tangent_dashed=True,
-            tangent_label="x = 10",
+        # ── Problem statement ──
+        prob_title = MathTex(
+            r"\text{Tangjentja ne piken}",
+            font_size=BODY_SIZE + 4, color=STEP_TITLE_COLOR,
+        )
+        prob_point = MathTex(
+            r"(10,\, 0)", font_size=CALC_SIZE + 4, color=LABEL_COLOR,
+        )
+        self.show_problem(prob_title, prob_point, wait_time=2.0)
+
+        # ── Build graph ──
+        axes, graph_group, radius_line, dot_p, lbl_p = self._build_graph(10, 0)
+
+        # ── Shift graph left ──
+        self.play(graph_group.animate.shift(LEFT * 3.2), run_time=T_LAYOUT_SHIFT)
+        div = make_divider()
+        self.play(FadeIn(div), run_time=0.2)
+        self.wait(0.5)
+
+        # ────────────────────────────────────────
+        # Step 1: Observe the radius
+        # ────────────────────────────────────────
+        s1t = self._title("Koeficienti kendor i rrezes", y_pos=3.2)
+
+        self.play(Indicate(radius_line, color=YELLOW, scale_factor=1.05), run_time=0.6)
+        self.wait(0.5)
+
+        s1txt = self._text([
+            r"\text{Rrezja shkon nga } (0,0)",
+            r"\text{ne } (10,\, 0)\text{, pergjate boshtit } Ox\text{.}",
+        ], s1t)
+        self.wait(2)
+
+        eq1 = self._eq(
+            r"m = \frac{0 - 0}{10 - 0} = \frac{0}{10} = 0",
+            s1txt, fs=30, key=True,
         )
 
-        div = self.setup_split_layout(graph_group)
+        s1note = self._text([
+            r"\text{Rrezja eshte horizontale } (m = 0)\text{.}",
+        ], eq1, buff=0.3)
+        self.wait(2)
 
-        txt1 = MathTex(
-            r"\text{Rrezja shtrihet përgjatë boshtit } Ox.",
-            font_size=BODY_SIZE,
-            color=BODY_TEXT_COLOR,
+        # ────────────────────────────────────────
+        # Step 2: Perpendicular to horizontal = vertical
+        # ────────────────────────────────────────
+        calc1 = VGroup(s1t, s1txt, eq1, s1note)
+        self.play(FadeOut(calc1), run_time=0.5)
+
+        s2t = self._title("Rrezja } \\perp \\text{ tangjentes", y_pos=3.2)
+
+        s2txt = self._text([
+            r"\text{Nje drejtez pingule me nje}",
+            r"\text{drejtez horizontale eshte}",
+            r"\text{nje drejtez vertikale.}",
+        ], s2t)
+        self.wait(2.5)
+
+        # Draw right angle mark at (10,0) — between horizontal radius and vertical tangent
+        tp = np.array(axes.c2p(10, 0))
+        sz = 0.2
+        ra_p1 = tp + LEFT * sz
+        ra_corner = tp + LEFT * sz + UP * sz
+        ra_p2 = tp + UP * sz
+        right_angle = VMobject(color=AUX_COLOR, stroke_width=2)
+        right_angle.set_points_as_corners([ra_p1, ra_corner, ra_p2])
+        self.play(Create(right_angle), run_time=0.5)
+        graph_group.add(right_angle)
+        self.wait(1.5)
+
+        s2note = self._text([
+            r"\text{Tangjentja eshte vertikale.}",
+            r"\text{Drejtezat vertikale kane formen:}",
+        ], s2txt, buff=0.3)
+        self.wait(1.5)
+
+        eq2 = self._eq(
+            r"x = \text{konst.}",
+            s2note, fs=34, color=LABEL_COLOR,
         )
-        txt1.move_to(CALC_TOP)
+        self.wait(1)
 
-        txt2 = MathTex(
-            r"\text{Tangjentja është pingulja e boshtit}",
-            font_size=BODY_SIZE,
-            color=BODY_TEXT_COLOR,
+        s2expl = self._text([
+            r"\text{Pika ka } x = 10\text{, pra:}",
+        ], eq2, buff=0.3)
+        self.wait(1)
+
+        # ────────────────────────────────────────
+        # Step 3: Final answer + draw tangent
+        # ────────────────────────────────────────
+        calc2 = VGroup(s2t, s2txt, s2note, eq2, s2expl)
+        self.play(FadeOut(calc2), run_time=0.5)
+
+        s3t = self._title("Ekuacioni i tangjentes", y_pos=3.0)
+
+        eq_final = self._eq(
+            r"x = 10",
+            s3t, fs=ANSWER_SIZE, color=ANSWER_COLOR, key=True,
         )
-        txt2.next_to(txt1, DOWN, buff=0.25)
+        box = make_answer_box(eq_final)
+        self.play(Create(box), run_time=0.5)
+        self.wait(1.5)
 
-        txt3 = MathTex(
-            r"Ox \text{ në pikën } (10,\,0).",
-            font_size=BODY_SIZE,
-            color=BODY_TEXT_COLOR,
+        # Draw vertical tangent line on graph
+        tangent = DashedLine(
+            axes.c2p(10, -11), axes.c2p(10, 11),
+            color=AUX_COLOR, stroke_width=2.5, dash_length=0.1,
         )
-        txt3.next_to(txt2, DOWN, buff=0.2)
+        self.play(Create(tangent), run_time=T_KEY_EQUATION)
+        graph_group.add(tangent)
+        self.wait(1)
 
-        self.play(FadeIn(txt1), run_time=T_BODY_FADE)
-        self.wait(2.0)
-        self.play(FadeIn(txt2), run_time=T_BODY_FADE)
-        self.play(FadeIn(txt3), run_time=T_BODY_FADE)
-        self.wait(3.0)
-
-        self.show_answer_below(r"x = 10", txt3)
+        # Transfer label to graph
+        tang_lbl = MathTex(r"x = 10", font_size=20, color=AUX_COLOR)
+        tang_lbl.next_to(tangent, RIGHT, buff=0.15).shift(UP * 1.5)
+        self._transfer_value(eq_final, tang_lbl)
+        graph_group.add(tang_lbl)
+        self.wait(3)
 
     # ================================================================
     #  FINAL SUMMARY
     # ================================================================
     def final_summary(self):
         self.show_summary_table(
-            "Përmbledhje e përgjigjeve",
+            "Permbledhje e pergjigjeve",
             [
                 r"\text{a)}\quad y = -\frac{3}{4}x + \frac{25}{2}",
                 r"\text{b)}\quad y = -\frac{4}{3}x + \frac{50}{3}",

@@ -92,6 +92,40 @@ Since there is no voiceover, use animations to direct attention:
 self.play(Indicate(ang_B_arc, color=YELLOW), run_time=0.5)
 ```
 
+## Albanian Characters in LaTeX (ë, ç, etc.)
+
+MathTex uses LaTeX which does NOT support UTF-8 characters like `ë` inside `\text{}`. The LaTeX diaeresis encoding `\"{e}` also renders incorrectly as `e"`.
+
+**Rule: Use plain ASCII in all MathTex text.** Replace:
+- `ë` → `e` (e.g., "këndor" → "kendor", "është" → "eshte")
+- `ç` → `c`
+
+Albanian students will understand the text perfectly without diacritics. `e"` is unacceptable.
+
+## Shifted Axes: Never Double-Shift
+
+When axes are shifted (e.g., `graph_group.animate.shift(LEFT * 3.2)`), all `axes.c2p()` and `axes.plot()` calls AUTOMATICALLY return coordinates in the shifted position.
+
+**NEVER add manual shifts to objects created from already-shifted axes:**
+
+```python
+# WRONG — double-shifts the tangent line
+tangent = axes.plot(lambda x: -0.75*x + 12.5, x_range=[-4, 12], ...)
+tangent.shift(LEFT * 3.2)  # BUG: axes already shifted
+
+# CORRECT — axes.plot() inherits the shift
+tangent = axes.plot(lambda x: -0.75*x + 12.5, x_range=[-4, 12], ...)
+# No manual shift needed
+
+# WRONG — double-shifts a label position
+pos = np.array(axes.c2p(6, 8)) + LEFT * 3.2  # BUG
+
+# CORRECT
+pos = np.array(axes.c2p(6, 8))  # already in shifted space
+```
+
+This applies to: `axes.plot()`, `axes.c2p()`, `Dot(axes.c2p(...))`, right-angle marks using `axes.c2p()`, tangent lines, labels, etc.
+
 ## CRITICAL: Zero Overlap Rule
 
 **NOTHING may overlap ANYTHING on screen. This is the #2 quality rule.**
