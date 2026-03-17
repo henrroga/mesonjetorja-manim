@@ -92,6 +92,60 @@ Since there is no voiceover, use animations to direct attention:
 self.play(Indicate(ang_B_arc, color=YELLOW), run_time=0.5)
 ```
 
+## Visual Toolkit — Manim CE Features to Use
+
+Beyond basic Create/Write/FadeIn, use these built-in helpers from `ExerciseScene` for richer visuals:
+
+### Equation Morphing (`morph_equation`)
+When showing algebraic simplification steps, **MORPH** equations instead of FadeOut + new Write. Matching symbols stay in place while changed parts animate smoothly:
+```python
+eq1 = self.panel_eq(r"x^2 + y^2 = 49", ref)
+eq2 = self.morph_equation(eq1, r"r^2 = 49")       # x²+y² morphs into r²
+eq3 = self.morph_equation(eq2, r"r = 7", color=ANSWER_COLOR)
+```
+**Use for:** simplification chains, rearranging formulas, substitution steps.
+
+### Circumscribe + Flash (`highlight_result`)
+For final answers and key results, use `highlight_result` instead of just a box:
+```python
+self.highlight_result(answer_eq)  # Circumscribe + particle Flash
+```
+**Use for:** final boxed answers, key intermediate findings, "aha" moments.
+
+### Flash Points (`flash_point`)
+When an intersection point or special location appears on a graph:
+```python
+self.flash_point(dot)  # particle burst at the dot's location
+```
+**Use for:** intersection points found algebraically, axis intercepts, vertices.
+
+### Sequential Reveals (`reveal_sequence`)
+When showing 3+ items (intercept dots, colored balls, summary rows), reveal them one by one with overlapping timing instead of all at once:
+```python
+self.reveal_sequence([dot1, dot2, dot3, dot4], lag_ratio=0.2)
+```
+**Use for:** multiple intercepts, lists of results, ball/object groups, summary tables.
+
+### Path Tracing (`trace_path`)
+Animate a dot traveling along a curve to show it satisfies an equation:
+```python
+dot = Dot(axes.c2p(5, 0), radius=0.08)
+self.trace_path(dot, circle, run_time=3.0)
+```
+**Use for:** demonstrating circle equations, showing a point on a curve, geometric constructions.
+
+### DrawBorderThenFill for Shapes
+For filled shapes (circles, shaded sub-triangles, probability balls), prefer `DrawBorderThenFill` over `Create` — it draws the outline first, then fills:
+```python
+self.play(DrawBorderThenFill(circle), run_time=1.2)
+```
+
+### Rate Functions for Polish
+Add personality to animations with easing:
+- `rate_functions.smooth` — default, good for most
+- `rate_functions.rush_into` — fast start, slow end (snapping into place)
+- `rate_functions.there_and_back` — temporary highlight that returns
+
 ## Albanian Characters in LaTeX (ë, ç, etc.)
 
 MathTex uses LaTeX which does NOT support UTF-8 characters like `ë` inside `\text{}`. The LaTeX diaeresis encoding `\"{e}` also renders incorrectly as `e"`.
