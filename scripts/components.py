@@ -539,6 +539,101 @@ class ExerciseScene(Scene):
         return eq
 
     # ──────────────────────────────────────────
+    #  VISUAL TOOLKIT — Enhanced Animations
+    # ──────────────────────────────────────────
+
+    def highlight_result(self, mobject, color=None):
+        """
+        Emphasize a result with Circumscribe + Flash.
+
+        Use on final answers, key intermediate results, or boxed equations.
+        More visually impactful than just a SurroundingRectangle.
+        """
+        c = color or ANSWER_COLOR
+        self.play(Circumscribe(mobject, color=c, run_time=0.8))
+        self.play(
+            Flash(mobject.get_center(), color=c,
+                  line_length=0.15, num_lines=8, run_time=0.4),
+        )
+
+    def morph_equation(self, old_eq, new_tex, font_size=None, color=None,
+                       position=None):
+        """
+        Morph one equation into another using TransformMatchingTex.
+
+        Matching symbols stay in place; changed parts animate smoothly.
+        Perfect for algebraic simplification steps.
+
+        Args:
+            old_eq: The current equation mobject on screen.
+            new_tex: LaTeX string for the new equation.
+            font_size: Font size (defaults to old_eq's size or CALC_SIZE).
+            color: Color for the new equation (defaults to old_eq's color).
+            position: Where to place the new eq (defaults to old_eq's position).
+
+        Returns the new equation mobject.
+        """
+        fs = font_size or CALC_SIZE
+        new_eq = MathTex(new_tex, font_size=fs)
+        if color:
+            new_eq.set_color(color)
+        if position is not None:
+            new_eq.move_to(position)
+        else:
+            new_eq.move_to(old_eq)
+        self.play(TransformMatchingTex(old_eq, new_eq), run_time=T_KEY_EQUATION)
+        self.wait(0.6)
+        return new_eq
+
+    def reveal_sequence(self, mobjects, lag_ratio=0.15, direction=RIGHT,
+                        run_time=1.5):
+        """
+        Reveal multiple mobjects sequentially with LaggedStart.
+
+        Use when showing 3+ items: intercept points, colored balls,
+        equation terms, summary rows. Creates visual rhythm.
+        """
+        self.play(
+            LaggedStart(
+                *[FadeIn(m, shift=direction * 0.3) for m in mobjects],
+                lag_ratio=lag_ratio,
+            ),
+            run_time=run_time,
+        )
+
+    def trace_path(self, dot, path, run_time=2.0, color=None):
+        """
+        Animate a dot moving along a path (circle, line, curve).
+
+        Use to demonstrate that a point satisfies an equation,
+        or to visually trace a geometric construction.
+        """
+        if color:
+            dot.set_color(color)
+        self.play(
+            MoveAlongPath(dot, path),
+            run_time=run_time,
+            rate_func=rate_functions.smooth,
+        )
+
+    def flash_point(self, point, color=None, radius=0.3):
+        """
+        Flash a point on the figure to draw attention.
+
+        Use when an intersection point is found, or when marking
+        a special location on a graph.
+        """
+        c = color or LABEL_COLOR
+        if hasattr(point, 'get_center'):
+            pos = point.get_center()
+        else:
+            pos = np.array(point)
+        self.play(
+            Flash(pos, color=c, line_length=0.12,
+                  num_lines=8, flash_radius=radius, run_time=0.5),
+        )
+
+    # ──────────────────────────────────────────
     #  GEOMETRY HELPERS
     # ──────────────────────────────────────────
 
