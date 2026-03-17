@@ -258,13 +258,26 @@ Add personality to animations with easing:
 These make videos feel alive instead of static. Use them to show PROCESSES, not just results.
 
 #### Animated Counter (`animated_counter`)
-A number that rolls from start to end. Students SEE the counting happen:
+A number that rolls from start to end using Manim's `ChangeDecimalToValue`. Students SEE the counting happen:
 ```python
 # Count balls: 0 → 22, showing "Total: 22"
 self.animated_counter(0, 22, prefix="Total: ", font_size=36,
                       position=RIGHT * 3, run_time=2.0)
 ```
 **Use for:** counting objects, showing a computed value gradually, totals.
+
+For standalone rolling numbers without the wrapper, use Manim directly:
+```python
+number = DecimalNumber(0, num_decimal_places=2, font_size=36, color=ANSWER_COLOR)
+number.move_to(...)
+self.add(number)
+self.play(ChangeDecimalToValue(number, 15.73), run_time=1.5)
+```
+
+For function-driven values (e.g., tied to animation progress):
+```python
+self.play(ChangingDecimal(number, lambda a: 25 * np.cos(a * 51 * DEGREES)), run_time=2)
+```
 
 #### Fraction Bar (`fraction_bar`)
 A visual bar that fills proportionally — shows what a fraction LOOKS like:

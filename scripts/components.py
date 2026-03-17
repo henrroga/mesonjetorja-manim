@@ -745,10 +745,12 @@ class ExerciseScene(Scene):
                          font_size=None, color=None, position=None,
                          run_time=1.5, num_decimal_places=0):
         """
-        Animate a number rolling from start to end.
+        Animate a number rolling from start to end using ChangeDecimalToValue.
+
+        Uses Manim's built-in ChangeDecimalToValue for smooth interpolation.
 
         Use for: counting balls, showing a computed value appearing
-        gradually, progress indicators.
+        gradually, progress indicators, totals.
 
         Args:
             start: Starting value.
@@ -761,24 +763,19 @@ class ExerciseScene(Scene):
             run_time: Duration of the animation.
             num_decimal_places: Decimal precision (0 for integers).
 
-        Returns the final DecimalNumber mobject.
+        Returns the group containing prefix + number + suffix.
         """
         fs = font_size or CALC_SIZE
         c = color or ANSWER_COLOR
 
-        tracker = ValueTracker(start)
         number = DecimalNumber(
             start,
             num_decimal_places=num_decimal_places,
             font_size=fs,
             color=c,
         )
-        if position is not None:
-            number.move_to(position)
 
-        # Prefix and suffix labels
-        pre_label = None
-        suf_label = None
+        # Build group with optional prefix/suffix
         group = VGroup()
 
         if prefix:
@@ -797,32 +794,15 @@ class ExerciseScene(Scene):
             )
             group.add(suf_label)
 
-        if len(group) > 1:
-            group.arrange(RIGHT, buff=0.15)
-            if position is not None:
-                group.move_to(position)
-
-        # Updater: number follows tracker
-        number.add_updater(
-            lambda m: m.set_value(tracker.get_value())
-        )
-        # Keep arrangement if there are prefix/suffix
-        if pre_label:
-            number.add_updater(
-                lambda m: m.next_to(pre_label, RIGHT, buff=0.15)
-            )
-        if suf_label:
-            suf_label.add_updater(
-                lambda m: m.next_to(number, RIGHT, buff=0.15)
-            )
+        group.arrange(RIGHT, buff=0.15)
+        if position is not None:
+            group.move_to(position)
 
         self.add(group)
-        self.play(tracker.animate.set_value(end), run_time=run_time)
-
-        # Clean up updaters
-        number.clear_updaters()
-        if suf_label:
-            suf_label.clear_updaters()
+        self.play(
+            ChangeDecimalToValue(number, end),
+            run_time=run_time,
+        )
 
         return group
 
