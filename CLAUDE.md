@@ -159,11 +159,35 @@ self.trace_path(dot, circle, run_time=3.0)
 ```
 **Use for:** demonstrating circle equations, showing a point on a curve, geometric constructions.
 
-### DrawBorderThenFill for Shapes
-For filled shapes (circles, shaded sub-triangles, probability balls), prefer `DrawBorderThenFill` over `Create` — it draws the outline first, then fills:
+### Introduction Animations — Stop Using Plain FadeIn for Everything
+
+Choose the right introduction animation based on WHAT you're introducing:
+
+| What | Animation | Why |
+|------|-----------|-----|
+| Circles, shapes, filled objects | `DrawBorderThenFill(shape)` | Outline first, then fill — satisfying |
+| Dots, small objects, answer boxes | `GrowFromCenter(dot)` | Pops into existence — more alive than FadeIn |
+| Results appearing at a location | `GrowFromPoint(result, origin_point)` | Grows FROM the calculation — visual link |
+| Side labels, edge annotations | `GrowFromEdge(label, LEFT)` | Grows from the side it's attached to |
+| Arrows, vectors | `GrowArrow(arrow)` | Grows from tail to tip — natural direction |
+| Text, equations | `Write(eq)` | Standard for text — keep using this |
+| Groups of items appearing | `reveal_sequence([...])` | LaggedStart — one by one with rhythm |
+
 ```python
+# Instead of FadeIn(circle):
 self.play(DrawBorderThenFill(circle), run_time=1.2)
+
+# Instead of FadeIn(dot):
+self.play(GrowFromCenter(dot), run_time=0.5)
+
+# Answer box grows from the equation that produced it:
+self.play(GrowFromPoint(answer_box, equation.get_center()), run_time=0.8)
+
+# Side label grows from the edge of the triangle side:
+self.play(GrowFromEdge(side_label, LEFT), run_time=0.5)
 ```
+
+**Reserve `FadeIn` for:** text blocks, background elements, subtle UI. For anything the student should NOTICE appearing, use a growing animation.
 
 ### Glow Trace (`glow_trace`)
 A neon glow traveling along a curve — says "THIS is the shape":
@@ -252,7 +276,10 @@ self.animate_parameter(r, 1, 10, [circle, eq], run_time=4)
 | "This is the circle" | `glow_trace()` |
 | "Look HERE now" | `focus_on()` |
 | Final exercise answer | `celebrate()` |
-| Shape outline then fill | `DrawBorderThenFill` |
+| Shape intro (filled) | `DrawBorderThenFill` |
+| Dot/small object intro | `GrowFromCenter` |
+| Result appearing from source | `GrowFromPoint` |
+| Arrow intro | `GrowArrow` |
 
 ## Albanian Characters in LaTeX (ë, ç, etc.)
 
