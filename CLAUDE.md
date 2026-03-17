@@ -97,13 +97,38 @@ self.play(Indicate(ang_B_arc, color=YELLOW), run_time=0.5)
 Beyond basic Create/Write/FadeIn, use these built-in helpers from `ExerciseScene` for richer visuals:
 
 ### Equation Morphing (`morph_equation`)
-When showing algebraic simplification steps, **MORPH** equations instead of FadeOut + new Write. Matching symbols stay in place while changed parts animate smoothly:
+When showing algebraic simplification steps, **MORPH** equations instead of FadeOut + new Write. Matching symbols stay in place while changed parts animate smoothly.
+
+**CRITICAL: Use `{{double braces}}` around matchable parts** — this is how Manim knows what corresponds to what:
 ```python
-eq1 = self.panel_eq(r"x^2 + y^2 = 49", ref)
-eq2 = self.morph_equation(eq1, r"r^2 = 49")       # x²+y² morphs into r²
-eq3 = self.morph_equation(eq2, r"r = 7", color=ANSWER_COLOR)
+# Create with double braces for matchable parts
+eq1 = MathTex("{{x}}^2", "+", "{{y}}^2", "=", "{{49}}", font_size=32)
+eq1.move_to(...); self.play(Write(eq1))
+
+# Morph: "=" and "49" stay in place, "x^2 + y^2" morphs to "r^2"
+eq2 = self.morph_equation(eq1, r"{{r}}^2 = {{49}}")
+
+# Morph with color: "49" stays, "r^2 =" morphs to "r ="
+eq3 = self.morph_equation(eq2, r"{{r}} = {{7}}", color=ANSWER_COLOR)
 ```
-**Use for:** simplification chains, rearranging formulas, substitution steps.
+
+**Variable substitution with `key_map`:**
+```python
+# Map x→a and y→b when changing notation
+eq2 = self.morph_equation(eq1, r"{{a}}^2 + {{b}}^2 = {{25}}",
+                          key_map={"x": "a", "y": "b"})
+```
+
+**Use for:** simplification chains, rearranging formulas, substitution, factoring steps.
+
+### Shape Morphing (`morph_shape`)
+Transform one geometric figure into another while keeping matching parts stable:
+```python
+# Full triangle morphs into sub-triangle
+new_tri = Polygon(A, B, H, color=SHAPE_COLOR)
+self.morph_shape(full_triangle, new_tri)
+```
+**Use for:** triangle → sub-triangle, rearranging figures, before/after comparisons.
 
 ### Circumscribe + Flash (`highlight_result`)
 For final answers and key results, use `highlight_result` instead of just a box:
@@ -215,7 +240,8 @@ self.animate_parameter(r, 1, 10, [circle, eq], run_time=4)
 | Situation | Feature |
 |-----------|---------|
 | Final answer emphasis | `highlight_result()` |
-| Algebra step → next step | `morph_equation()` |
+| Algebra step → next step | `morph_equation()` (use `{{double braces}}`) |
+| Geometry figure → sub-figure | `morph_shape()` |
 | Multiple dots/items appearing | `reveal_sequence()` |
 | Point on a curve | `trace_path()` |
 | Intersection found | `flash_point()` |

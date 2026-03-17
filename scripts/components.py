@@ -557,19 +557,31 @@ class ExerciseScene(Scene):
         )
 
     def morph_equation(self, old_eq, new_tex, font_size=None, color=None,
-                       position=None):
+                       position=None, key_map=None,
+                       transform_mismatches=False):
         """
         Morph one equation into another using TransformMatchingTex.
 
         Matching symbols stay in place; changed parts animate smoothly.
         Perfect for algebraic simplification steps.
 
+        IMPORTANT: For best results, use {{double braces}} around the
+        parts you want to match independently. Example:
+            old: MathTex("{{x}}^2", "+", "{{y}}^2", "=", "{{25}}")
+            new: MathTex("{{r}}^2", "=", "{{25}}")
+        The "=" and "25" will stay in place; "x^2 +" and "y^2" will
+        morph into "r^2".
+
         Args:
             old_eq: The current equation mobject on screen.
-            new_tex: LaTeX string for the new equation.
+            new_tex: LaTeX string for the new equation (use {{}} for parts).
             font_size: Font size (defaults to old_eq's size or CALC_SIZE).
-            color: Color for the new equation (defaults to old_eq's color).
-            position: Where to place the new eq (defaults to old_eq's position).
+            color: Color for the new equation.
+            position: Where to place the new eq (defaults to old_eq's pos).
+            key_map: Dict mapping old keys to new keys for variable
+                     substitution. E.g., {"x": "a", "y": "b"}.
+            transform_mismatches: If True, unmatched parts Transform
+                     instead of fading. Set True for cleaner morphs.
 
         Returns the new equation mobject.
         """
@@ -581,9 +593,49 @@ class ExerciseScene(Scene):
             new_eq.move_to(position)
         else:
             new_eq.move_to(old_eq)
-        self.play(TransformMatchingTex(old_eq, new_eq), run_time=T_KEY_EQUATION)
+        self.play(
+            TransformMatchingTex(
+                old_eq, new_eq,
+                key_map=key_map or {},
+                transform_mismatches=transform_mismatches,
+            ),
+            run_time=T_KEY_EQUATION,
+        )
         self.wait(0.6)
         return new_eq
+
+    def morph_shape(self, old_mob, new_mob, run_time=None,
+                    fade_transform_mismatches=True):
+        """
+        Morph one geometric shape/group into another by matching shapes.
+
+        Matching submobjects (by normalized shape hash) stay in place;
+        others fade-transform. Perfect for geometry transformations.
+
+        Use for:
+        - Full triangle → sub-triangle (matching sides stay)
+        - Circle with labels → same circle with different labels
+        - Rearranging a figure while keeping common parts stable
+
+        Args:
+            old_mob: The current shape/group on screen.
+            new_mob: The target shape/group.
+            run_time: Duration (defaults to T_KEY_EQUATION).
+            fade_transform_mismatches: If True, unmatched parts
+                     FadeTransform (smoother). Default: True.
+
+        Returns the new mobject.
+        """
+        rt = run_time or T_KEY_EQUATION
+        self.play(
+            TransformMatchingShapes(
+                old_mob, new_mob,
+                fade_transform_mismatches=fade_transform_mismatches,
+            ),
+            run_time=rt,
+        )
+        self.wait(0.6)
+        return new_mob
 
     def reveal_sequence(self, mobjects, lag_ratio=0.15, direction=RIGHT,
                         run_time=1.5):
