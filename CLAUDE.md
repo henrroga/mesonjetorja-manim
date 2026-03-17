@@ -140,6 +140,29 @@ For filled shapes (circles, shaded sub-triangles, probability balls), prefer `Dr
 self.play(DrawBorderThenFill(circle), run_time=1.2)
 ```
 
+### Glow Trace (`glow_trace`)
+A neon glow traveling along a curve — says "THIS is the shape":
+```python
+self.glow_trace(circle, color=YELLOW)           # glow traces the full circle
+self.glow_trace(Line(A, B), color=AUX_COLOR)    # glow runs along a side
+```
+**Use for:** introducing a circle/line/curve, emphasizing a specific edge, showing "this is the path". Especially powerful when first drawing a shape — draw it, then glow-trace it.
+
+### Focus Spotlight (`focus_on`)
+A spotlight shrinks onto a target — tells the viewer "NOW LOOK HERE":
+```python
+self.focus_on(dot_P)          # spotlight onto point P
+self.focus_on(angle_arc)      # spotlight onto the angle
+```
+**Use for:** directing attention before a calculation step. Critical for no-voiceover videos — this is how you "point" at something.
+
+### Celebration (`celebrate`)
+Wave + Flash for the absolute final answer — more dramatic than `highlight_result`:
+```python
+self.celebrate(final_answer_box)  # wave + particle burst
+```
+**Use for:** the very last answer of the entire exercise, not intermediate results.
+
 ### Rate Functions for Polish
 Add personality to animations with easing:
 - `rate_functions.smooth` — default, good for most
@@ -200,6 +223,9 @@ self.animate_parameter(r, 1, 10, [circle, eq], run_time=4)
 | Showing a proportion | `fraction_bar()` |
 | Label follows moving point | `linked_label()` |
 | "What if r changes?" | `animate_parameter()` |
+| "This is the circle" | `glow_trace()` |
+| "Look HERE now" | `focus_on()` |
+| Final exercise answer | `celebrate()` |
 | Shape outline then fill | `DrawBorderThenFill` |
 
 ## Albanian Characters in LaTeX (ë, ç, etc.)

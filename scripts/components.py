@@ -633,6 +633,58 @@ class ExerciseScene(Scene):
                   num_lines=8, flash_radius=radius, run_time=0.5),
         )
 
+    def glow_trace(self, path_mobject, color=None, time_width=0.3,
+                   stroke_width=8, run_time=1.5):
+        """
+        Send a glowing sliver of light traveling along a curve.
+
+        Use for: "this is the circle", tracing a triangle side,
+        showing a line segment, scanning an edge. Creates a neon
+        glow that travels along the path.
+
+        Args:
+            path_mobject: A VMobject (Circle, Line, Polygon side, Arc, etc.)
+            color: Glow color (defaults to LABEL_COLOR / yellow).
+            time_width: How wide the glow sliver is (0.1=thin, 0.5=wide).
+            stroke_width: Thickness of the glow.
+            run_time: Duration.
+        """
+        c = color or LABEL_COLOR
+        glow = path_mobject.copy().set_stroke(color=c, width=stroke_width)
+        self.play(
+            ShowPassingFlash(glow, time_width=time_width, run_time=run_time),
+        )
+
+    def focus_on(self, target, color=None, opacity=0.2, run_time=1.0):
+        """
+        Shrink a spotlight onto a target — "now look HERE".
+
+        Use for: directing attention to a specific part of the figure
+        before starting a calculation on it. Essential for no-voiceover
+        videos where you need to tell the viewer WHERE to look.
+
+        Args:
+            target: A Mobject or point to focus on.
+            color: Spotlight color (defaults to dim gray).
+            opacity: How opaque the spotlight circle is.
+            run_time: Duration.
+        """
+        c = color or GRAY
+        self.play(FocusOn(target, color=c, opacity=opacity, run_time=run_time))
+
+    def celebrate(self, mobject, run_time=1.5):
+        """
+        Wave + Flash celebration on a final result.
+
+        Use for: the absolute final answer of the entire exercise,
+        major milestones. More dramatic than highlight_result.
+        """
+        self.play(ApplyWave(mobject, amplitude=0.15, run_time=run_time * 0.6))
+        self.play(
+            Flash(mobject.get_center(), color=ANSWER_COLOR,
+                  line_length=0.3, num_lines=12, run_time=run_time * 0.4),
+        )
+
     # ──────────────────────────────────────────
     #  DYNAMIC / UPDATER HELPERS
     # ──────────────────────────────────────────
