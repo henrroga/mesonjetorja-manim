@@ -18,6 +18,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+VENV_PYTHON="$SCRIPT_DIR/.venv/bin/python"
 MUSIC_DIR="$SCRIPT_DIR/music"
 OUTPUT_DIR="$SCRIPT_DIR/output"
 
@@ -49,7 +50,7 @@ case "$QUALITY" in
 esac
 
 echo "▸ Rendering $CLASS_NAME at quality -q$QUALITY ..."
-python3 -m manim render "$SCRIPT_PATH" "$CLASS_NAME" $QF --format mp4
+"$VENV_PYTHON" -m manim render "$SCRIPT_PATH" "$CLASS_NAME" $QF --format mp4
 
 # Find the rendered video — pick the most recently modified match
 # (manim puts it in media/videos/<filename>/<resolution>/)
