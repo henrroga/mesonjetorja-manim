@@ -84,6 +84,12 @@ ANGLE_ARC_RADIUS_DEFAULT = 0.4 # For normal angles
 ANGLE_ARC_RADIUS_LARGE = 0.5   # For angles > 120°
 
 # ──────────────────────────────────────────────
+#  ALBANIAN TEX TEMPLATE (supports ë, ç, etc.)
+# ──────────────────────────────────────────────
+ALBANIAN_TEX = TexTemplate()
+ALBANIAN_TEX.add_to_preamble(r"\usepackage[T1]{fontenc}")
+
+# ──────────────────────────────────────────────
 #  HELPER: Apply background
 # ──────────────────────────────────────────────
 

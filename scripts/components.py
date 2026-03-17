@@ -23,6 +23,7 @@ from style_guide import (
     T_DOT_FADE, T_LAYOUT_SHIFT, T_TRANSITION,
     W_AFTER_KEY, W_AFTER_ROUTINE, W_AFTER_ANSWER, W_PROBLEM,
     DIAGRAM_CENTER, CALC_CENTER, CALC_TOP, DIVIDER_X,
+    ALBANIAN_TEX,
 )
 
 
@@ -55,6 +56,9 @@ class ExerciseScene(Scene):
 
     def construct(self):
         apply_style(self)
+        # Enable Albanian characters (ë, ç) in all MathTex globally
+        MathTex.set_default(tex_template=ALBANIAN_TEX)
+        Tex.set_default(tex_template=ALBANIAN_TEX)
         self.title_screen()
 
         for part_name in self.parts:
@@ -188,6 +192,9 @@ class ExerciseScene(Scene):
         """
         Display a final summary with all answers in a boxed list.
 
+        The box is centered on screen with generous spacing to avoid
+        overlaps between rows and between the title and box.
+
         Args:
             title_text: Title for the summary (e.g. "Përmbledhje").
             rows: List of LaTeX strings for each row.
@@ -204,10 +211,17 @@ class ExerciseScene(Scene):
         row_group = VGroup(
             *[MathTex(r, font_size=font_size, color=ANSWER_COLOR) for r in rows]
         )
-        row_group.arrange(DOWN, buff=0.3, aligned_edge=LEFT)
-        row_group.next_to(title, DOWN, buff=0.6)
+        row_group.arrange(DOWN, buff=0.45, aligned_edge=LEFT)
 
         box = make_answer_box(row_group)
+
+        # Center the box+rows on screen, below the title with generous gap
+        content = VGroup(row_group, box)
+        content.move_to(ORIGIN).shift(DOWN * 0.3)
+
+        # Ensure it doesn't overlap with title
+        if content.get_top()[1] > title.get_bottom()[1] - 0.4:
+            content.next_to(title, DOWN, buff=0.5)
 
         self.play(
             LaggedStart(

@@ -429,15 +429,19 @@ self.animate_parameter(r, 1, 10, [circle, eq], run_time=4)
 | Deform/warp a shape | `Homotopy(func, shape)` |
 | Physics particle flow | `PhaseFlow(velocity_func, dot)` |
 
-## Albanian Characters in LaTeX (ë, ç, etc.)
+## Albanian Characters (ë, ç) — USE THEM
 
-MathTex uses LaTeX which does NOT support UTF-8 characters like `ë` inside `\text{}`. The LaTeX diaeresis encoding `\"{e}` also renders incorrectly as `e"`.
+**Always use proper Albanian diacritics** — ë, ç, etc. The `ALBANIAN_TEX` template (set globally in `ExerciseScene.construct()`) adds `\usepackage[T1]{fontenc}` which makes ë and ç render correctly in `\text{}` blocks.
 
-**Rule: Use plain ASCII in all MathTex text.** Replace:
-- `ë` → `e` (e.g., "këndor" → "kendor", "është" → "eshte")
-- `ç` → `c`
+```python
+# This works correctly — ë renders as ë
+MathTex(r"\text{Përmbledhje e përgjigjeve}")
+MathTex(r"\text{Koeficienti këndor}")
+MathTex(r"\text{Zëvendësojmë pikën}")
+```
 
-Albanian students will understand the text perfectly without diacritics. `e"` is unacceptable.
+**Do NOT use plain ASCII** (e instead of ë) — Albanian students expect proper spelling.
+**Do NOT use LaTeX diaeresis** (`\"{e}`) — it renders as `e"` which is wrong.
 
 ## Shifted Axes: Never Double-Shift
 
