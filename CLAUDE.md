@@ -313,6 +313,29 @@ trail = TracedPath(dot.get_center, dissipating_time=0.5,
 | `trace_path()` | Moves dot along existing path | One-shot animation along a known curve |
 | `glow_trace()` | Neon flash along a curve | Emphasize a shape already on screen |
 
+### Shape Deformations (`Homotopy`)
+Deform a shape by warping its points with a custom function. Each point (x,y,z) is transformed based on time t ∈ [0,1]:
+```python
+# Wave deformation — make a line wiggle like a sine wave
+def wave(x, y, z, t):
+    return (x, y + 0.3 * np.sin(x * 3 + t * TAU), z)
+self.play(Homotopy(wave, line, run_time=2))
+
+# Stretch circle into ellipse
+def stretch(x, y, z, t):
+    return (x * (1 + t), y * (1 - 0.5*t), z)
+self.play(Homotopy(stretch, circle, run_time=1.5))
+```
+**Use for:** geometric transformations (dilation, shear, stretch), physics deformations, showing how shapes change under a mapping. For smoother results on VMobjects, use `SmoothedVectorizedHomotopy`.
+
+### Physics: Vector Field Flow (`PhaseFlow`)
+Move points according to a velocity function — useful for physics exercises:
+```python
+# Current flowing through a wire (particles drifting right)
+self.play(PhaseFlow(lambda p: RIGHT * 0.5, dot, virtual_time=2))
+```
+**Use for:** particle movement in fields, current flow in circuits, force visualization.
+
 ### Rate Functions for Polish
 Add personality to animations with easing:
 - `rate_functions.smooth` — default, good for most
@@ -403,6 +426,8 @@ self.animate_parameter(r, 1, 10, [circle, eq], run_time=4)
 | Same anim on every item in group | `LaggedStartMap(FadeIn, group)` |
 | Chain anims sequentially | `Succession(anim1, anim2, anim3)` |
 | Ripple/wave across a group | `LaggedStartMap(Indicate, group)` |
+| Deform/warp a shape | `Homotopy(func, shape)` |
+| Physics particle flow | `PhaseFlow(velocity_func, dot)` |
 
 ## Albanian Characters in LaTeX (ë, ç, etc.)
 
