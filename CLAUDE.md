@@ -247,6 +247,42 @@ self.celebrate(final_answer_box)  # wave + particle burst
 ```
 **Use for:** the very last answer of the entire exercise, not intermediate results.
 
+### Animation Composition — Combining Multiple Animations
+
+**`LaggedStartMap`** — Apply the same animation to every submobject in a group, staggered. Much cleaner than manually building LaggedStart lists:
+```python
+# Instead of: LaggedStart(*[FadeIn(m) for m in balls], lag_ratio=0.1)
+self.play(LaggedStartMap(FadeIn, balls, lag_ratio=0.1, run_time=2))
+
+# Apply GrowFromCenter to every dot in a group:
+self.play(LaggedStartMap(GrowFromCenter, dots, lag_ratio=0.15))
+
+# Ripple highlight effect (yellow pulse across a group):
+self.play(LaggedStartMap(Indicate, equation_parts, lag_ratio=0.1,
+                         rate_func=there_and_back, run_time=2))
+```
+**Use for:** introducing groups of objects (balls, dots, summary rows), ripple effects, batch highlighting.
+
+**`Succession`** — Play animations one after another in a single `self.play()` call:
+```python
+# Instead of 3 separate self.play() calls:
+self.play(Succession(
+    FadeIn(step1, shift=UP),
+    FadeIn(step2, shift=UP),
+    FadeIn(step3, shift=UP),
+))
+```
+**Use for:** chained intro sequences, multi-step transitions in one call.
+
+**`AnimationGroup`** — Play animations simultaneously (we already use this implicitly when passing multiple anims to `self.play()`):
+```python
+# Explicit group with custom lag_ratio:
+self.play(AnimationGroup(
+    Write(equation), Create(circle),
+    lag_ratio=0.3,  # circle starts when equation is 30% done
+))
+```
+
 ### Auto-Tracing Paths (`TracedPath`)
 Automatically draws the trail of a moving point — no manual path needed:
 ```python
@@ -364,6 +400,9 @@ self.animate_parameter(r, 1, 10, [circle, eq], run_time=4)
 | Erase an equation | `Unwrite` |
 | Auto-trace a moving point | `TracedPath` (add to scene, moves auto) |
 | Comet-tail / fading trail | `TracedPath(dissipating_time=0.5)` |
+| Same anim on every item in group | `LaggedStartMap(FadeIn, group)` |
+| Chain anims sequentially | `Succession(anim1, anim2, anim3)` |
+| Ripple/wave across a group | `LaggedStartMap(Indicate, group)` |
 
 ## Albanian Characters in LaTeX (ë, ç, etc.)
 
