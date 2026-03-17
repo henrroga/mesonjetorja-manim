@@ -189,6 +189,41 @@ self.play(GrowFromEdge(side_label, LEFT), run_time=0.5)
 
 **Reserve `FadeIn` for:** text blocks, background elements, subtle UI. For anything the student should NOTICE appearing, use a growing animation.
 
+### Removal Animations — Stop Using Plain FadeOut for Everything
+
+| What | Animation | Why |
+|------|-----------|-----|
+| Geometric shapes | `Uncreate(shape)` | Reverse-draws the outline away — cleaner than fading |
+| Equations, text | `Unwrite(eq)` | Erases like rubbing out — matches how Write introduced it |
+| Groups, backgrounds | `FadeOut(group)` | Standard — fine for bulk cleanup |
+
+```python
+# Instead of FadeOut(triangle):
+self.play(Uncreate(triangle), run_time=0.8)
+
+# Instead of FadeOut(equation):
+self.play(Unwrite(equation), run_time=0.6)
+```
+
+### Counting Animations
+
+**`ShowIncreasingSubsets`** — Shows submobjects accumulating one by one, leaving all previous visible. Perfect for counting problems:
+```python
+# 22 balls appear one by one, each staying on screen
+balls = VGroup(*[Circle(...) for _ in range(22)])
+self.play(ShowIncreasingSubsets(balls), run_time=3.0)
+```
+**Use for:** counting objects (probability), building up a set of points, showing terms appearing in a sum.
+
+### Dramatic Intros
+
+**`SpiralIn`** — Submobjects fly in on spiral trajectories. Use sparingly for impact:
+```python
+# Final summary answers spiral in dramatically
+self.play(SpiralIn(answer_group), run_time=1.5)
+```
+**Use for:** title screens, final summary tables, celebration moments. NOT for routine content.
+
 ### Glow Trace (`glow_trace`)
 A neon glow traveling along a curve — says "THIS is the shape":
 ```python
@@ -280,6 +315,10 @@ self.animate_parameter(r, 1, 10, [circle, eq], run_time=4)
 | Dot/small object intro | `GrowFromCenter` |
 | Result appearing from source | `GrowFromPoint` |
 | Arrow intro | `GrowArrow` |
+| Counting objects 1 by 1 | `ShowIncreasingSubsets` |
+| Dramatic summary intro | `SpiralIn` |
+| Remove a shape cleanly | `Uncreate` |
+| Erase an equation | `Unwrite` |
 
 ## Albanian Characters in LaTeX (ë, ç, etc.)
 
