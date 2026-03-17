@@ -247,6 +247,36 @@ self.celebrate(final_answer_box)  # wave + particle burst
 ```
 **Use for:** the very last answer of the entire exercise, not intermediate results.
 
+### Auto-Tracing Paths (`TracedPath`)
+Automatically draws the trail of a moving point — no manual path needed:
+```python
+# Dot moves along a circle, leaving a colored trail behind it
+dot = Dot(axes.c2p(5, 0), color=YELLOW)
+trail = TracedPath(dot.get_center, stroke_color=LABEL_COLOR, stroke_width=3)
+self.add(trail, dot)
+self.play(MoveAlongPath(dot, circle), run_time=3)
+# The trail stays on screen showing where the dot went
+```
+
+**Dissipating trail** — comet-tail effect that fades behind the dot:
+```python
+trail = TracedPath(dot.get_center, dissipating_time=0.5,
+                   stroke_color=YELLOW, stroke_opacity=[0, 1])
+```
+
+**Use for:**
+- Tracing a point around a circle to show "all points satisfying x²+y²=r²"
+- Drawing a function curve by moving a point along it
+- Showing the trajectory of a moving object in physics
+- Any "where has this point been?" visualization
+
+**TracedPath vs trace_path vs glow_trace:**
+| Method | What it does | When to use |
+|--------|-------------|-------------|
+| `TracedPath` | Auto-records where a dot goes | Dot is moving via updaters or `.animate` |
+| `trace_path()` | Moves dot along existing path | One-shot animation along a known curve |
+| `glow_trace()` | Neon flash along a curve | Emphasize a shape already on screen |
+
 ### Rate Functions for Polish
 Add personality to animations with easing:
 - `rate_functions.smooth` — default, good for most
@@ -332,6 +362,8 @@ self.animate_parameter(r, 1, 10, [circle, eq], run_time=4)
 | Dramatic summary intro | `SpiralIn` |
 | Remove a shape cleanly | `Uncreate` |
 | Erase an equation | `Unwrite` |
+| Auto-trace a moving point | `TracedPath` (add to scene, moves auto) |
+| Comet-tail / fading trail | `TracedPath(dissipating_time=0.5)` |
 
 ## Albanian Characters in LaTeX (ë, ç, etc.)
 
