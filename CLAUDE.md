@@ -146,6 +146,62 @@ Add personality to animations with easing:
 - `rate_functions.rush_into` — fast start, slow end (snapping into place)
 - `rate_functions.there_and_back` — temporary highlight that returns
 
+### Dynamic Values & Updaters
+
+These make videos feel alive instead of static. Use them to show PROCESSES, not just results.
+
+#### Animated Counter (`animated_counter`)
+A number that rolls from start to end. Students SEE the counting happen:
+```python
+# Count balls: 0 → 22, showing "Total: 22"
+self.animated_counter(0, 22, prefix="Total: ", font_size=36,
+                      position=RIGHT * 3, run_time=2.0)
+```
+**Use for:** counting objects, showing a computed value gradually, totals.
+
+#### Fraction Bar (`fraction_bar`)
+A visual bar that fills proportionally — shows what a fraction LOOKS like:
+```python
+# P(red) = 15/22 — bar fills to ~68%
+self.fraction_bar(15, 22, position=DOWN * 2, color=RED)
+```
+**Use for:** probability fractions, percentages, ratio comparisons, proportions.
+
+#### Linked Labels (`linked_label`)
+A label that stays attached to a moving point — never gets "left behind":
+```python
+label = self.linked_label(dot, r"P(x,y)", direction=UR)
+self.add(label)
+# Now if dot moves, label follows automatically
+```
+**Use for:** labels on points that trace paths, dynamic geometry, parameter-dependent text.
+
+#### Parameter Exploration (`animate_parameter`)
+Animate a parameter changing with everything updating in real-time:
+```python
+r = ValueTracker(1)
+circle = always_redraw(lambda: Circle(radius=r.get_value(), color=SHAPE_COLOR))
+eq = always_redraw(lambda: MathTex(f"r = {r.get_value():.1f}").to_corner(UR))
+self.add(circle, eq)
+self.animate_parameter(r, 1, 10, [circle, eq], run_time=4)
+```
+**Use for:** showing how radius affects a circle, how slope changes a line, exploring what happens when a value changes. Powerful for building intuition.
+
+### When to Use Each Feature
+
+| Situation | Feature |
+|-----------|---------|
+| Final answer emphasis | `highlight_result()` |
+| Algebra step → next step | `morph_equation()` |
+| Multiple dots/items appearing | `reveal_sequence()` |
+| Point on a curve | `trace_path()` |
+| Intersection found | `flash_point()` |
+| Counting objects | `animated_counter()` |
+| Showing a proportion | `fraction_bar()` |
+| Label follows moving point | `linked_label()` |
+| "What if r changes?" | `animate_parameter()` |
+| Shape outline then fill | `DrawBorderThenFill` |
+
 ## Albanian Characters in LaTeX (ë, ç, etc.)
 
 MathTex uses LaTeX which does NOT support UTF-8 characters like `ë` inside `\text{}`. The LaTeX diaeresis encoding `\"{e}` also renders incorrectly as `e"`.

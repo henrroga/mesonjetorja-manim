@@ -634,6 +634,218 @@ class ExerciseScene(Scene):
         )
 
     # ──────────────────────────────────────────
+    #  DYNAMIC / UPDATER HELPERS
+    # ──────────────────────────────────────────
+
+    def animated_counter(self, start, end, prefix="", suffix="",
+                         font_size=None, color=None, position=None,
+                         run_time=1.5, num_decimal_places=0):
+        """
+        Animate a number rolling from start to end.
+
+        Use for: counting balls, showing a computed value appearing
+        gradually, progress indicators.
+
+        Args:
+            start: Starting value.
+            end: Final value.
+            prefix: Text before the number (e.g., "Total: ").
+            suffix: Text after the number (e.g., " cm").
+            font_size: Size (defaults to CALC_SIZE).
+            color: Color (defaults to ANSWER_COLOR).
+            position: Where to place (defaults to ORIGIN).
+            run_time: Duration of the animation.
+            num_decimal_places: Decimal precision (0 for integers).
+
+        Returns the final DecimalNumber mobject.
+        """
+        fs = font_size or CALC_SIZE
+        c = color or ANSWER_COLOR
+
+        tracker = ValueTracker(start)
+        number = DecimalNumber(
+            start,
+            num_decimal_places=num_decimal_places,
+            font_size=fs,
+            color=c,
+        )
+        if position is not None:
+            number.move_to(position)
+
+        # Prefix and suffix labels
+        pre_label = None
+        suf_label = None
+        group = VGroup()
+
+        if prefix:
+            pre_label = MathTex(
+                r"\text{" + prefix + r"}",
+                font_size=fs, color=c,
+            )
+            group.add(pre_label)
+
+        group.add(number)
+
+        if suffix:
+            suf_label = MathTex(
+                r"\text{" + suffix + r"}",
+                font_size=fs, color=c,
+            )
+            group.add(suf_label)
+
+        if len(group) > 1:
+            group.arrange(RIGHT, buff=0.15)
+            if position is not None:
+                group.move_to(position)
+
+        # Updater: number follows tracker
+        number.add_updater(
+            lambda m: m.set_value(tracker.get_value())
+        )
+        # Keep arrangement if there are prefix/suffix
+        if pre_label:
+            number.add_updater(
+                lambda m: m.next_to(pre_label, RIGHT, buff=0.15)
+            )
+        if suf_label:
+            suf_label.add_updater(
+                lambda m: m.next_to(number, RIGHT, buff=0.15)
+            )
+
+        self.add(group)
+        self.play(tracker.animate.set_value(end), run_time=run_time)
+
+        # Clean up updaters
+        number.clear_updaters()
+        if suf_label:
+            suf_label.clear_updaters()
+
+        return group
+
+    def fraction_bar(self, numerator, denominator, width=4.0, height=0.4,
+                     color=None, bg_color=None, position=None,
+                     run_time=1.0):
+        """
+        Show a visual fraction bar that fills proportionally.
+
+        Use for: probability (P = 15/22 fills 68%), percentages,
+        progress visualization, ratio comparisons.
+
+        Args:
+            numerator: The favorable count.
+            denominator: The total count.
+            width: Bar width in scene units.
+            height: Bar height.
+            color: Fill color (defaults to ANSWER_COLOR).
+            bg_color: Background bar color (defaults to dim gray).
+            position: Where to place.
+            run_time: Fill animation duration.
+
+        Returns (bar_group, fill_rect) for later reference.
+        """
+        c = color or ANSWER_COLOR
+        bg = bg_color or DIVIDER_COLOR
+
+        ratio = numerator / denominator
+        fill_width = width * ratio
+
+        # Background bar (full width)
+        bg_rect = Rectangle(
+            width=width, height=height,
+            fill_color=bg, fill_opacity=0.3,
+            stroke_color=bg, stroke_width=1,
+        )
+
+        # Fill bar (starts at zero width, animates to ratio)
+        fill_rect = Rectangle(
+            width=0.001, height=height,
+            fill_color=c, fill_opacity=0.7,
+            stroke_width=0,
+        )
+        fill_rect.align_to(bg_rect, LEFT)
+
+        bar_group = VGroup(bg_rect, fill_rect)
+        if position is not None:
+            bar_group.move_to(position)
+
+        # Label: "15/22"
+        label = MathTex(
+            f"\\frac{{{numerator}}}{{{denominator}}}",
+            font_size=24, color=c,
+        )
+        label.next_to(bar_group, RIGHT, buff=0.2)
+
+        self.play(FadeIn(bg_rect), run_time=0.3)
+        self.play(
+            fill_rect.animate.stretch_to_fit_width(fill_width).align_to(bg_rect, LEFT),
+            FadeIn(label),
+            run_time=run_time,
+        )
+
+        bar_group.add(label)
+        return bar_group, fill_rect
+
+    def linked_label(self, target, tex, font_size=None, color=None,
+                     direction=UP, buff=0.2):
+        """
+        Create a label that always stays attached to a moving mobject.
+
+        Use for: labels on points that move along paths, dynamic
+        geometry where vertices shift, parameter-dependent labels.
+
+        Args:
+            target: The mobject to track.
+            tex: LaTeX string for the label.
+            font_size: Size (defaults to DIAGRAM_VALUE_SIZE).
+            color: Color (defaults to LABEL_COLOR).
+            direction: Where relative to target (UP, DOWN, UR, etc.).
+            buff: Distance from target.
+
+        Returns the label mobject (with updater attached).
+        """
+        fs = font_size or DIAGRAM_VALUE_SIZE
+        c = color or LABEL_COLOR
+
+        label = MathTex(tex, font_size=fs, color=c)
+        label.next_to(target, direction, buff=buff)
+        label.add_updater(
+            lambda m: m.next_to(target, direction, buff=buff)
+        )
+        return label
+
+    def animate_parameter(self, tracker, start, end, mobjects_to_update,
+                          run_time=3.0, rate_func=None):
+        """
+        Animate a ValueTracker change with dependent mobjects updating.
+
+        Use for: showing how changing radius affects a circle,
+        how slope changes a line, parameter exploration.
+
+        Args:
+            tracker: A ValueTracker controlling the parameter.
+            start: Starting value.
+            end: Ending value.
+            mobjects_to_update: List of mobjects with updaters attached.
+            run_time: Animation duration.
+            rate_func: Easing function.
+
+        Example:
+            r_tracker = ValueTracker(1)
+            circle = always_redraw(
+                lambda: Circle(radius=r_tracker.get_value(), color=SHAPE_COLOR)
+            )
+            self.add(circle)
+            self.animate_parameter(r_tracker, 1, 5, [circle], run_time=3)
+        """
+        rf = rate_func or rate_functions.smooth
+        tracker.set_value(start)
+        self.play(
+            tracker.animate.set_value(end),
+            run_time=run_time,
+            rate_func=rf,
+        )
+
+    # ──────────────────────────────────────────
     #  GEOMETRY HELPERS
     # ──────────────────────────────────────────
 
