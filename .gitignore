@@ -19,8 +19,9 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Claude Code
-.claude/
+# Claude Code — ignore config but keep skills
+.claude/*
+!.claude/skills/
 .agents/
 
 # Skill lock
