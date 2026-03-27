@@ -1,6 +1,6 @@
 # Mësonjëtorja Manim — Video Production Guidelines
 
-This project generates educational math/physics video solutions using Manim Community Edition.
+This project generates educational math/physics/chemistry video solutions using Manim Community Edition.
 Videos are published on mesonjetorja.com for Albanian students.
 
 **CRITICAL: These videos have NO voiceover. The visuals must tell the complete story on their own. Every calculation result must be reflected on the figure. Every step must be visually obvious.**
@@ -576,11 +576,99 @@ Before finishing any geometry diagram, verify ALL of these:
 - [ ] Every computed value is shown on the figure, not just on the right panel
 - [ ] Sub-shapes being worked on are visually highlighted or extracted
 
+## Chemistry — Lewis Structures & Molecular Diagrams
+
+Chemistry videos require **animated construction** of diagrams, not static reveals. Students should see molecules being BUILT.
+
+### Lewis Structure Animation Rules
+
+**NEVER show a Lewis structure all at once.** Build it step by step:
+
+1. **Central atom appears first** — `GrowFromCenter(atom)`
+2. **Surrounding atoms grow in** — `LaggedStartMap(GrowFromCenter, outer_atoms)`
+3. **Bonds draw from center outward** — `Create(bond_line)` or `GrowFromPoint(bond, center)`
+4. **Lone pairs pop in last** — `LaggedStartMap(FadeIn, lone_pairs)` with small `lag_ratio`
+
+```python
+# WRONG — everything appears at once
+lewis = VGroup(atoms, bonds, lone_pairs)
+self.play(FadeIn(lewis))
+
+# CORRECT — built step by step
+self.play(GrowFromCenter(central_atom), run_time=0.5)
+self.play(
+    LaggedStartMap(GrowFromCenter, outer_atoms, lag_ratio=0.15),
+    run_time=0.8,
+)
+self.play(
+    LaggedStart(*[Create(b) for b in bonds], lag_ratio=0.1),
+    run_time=0.8,
+)
+self.play(
+    LaggedStartMap(FadeIn, lone_pairs, lag_ratio=0.1),
+    run_time=0.6,
+)
+```
+
+### Electron Counting Animation
+
+When checking electron counts (octet rule, duet), **visually count** by highlighting:
+- Flash each bond pair while incrementing a counter
+- Show the running total: `2... 4... 6... 8 ✓` or `6 ✗`
+
+```python
+# Highlight bonds one by one while counting
+for i, bond in enumerate(bonds):
+    count = (i + 1) * 2
+    self.play(Indicate(bond, color=LABEL_COLOR), run_time=0.3)
+    counter.become(MathTex(f"{count}e^-", ...))
+```
+
+### Bond Types Visual Distinction
+
+| Bond | Visual |
+|------|--------|
+| Single bond | Single line, `stroke_width=2.5` |
+| Double bond | Two parallel lines, offset ±0.08 |
+| Triple bond | Three parallel lines |
+| Lone pair | Two dots (Dot objects), spaced 0.16 apart |
+| Dative/coordinate bond | Arrow instead of line |
+
+### Atom Representation
+
+Atoms should be circles with element symbol text centered inside:
+```python
+def atom(label, color=WHITE, radius=0.4):
+    circle = Circle(radius=radius, color=color, stroke_width=2)
+    text = MathTex(label, font_size=28, color=color)
+    text.move_to(circle.get_center())
+    return VGroup(circle, text)
+```
+
+### Color Coding for Chemistry
+
+- **Central atom**: `SHAPE_COLOR` (blue)
+- **Outer atoms**: `WHITE`
+- **Exception/violation atom**: `HIGHLIGHT_COLOR` (orange) or `AUX_COLOR` (red)
+- **Bonds**: `WHITE`
+- **Lone pairs**: `LABEL_COLOR` (yellow dots)
+- **Correct check**: `ANSWER_COLOR` (green)
+- **Violation/wrong**: `AUX_COLOR` (red)
+
+### Pacing for Chemistry Reels
+
+Chemistry explanations need MORE reading time than math:
+- After showing a complete Lewis structure: **wait 2-3s**
+- After showing electron count result: **wait 1.5-2s**
+- After showing pass/fail verdict: **wait 2s**
+- For the violation molecule: **wait 3s** extra for dramatic effect
+
 ## File Structure
 
 - `scripts/style_guide.py` — Colors, sizes, timing, layout constants
 - `scripts/components.py` — ExerciseScene base class with all reusable helpers
 - `scripts/matematike/<book>/<unit>/ushtrimi<N>.py` — Individual exercise scripts
+- `scripts/reels/*.py` — TikTok/Instagram vertical reel scripts
 
 ## Data Source
 
