@@ -364,6 +364,7 @@ scripts/
           reel_a.py                 # Reel A — e.g., "table + outcomes"
           reel_b.py                 # Reel B — e.g., "P(0), P(3), P(6)"
           reel_c.py                 # Reel C — e.g., "P(prime)"
+          publish.txt               # Titles & captions for all videos
           Ushtrimi3.mp4             # YouTube output (gitignored)
           ReelA.mp4                 # Reel A output (gitignored)
           ReelB.mp4                 # Reel B output (gitignored)
@@ -401,7 +402,17 @@ The user provides exercise data as a JSON object with these fields:
 
 ---
 
-## 13. Render Commands
+## 13. publish.txt — MANDATORY
+
+Always generate a `publish.txt` in the exercise folder with ready-to-paste captions for each reel. See the `youtube-video` skill for the full template. Each reel section includes:
+- Caption text with hook question + key answer + hashtags
+- Reference: `Ushtrimi <N> | Kapitulli <unit> | <textbook> (Botime Pegi)`
+- CTA: `Më shumë zgjidhje: mesonjetorja.com`
+- Hashtags: `#matematike #<topic> #klasa<N> #mesonjetorja`
+
+---
+
+## 14. Render Commands
 
 ```bash
 # Preview (fast, low quality — from project root)
@@ -415,7 +426,7 @@ The vertical config is set in the script itself via `config.*` — no CLI flags 
 
 ---
 
-## 14. Checklist Before Publishing
+## 15. Checklist Before Publishing
 
 - [ ] Each reel is fully understandable WITHOUT seeing the other reels
 - [ ] The question/problem is clearly stated and given enough reading time

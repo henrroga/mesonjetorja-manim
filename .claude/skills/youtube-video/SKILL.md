@@ -196,13 +196,75 @@ scripts/
           ushtrimi<N>.py       # YouTube video
           reel_a.py            # Reel A (standalone)
           reel_b.py            # Reel B (standalone)
+          publish.txt          # Titles & captions for all videos
           Ushtrimi<N>.mp4      # YouTube output (gitignored)
           ReelA.mp4            # Reel output (gitignored)
 ```
 
 ---
 
-## 8. Render Commands
+## 8. publish.txt — MANDATORY
+
+Every exercise folder MUST include a `publish.txt` with ready-to-paste titles and captions for all videos. This makes posting fast and consistent.
+
+### YouTube Title Format
+```
+Ushtrimi <N> | Kapitulli <unit> | <textbook name> (Botime Pegi)
+```
+
+### YouTube Description Template
+```
+Në këtë video zgjidhim ushtrimin <N> nga kapitulli <unit> ku <brief problem description in Albanian>.
+
+Zgjidhjet e librit: https://mesonjetorja.com/zgjidhje/<sourceSlug>
+
+Lini komentet tuaja më poshtë dhe bëni Subscribe për më shumë.
+
+Website: https://mesonjetorja.com/
+Instagram: https://www.instagram.com/mesonjetorja
+TikTok: https://www.tiktok.com/@mesonjetorja
+
+#matematike #<topic> #<topic> #klasa<N>
+```
+
+### Reel Caption Template
+```
+<Hook question or problem summary in Albanian> 🎲
+
+<Key result or answer>
+
+Ushtrimi <N> | Kapitulli <unit> | <textbook short name> (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #<topic> #<topic> #klasa<N> #mesonjetorja
+```
+
+### File Structure
+```
+═══════════════════════════════════════════════════════
+ YOUTUBE VIDEO
+═══════════════════════════════════════════════════════
+
+Title:
+...
+
+Description:
+...
+
+═══════════════════════════════════════════════════════
+ REEL A — <topic>
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+...
+```
+
+One section per video. Include the key answers in reel captions so viewers can verify.
+
+---
+
+## 9. Render Commands
 
 ```bash
 # Preview (low quality)

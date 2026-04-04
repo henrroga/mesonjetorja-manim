@@ -1,0 +1,71 @@
+═══════════════════════════════════════════════════════
+ YOUTUBE VIDEO
+═══════════════════════════════════════════════════════
+
+Title:
+Ushtrimi 3 | Kapitulli 8.3A | Matematika 10 - 11: Pjesa II (Botime Pegi)
+
+Description:
+Në këtë video zgjidhim ushtrimin 3 nga kapitulli 8.3A ku hidhen dy zare të rregullta dhe mbahet shënim ndryshesa e pikëve. Ndërtojmë tabelën e hapësirës së rezultateve, gjejmë bashkësinë e rezultateve të mundshme, dhe llogarisim probabilitetet P(0), P(3), P(6), dhe P(numër i thjeshtë).
+
+Zgjidhjet e librit: https://mesonjetorja.com/zgjidhje/matematika-10-11-pjesa-2
+
+Lini komentet tuaja më poshtë dhe bëni Subscribe për më shumë.
+
+Website: https://mesonjetorja.com/
+Instagram: https://www.instagram.com/mesonjetorja
+TikTok: https://www.tiktok.com/@mesonjetorja
+
+#matematike #probabilitet #zare #klasa11
+
+
+═══════════════════════════════════════════════════════
+ REEL A — Tabela e ndryshesave
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Hidhen dy zare të rregullta dhe shënojmë ndryshesën e pikëve |i - j|. Si duket tabela e rezultateve? 🎲🎲
+
+Rezultatet e mundshme: {0, 1, 2, 3, 4, 5}
+
+Ushtrimi 3 | Kapitulli 8.3A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #probabilitet #zare #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL B — P(0), P(3), P(6)
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Hidhen dy zare. Ndryshesa e pikëve: |i - j|. Sa është P(0), P(3), dhe P(6)? 🎲
+
+P(0) = 1/6
+P(3) = 1/6
+P(6) = 0 (ndryshesa max është 5!)
+
+Ushtrimi 3 | Kapitulli 8.3A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #probabilitet #zare #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL C — P(numër i thjeshtë)
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Sa mundësi ka që ndryshesa e dy zareve të jetë numër i thjeshtë? 🎲
+
+Nga {0,1,2,3,4,5} → thjeshtë janë: 2, 3, 5
+Numërojmë: 8 + 6 + 2 = 16 herë nga 36
+P(thjeshtë) = 4/9
+
+Ushtrimi 3 | Kapitulli 8.3A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #probabilitet #zare #klasa11 #mesonjetorja
