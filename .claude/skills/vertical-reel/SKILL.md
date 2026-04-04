@@ -2,21 +2,21 @@
 name: vertical-reel
 description: |
   Create vertical 9:16 Manim videos for Instagram Reels and TikTok. Handles safe zones,
-  fast pacing, hook-first structure, and platform-aware layouts.
+  clarity-first pacing, and platform-aware layouts. One exercise produces MULTIPLE standalone reels.
 
   Trigger when: User asks for "reel", "TikTok", "vertical video", "Instagram video",
   "short-form", "9:16", or "vertical" in context of Manim video creation.
 user-invokable: true
 args:
   - name: exercise
-    description: Which exercise or topic to create a reel for (optional — will pick one if not specified)
+    description: Which exercise or topic to create reels for (optional — will pick one if not specified)
     required: false
 ---
 
 # Vertical Reel Production Guide — Instagram Reels & TikTok
 
 Create 9:16 vertical Manim CE videos optimized for mobile-first social platforms.
-These are short (30–60s), fast-paced, hook-first educational clips.
+Each reel is 30–50 seconds, **clarity-first**, and fully understandable on its own.
 
 ---
 
@@ -67,9 +67,6 @@ SAFE_CENTER_X = 0.0   # Truly centered on frame
 SAFE_CENTER_Y = 0.75  # Vertical center of safe zone
 ```
 
-**Key insight:** Keep content CENTERED with equal margins on all sides. The safe zone
-has generous padding from every edge — bottom has the most because of captions/music UI.
-
 ### What Goes Where
 
 | Zone | What to put there |
@@ -88,141 +85,177 @@ with the main content.
 
 ---
 
-## 3. Video Structure (30–60 seconds)
+## 3. CORE PRINCIPLE: One Exercise = Multiple Standalone Reels
 
-Every reel follows this 5-phase structure:
+**NEVER cram an entire exercise into one reel.** Instead, split it into multiple reels,
+each covering ONE clear concept or question. Each reel must be **fully understandable
+on its own** — a viewer who sees only that one reel should:
 
-### Phase 1 — HOOK (0–3 seconds) 🎯
+1. Understand WHAT the problem is asking
+2. Follow HOW it's being solved
+3. See the ANSWER clearly
 
-**The most important phase.** Users decide to scroll or stay in under 2 seconds.
+### How to Split an Exercise
+
+Analyze the exercise and identify natural "reel boundaries":
+
+| Exercise structure | Reel split |
+|---|---|
+| Parts a, b, c with different questions | One reel per part (or group related parts) |
+| Setup + multiple probability questions | Reel 1: setup + first question. Reel 2+: each remaining question |
+| Long algebra with multiple stages | One reel per stage (factoring, solving, checking) |
+| Geometry with construction + calculation | Reel 1: construction. Reel 2: calculation |
+
+**Example:** An exercise with "build a table, find P(0), P(3), P(6), P(prime)" becomes:
+- `reel_a.py` — "What's the difference table for two dice?" (table + set of outcomes)
+- `reel_b.py` — "P(0), P(3), P(6) for dice differences" (three quick probabilities)
+- `reel_c.py` — "Is a dice difference prime?" (prime analysis + P(prime))
+
+### Standalone Rule
+
+Each reel must re-establish context. Don't assume the viewer saw a previous reel.
+- Reel B can't start with "continuing from before..." — it must state the problem fresh
+- Brief context recap (5–8 seconds) is NOT wasted time, it's essential
+- Show the dice / table / setup again if needed — fast, but present
+
+---
+
+## 4. Reel Structure (30–50 seconds per reel)
+
+Every reel follows this 4-phase structure:
+
+### Phase 1 — HOOK + CONTEXT (0–10 seconds)
+
+**The viewer must understand the problem.** This is the MOST important phase.
+Students should think: "Oh, I know this exercise from school!"
 
 Rules:
-- **Start with a QUESTION** — not a title, not "let me show you"
-- Use **large text** (font_size 40–52) that's readable on a phone
-- Include a **visual mystery** — a shape, a "?", something incomplete
-- **No slow fades** — use `GrowFromCenter`, simultaneous animations
-- Everything appears in ONE `self.play()` call, `run_time=1.0`
+- **Show the ACTUAL question** — not a vague teaser, not truncated text
+- Use **large text** (font_size 40–48) readable on a phone
+- If the question needs 3 lines, use 3 lines — don't truncate
+- **Give the question time to be READ** — if it takes 5 seconds to read, wait 5 seconds
+- A visual element (dice, shapes, table outline) helps but must NOT replace the text
 
 ```python
 def hook(self):
-    q_mark = MathTex(r"?", font_size=180, color=LABEL_COLOR)
-    q_mark.move_to(UP * 3.5)  # Centered in safe zone
-
-    hook_text = MathTex(
-        r"\text{Sa mundësi ke të nxjerrësh}",
-        font_size=40, color=WHITE,
+    # The ACTUAL question, clearly stated
+    q_line1 = MathTex(
+        r"\text{Hidhen dy zare të rregullta.}",
+        font_size=38, color=WHITE,
     )
-    hook_text2 = MathTex(
-        r"\text{topin e kuq?}",
-        font_size=48, color=RED,  # Key word in COLOR
+    q_line2 = MathTex(
+        r"\text{Mbahet shënim ndryshesa e pikëve.}",
+        font_size=38, color=WHITE,
     )
-    hook_group = VGroup(hook_text, hook_text2).arrange(DOWN, buff=0.35)
-    hook_group.move_to(UP * 0.5)
+    q_line3 = MathTex(
+        r"\text{Sa është } P(0) \text{ ?}",
+        font_size=44, color=LABEL_COLOR,  # The specific question in COLOR
+    )
+    question = VGroup(q_line1, q_line2, q_line3).arrange(DOWN, buff=0.35)
+    question.move_to(UP * 2.0)
 
-    # Everything appears at once — FAST
     self.play(
-        GrowFromCenter(q_mark),
-        FadeIn(hook_group, shift=UP * 0.5),
-        run_time=1.0,
+        FadeIn(question, shift=UP * 0.5),
+        run_time=1.2,
     )
-    self.play(q_mark.animate.scale(1.2), rate_func=there_and_back, run_time=0.6)
-    self.wait(0.8)
+    self.wait(3.0)  # LET THEM READ IT
 ```
 
-Good hooks:
-- "Sa mundësi ke...?" (What's the probability...?)
-- "A mund ta zgjidhësh këtë?" (Can you solve this?)
-- "Çfarë vlere ka x?" (What is x?)
-- Show the problem visually FIRST, then solve it
+**Bad hooks** (too vague, viewer doesn't know what's happening):
+- "Sa mundësi ke...?" with no context
+- A giant "?" with no problem statement
+- Jumping straight into a table without explaining what it represents
 
-### Phase 2 — SETUP (3–12 seconds)
+**Good hooks** (viewer immediately understands the exercise):
+- Full problem statement, then highlight the specific question
+- "Hidhen dy zare. Ndryshesa e pikëve. Sa është P(0)?"
+- Show the setup visually while the question text is on screen
 
-Show the problem data visually. Use counting animations, colored objects, diagrams.
+### Phase 2 — SETUP / BUILD (10–20 seconds)
+
+Show the visual foundation needed to solve the problem.
+- Build a table, draw shapes, show objects
 - `ShowIncreasingSubsets` for counting
 - `LaggedStartMap(GrowFromCenter, ...)` for revealing groups
-- Keep labels SHORT — single numbers, not full sentences
+- **Label everything clearly** — the viewer needs to understand what they're looking at
 
-### Phase 3 — SOLVE Part 1 (12–25 seconds)
+### Phase 3 — SOLVE (20–35 seconds)
 
-The main calculation. Keep it to 3–4 equations maximum.
-- One question text → one formula → one substitution → one answer
-- **Skip "why" text** — reels are too fast for explanations
+Walk through the solution. Keep it to 3–5 equations maximum per reel.
+- Show the formula FIRST, then substitute values
 - **Use color** to connect equation parts to visual elements
+- **Brief "why" text is OK** — don't skip understanding to save 3 seconds
 - Answer gets `SurroundingRectangle` + `Flash`
 
-### Phase 4 — SOLVE Part 2 (25–38 seconds) [optional]
+### Phase 4 — ANSWER + CTA (35–50 seconds)
 
-A second quick result that contrasts with Part 1.
-- Even faster — 2–3 equations
-- Reuse the same visual setup (just dim/highlight differently)
-
-### Phase 5 — PUNCHLINE (38–55 seconds)
-
-Visual comparison, summary, or "wow" moment.
-- Side-by-side or stacked comparison
-- Animated fraction bars filling simultaneously
-- CTA: "@mesonjetorja" and "Më shumë ushtrime..."
-- `Circumscribe` the final comparison for emphasis
+Emphasize the answer, then CTA.
+- Box the answer prominently
+- Show "@mesonjetorja" and "Më shumë ushtrime..."
+- `Circumscribe` the final answer for emphasis
 
 ---
 
-## 4. Timing & Pacing Rules
+## 5. Timing & Pacing Rules
 
-Reels are 2–3x faster than full exercise videos.
+Reels are faster than YouTube videos, but **NEVER sacrifice comprehension for speed.**
 
 | Action | Full video | Reel |
 |--------|-----------|------|
-| `Write(equation)` | 1.0–1.2s | 0.6–0.8s |
-| Wait after equation | 2.0–3.0s | 0.4–0.6s |
-| Wait after answer | 3.5s | 1.0s |
+| `Write(equation)` | 1.0–1.2s | 0.7–0.9s |
+| Wait after question text | 3.0–4.0s | 2.0–3.0s (they MUST read it) |
+| Wait after equation | 2.0–3.0s | 1.0–1.5s |
+| Wait after answer | 3.5s | 1.5–2.0s |
 | FadeOut transition | 0.7s | 0.3–0.4s |
-| Phase transition | Clean fade | Instant or 0.4s |
 
-**Total target: 30–50 seconds.** Never exceed 60 seconds.
+**Total target: 30–50 seconds per reel.** Can go to 60s if needed for clarity.
 
 ### Pacing Principles
-- **No dead air** — if nothing moves for > 1.5s, the viewer scrolls
-- **Overlap animations** — use `AnimationGroup` and simultaneous `self.play()` calls
-- **Cut the "why"** — full videos explain; reels show the result
+- **Clarity beats speed** — if the viewer doesn't understand, the reel is worthless
+- **Give text time to be read** — Albanian words are long; respect reading speed
+- **No dead air > 2s** — but "reading time" is NOT dead air
 - **One concept per reel** — don't try to cover 5 parts of an exercise
+- **Brief context recap is mandatory** — don't assume previous knowledge
 
 ---
 
-## 5. Typography for Small Screens
+## 6. Typography for Small Screens
 
 Phone screens are small. Text must be LARGE and HIGH CONTRAST.
 
 ```python
 # Reel font sizes (bigger than full video)
-REEL_HOOK_SIZE = 48       # Hook question — must be readable at a glance
-REEL_TITLE_SIZE = 42      # Phase titles
-REEL_EQUATION_SIZE = 40   # Main equations
+REEL_HOOK_SIZE = 44       # Hook question — must be readable at a glance
+REEL_TITLE_SIZE = 40      # Phase titles
+REEL_EQUATION_SIZE = 38   # Main equations
 REEL_ANSWER_SIZE = 44     # Final answers — slightly bigger
-REEL_BODY_SIZE = 32       # Explanatory text (use sparingly)
+REEL_BODY_SIZE = 32       # Explanatory text
 REEL_SMALL_SIZE = 28      # Percentages, labels
+REEL_TABLE_SIZE = 22      # Table cell values (tables have many cells)
 ```
 
 Rules:
-- **Never go below font_size 26** — unreadable on phones
+- **Never go below font_size 22** for tables, **26** for everything else
 - **One line per MathTex** — no line wrapping
-- **Maximum 6 words per text line** — break into multiple MathTex if needed
+- **Maximum 7 words per text line** — break into multiple MathTex if needed
 - **Use color for emphasis** — not bold (which we never use anyway)
+- **Albanian text needs MORE space** — words like "ndryshesës" are long
 
 ---
 
-## 6. Layout Patterns
+## 7. Layout Patterns
 
-### Pattern A: Visual Top + Calc Bottom (recommended)
+### Pattern A: Question Top + Visual Middle + Calc Bottom (recommended)
 
 ```
 ┌─────────────┐
-│  [DIAGRAM]  │  ← Visual element: balls, triangle, graph
-│  [LABELS]   │
+│  Question    │  ← Full question text, readable
+│  (2-3 lines) │
 │             │
-│  Question?  │  ← One-line question
+│  [DIAGRAM]  │  ← Visual element: table, balls, shapes
+│             │
 │  Formula    │  ← Formula template
 │  = Answer   │  ← Substituted answer (colored, boxed)
-│  ████░░░ %  │  ← Fraction bar
 │             │
 │  @handle    │  ← CTA
 └─────────────┘
@@ -234,7 +267,7 @@ For pure algebra reels (no diagram needed):
 
 ```
 ┌─────────────┐
-│  Problem?   │  ← Hook question with the equation
+│  Problem    │  ← Full problem statement
 │             │
 │  Step 1     │
 │  Step 2     │  ← Each step morphs from previous
@@ -249,7 +282,7 @@ For pure algebra reels (no diagram needed):
 
 ```
 ┌─────────────┐
-│   Title     │
+│   Context   │  ← What we're comparing
 │             │
 │  Result A   │
 │  ████████░  │  ← Bar A
@@ -263,9 +296,9 @@ For pure algebra reels (no diagram needed):
 
 ---
 
-## 7. Animation Selection for Reels
+## 8. Animation Selection for Reels
 
-Reels need **punchy, fast animations**. Skip subtle ones.
+Reels need **clear, purposeful animations**. Every animation must serve comprehension.
 
 ### USE in reels:
 - `GrowFromCenter` — dots, small objects appearing
@@ -275,9 +308,9 @@ Reels need **punchy, fast animations**. Skip subtle ones.
 - `Circumscribe` — emphasize results
 - `GrowFromPoint` — answer grows from equation
 - `Indicate` with `there_and_back` — quick pulse
+- `Write` — still good for equations; don't rush it
 
 ### AVOID in reels:
-- `Write` for long equations — too slow; use `FadeIn(shift=UP)` instead
 - `DrawBorderThenFill` for small objects — `GrowFromCenter` is faster
 - `glow_trace` — too subtle for small screens
 - `focus_on` — spotlight effect is too slow
@@ -286,23 +319,23 @@ Reels need **punchy, fast animations**. Skip subtle ones.
 
 ---
 
-## 8. Color on Small Screens
+## 9. Color on Small Screens
 
 High contrast is essential. The dark background (`#1C1C1C`) helps, but:
 - **White text for neutral content** — not `GRAY_B` (too dim on phones)
 - **Bright, saturated colors for key elements** — RED, BLUE, GREEN
 - **ANSWER_COLOR (#83C167)** still works great for answers
 - **Avoid DIVIDER_COLOR (#888888) for text** — too faint; OK for lines/borders only
-- **One accent color per phase** — don't rainbow; pick red for Part A, blue for Part B
+- **One accent color per reel** — pick a consistent highlight color
 
 ---
 
-## 9. Albanian Text in Reels
+## 10. Albanian Text in Reels
 
 Same rules as full videos — ALWAYS use proper diacritics:
 - ë (not e), ç (not c)
 - `ALBANIAN_TEX` template is required
-- Keep text SHORT — Albanian words are long; break lines if needed
+- **Give Albanian text enough space** — words are long, break lines generously
 
 Common reel phrases:
 ```python
@@ -316,52 +349,83 @@ r"\text{Më shumë ushtrime në faqen tonë!}"  # More exercises on our page!
 
 ---
 
-## 10. File Structure
+## 11. File Structure
 
-Place reel scripts in `scripts/reels/`:
+Reel scripts live **inside the exercise folder**, next to the YouTube script.
+Multiple reels per exercise — one file per reel:
+
 ```
 scripts/
-  reels/
-    probability_balls_reel.py
-    quadratic_equation_reel.py
-    triangle_angles_reel.py
-    ...
+  matematike/
+    matematika-10-11-pjesa-2/      # sourceSlug from DB
+      8-3A/                         # unitSlug from DB
+        3/                          # exerciseSlug from DB
+          ushtrimi3.py              # YouTube video (ExerciseScene)
+          reel_a.py                 # Reel A — e.g., "table + outcomes"
+          reel_b.py                 # Reel B — e.g., "P(0), P(3), P(6)"
+          reel_c.py                 # Reel C — e.g., "P(prime)"
+          Ushtrimi3.mp4             # YouTube output (gitignored)
+          ReelA.mp4                 # Reel A output (gitignored)
+          ReelB.mp4                 # Reel B output (gitignored)
+          ReelC.mp4                 # Reel C output (gitignored)
 ```
 
 Each reel is a **standalone Scene** (not subclassing ExerciseScene) because:
-- No title screen needed (waste of seconds)
+- No title screen needed
 - No part headers needed
 - No split layout (vertical doesn't have left/right panels)
 - Custom timing constants
+
+**Class naming:** `ReelA`, `ReelB`, `ReelC` — matches the output filename.
 
 Import shared colors and `ALBANIAN_TEX` from `style_guide.py`.
 
 ---
 
-## 11. Render Commands
+## 12. Exercise Data & Solution Handling
+
+The user provides exercise data as a JSON object with these fields:
+- `exerciseSlug`, `unitSlug`, `sourceSlug` — used for folder structure
+- `question` — the exercise problem (HTML)
+- `solution` — the text solution from the website (HTML, may contain images)
+- `unitContext` — the lesson/unit theory, examples, and tables (Markdown)
+- `grade` — the student grade level (e.g., "Klasa 11")
+
+**CRITICAL: The solution is a REFERENCE, not gospel truth.**
+- Use it as a clue to understand the expected approach and final answers
+- **Always double-check the math yourself** — verify every calculation
+- **Expand beyond the solution** — the video must be MORE explanatory than the text
+- **Use the unitContext** to connect the exercise to the broader lesson
+- The unitContext shows the theory, notation, and worked examples the student has seen
+- Reference the unit's approach/notation so the video feels like a natural extension
+
+---
+
+## 13. Render Commands
 
 ```bash
-# Preview (fast, low quality)
-cd scripts && manim -pql reels/my_reel.py MyReelScene
+# Preview (fast, low quality — from project root)
+./render.sh scripts/matematike/<sourceSlug>/<unitSlug>/<exerciseSlug>/reel_a.py ReelA l
 
-# Final render (1080x1920, high quality)
-cd scripts && manim -pqh reels/my_reel.py MyReelScene
+# Final render with music (from project root)
+./render.sh scripts/matematike/<sourceSlug>/<unitSlug>/<exerciseSlug>/reel_a.py ReelA
 ```
 
 The vertical config is set in the script itself via `config.*` — no CLI flags needed.
 
 ---
 
-## 12. Checklist Before Publishing
+## 14. Checklist Before Publishing
 
-- [ ] Total duration ≤ 60 seconds (ideally 30–50s)
-- [ ] Hook grabs attention in first 2 seconds
+- [ ] Each reel is fully understandable WITHOUT seeing the other reels
+- [ ] The question/problem is clearly stated and given enough reading time
+- [ ] A student would think "I know this exercise!" within the first 8 seconds
+- [ ] Total duration 30–50 seconds (up to 60s if clarity demands it)
 - [ ] ALL content inside safe zone (no text at bottom/right edges)
 - [ ] All Albanian text uses proper ë and ç
-- [ ] Font sizes ≥ 26 everywhere
+- [ ] Font sizes ≥ 26 everywhere (≥ 22 for table cells)
 - [ ] No overlapping elements
 - [ ] Answer is visually emphasized (box + flash)
 - [ ] CTA (@mesonjetorja) is visible but not in danger zone
-- [ ] No dead air > 1.5 seconds
 - [ ] Plays well with sound off (it always does — no voiceover)
 - [ ] Preview on actual phone screen before publishing
