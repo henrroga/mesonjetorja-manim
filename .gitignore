@@ -1,5 +1,10 @@
-# Manim output
+# Manim output (temp render files)
 media/
+
+# Video files — rendered locally, never committed
+*.mp4
+
+# Legacy output folder
 output/
 
 # Python

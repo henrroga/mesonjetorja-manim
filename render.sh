@@ -7,20 +7,20 @@
 #    ./render.sh <script_path> <ClassName> [quality]
 #
 #  Examples:
-#    ./render.sh scripts/matematike/matematika-10-11-pjesa-2/7.2A/ushtrimi4.py Ushtrimi4
-#    ./render.sh scripts/matematike/matematika-10-11-pjesa-2/7.2A/ushtrimi4.py Ushtrimi4 k
+#    ./render.sh scripts/matematike/mat-10-11-p2/7.2A/ushtrimi4.py Ushtrimi4
+#    ./render.sh scripts/matematike/mat-10-11-p2/7.2A/ushtrimi4.py Ushtrimi4 k
 #
 #  Quality flags: l (480p), m (720p), h (1080p, default), k (4K)
 #
-#  Output goes to: output/<ClassName>.mp4
+#  Output goes to: same directory as the script
+#    e.g., scripts/matematike/.../7.2A/Ushtrimi4.mp4
 # ─────────────────────────────────────────────────────────
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-VENV_PYTHON="$SCRIPT_DIR/.venv/bin/python"
-MUSIC_DIR="$SCRIPT_DIR/music"
-OUTPUT_DIR="$SCRIPT_DIR/output"
+PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
+VENV_PYTHON="$PROJECT_DIR/.venv/bin/python"
+MUSIC_DIR="$PROJECT_DIR/music"
 
 # Default music track and volume
 MUSIC_FILE="$MUSIC_DIR/lofi-chill.mp3"
@@ -49,13 +49,16 @@ case "$QUALITY" in
     *) echo "Invalid quality: $QUALITY (use l/m/h/k)"; exit 1 ;;
 esac
 
+# Output directory = same folder as the script
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+
 echo "▸ Rendering $CLASS_NAME at quality -q$QUALITY ..."
 "$VENV_PYTHON" -m manim render "$SCRIPT_PATH" "$CLASS_NAME" $QF --format mp4
 
 # Find the rendered video — pick the most recently modified match
 # (manim puts it in media/videos/<filename>/<resolution>/)
 BASENAME=$(basename "$SCRIPT_PATH" .py)
-VIDEO_FILE=$(find "$SCRIPT_DIR/media/videos/$BASENAME" -name "$CLASS_NAME.mp4" -type f -print0 \
+VIDEO_FILE=$(find "$PROJECT_DIR/media/videos/$BASENAME" -name "$CLASS_NAME.mp4" -type f -print0 \
     | xargs -0 ls -t 2>/dev/null | head -1)
 
 if [ -z "$VIDEO_FILE" ]; then
@@ -72,17 +75,12 @@ if [ ! -f "$MUSIC_FILE" ]; then
     exit 1
 fi
 
-# Create output directory
-mkdir -p "$OUTPUT_DIR"
-
-FINAL="$OUTPUT_DIR/${CLASS_NAME}.mp4"
+# Final output: next to the script
+FINAL="$SCRIPT_DIR/${CLASS_NAME}.mp4"
 
 echo "▸ Adding background music (volume: ${MUSIC_VOLUME}) ..."
 
 # Merge video + looped music at low volume with fade-out at the end
-# -stream_loop -1  → loop the music track indefinitely
-# volume=...       → keep music subtle
-# afade=t=out      → fade out music in the last 3 seconds
 VIDEO_DURATION=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$VIDEO_FILE")
 FADE_START=$(echo "$VIDEO_DURATION - 3" | bc)
 
