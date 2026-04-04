@@ -191,7 +191,7 @@ Walk through the solution. Keep it to 3–5 equations maximum per reel.
 
 Emphasize the answer, then CTA.
 - Box the answer prominently
-- Show "@mesonjetorja" and "Më shumë ushtrime..."
+- Show "mesonjetorja.com" and "Më shumë ushtrime..."
 - `Circumscribe` the final answer for emphasis
 
 ---
@@ -343,7 +343,7 @@ r"\text{Sa mundësi ke...?}"           # What's the probability...?
 r"\text{A mund ta zgjidhësh?}"        # Can you solve it?
 r"\text{Çfarë vlere ka } x \text{?}" # What is x?
 r"\text{Përfundimi:}"                 # Conclusion:
-r"\text{@mesonjetorja}"               # CTA handle
+r"\text{mesonjetorja.com}"             # CTA — always the website, never @handle
 r"\text{Më shumë ushtrime në faqen tonë!}"  # More exercises on our page!
 ```
 
@@ -426,6 +426,6 @@ The vertical config is set in the script itself via `config.*` — no CLI flags 
 - [ ] Font sizes ≥ 26 everywhere (≥ 22 for table cells)
 - [ ] No overlapping elements
 - [ ] Answer is visually emphasized (box + flash)
-- [ ] CTA (@mesonjetorja) is visible but not in danger zone
+- [ ] CTA (mesonjetorja.com) is visible but not in danger zone
 - [ ] Plays well with sound off (it always does — no voiceover)
 - [ ] Preview on actual phone screen before publishing

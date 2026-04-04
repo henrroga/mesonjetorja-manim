@@ -663,13 +663,114 @@ Chemistry explanations need MORE reading time than math:
 - After showing pass/fail verdict: **wait 2s**
 - For the violation molecule: **wait 3s** extra for dramatic effect
 
+## ExerciseScene vs Plain Scene — When to Use Which
+
+`ExerciseScene` (from `components.py`) calls `fade_all()` between every part. This **DESTROYS all mobjects** on screen.
+
+**Use `ExerciseScene`** when parts are self-contained (no shared visual state).
+
+**Use a plain `Scene`** when a key visual (table, graph, diagram) must persist across parts. This is common for:
+- Probability tables that get highlighted per question
+- Coordinate planes with multiple plotted elements
+- Geometry figures referenced by multiple calculations
+
+```python
+# Plain Scene pattern for persistent visuals
+class Ushtrimi3(Scene):
+    def construct(self):
+        self.title_screen()
+        self.part_a()        # builds table (centered)
+        self.part_b()        # table shifts left, stays
+        self.part_c_i()      # highlights cells, calculates on right
+        self.part_c_ii()     # highlights different cells
+        self.final_summary()
+        self.end_screen()    # mesonjetorja.com + 8s hold
+```
+
+## Tables — Always Use MathTable
+
+**NEVER** position table cells manually with coordinate math — it causes misaligned borders.
+
+**ALWAYS** use Manim's `MathTable`:
+```python
+table = MathTable(
+    table_data,
+    row_labels=row_labels,
+    col_labels=col_labels,
+    top_left_entry=corner_label,
+    include_outer_lines=True,
+    v_buff=0.25, h_buff=0.4,
+    element_to_mobject_config={"font_size": 22},
+    line_config={"stroke_width": 1, "color": DIVIDER_COLOR, "stroke_opacity": 0.5},
+)
+```
+
+Access data cells with `table.get_entries((r+2, c+2))` (1-indexed, row/col 1 are labels).
+
+## End Screen — MANDATORY for YouTube
+
+Every YouTube video must end with `mesonjetorja.com` (never `@mesonjetorja`) and an 8-second hold for YouTube end screen overlay:
+
+```python
+def end_screen(self):
+    domain = MathTex(r"\text{mesonjetorja.com}", font_size=TITLE_SIZE, color=WHITE)
+    domain.move_to(UP * 0.5)
+    tagline = MathTex(r"\text{Më shumë ushtrime në faqen tonë!}",
+                      font_size=SUBTITLE_SIZE, color=BODY_TEXT_COLOR)
+    tagline.next_to(domain, DOWN, buff=0.5)
+    self.play(GrowFromCenter(domain), FadeIn(tagline, shift=UP * 0.3), run_time=1.0)
+    self.wait(8.0)
+```
+
+## Persistent Visual Pattern
+
+When the exercise has a key visual (table, graph, triangle):
+1. **Build** it centered on screen with full labels
+2. **Shift & shrink** it to the left when calculations begin (remove labels that won't fit)
+3. **Highlight** relevant parts for each step, then **reset** before the next step
+4. **Remove** only when ALL referencing calculations are done
+
+## Double-Animation Prevention
+
+When building VGroups for staged animation (e.g., headers first, then values), **never** put items in a shared VGroup and then try to animate subsets — items get animated twice (appear, disappear, reappear). Keep groups separate:
+
+```python
+# WRONG — items are in both all_cells and the row loop
+all_cells = VGroup(corner, *headers, *values)
+self.play(FadeIn(VGroup(*list(all_cells)[:13])))  # animates some values!
+for row in rows:
+    self.play(FadeIn(row))  # re-animates them!
+
+# CORRECT — separate groups
+header_group = VGroup(corner, *headers)
+self.play(FadeIn(header_group))
+for row in value_rows:
+    self.play(FadeIn(row))
+```
+
 ## File Structure
 
-- `scripts/style_guide.py` — Colors, sizes, timing, layout constants
-- `scripts/components.py` — ExerciseScene base class with all reusable helpers
-- `scripts/matematike/<book>/<unit>/ushtrimi<N>.py` — Individual exercise scripts
-- `scripts/reels/*.py` — TikTok/Instagram vertical reel scripts
+```
+scripts/
+  style_guide.py                    — Colors, sizes, timing, layout constants
+  components.py                     — ExerciseScene base class with reusable helpers
+  generate_exercise.py              — Script generator from JSON
+  matematike/<sourceSlug>/<unitSlug>/<exerciseSlug>/
+    ushtrimi<N>.py                  — YouTube video script
+    reel_a.py, reel_b.py, ...       — Standalone reel scripts
+    *.mp4                           — Rendered output (gitignored)
+  fizike/<sourceSlug>/<unitSlug>/<exerciseSlug>/
+    ...
+  kimi/<sourceSlug>/<unitSlug>/<exerciseSlug>/
+    ...
+```
+
+Folder names use slugs from the mesonjetorja.com database:
+- `sourceSlug` — textbook slug (e.g., `matematika-10-11-pjesa-2`)
+- `unitSlug` — unit slug (e.g., `8-3A`)
+- `exerciseSlug` — exercise slug (e.g., `3`)
 
 ## Data Source
 
 Get exercise data from mesonjetorja.com (deployed site), never from localhost or database directly.
+The solution provided is a REFERENCE — always double-check the math independently.

@@ -231,7 +231,7 @@ class ReelA(Scene):
     def cta(self):
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
 
-        handle = MathTex(r"\text{@mesonjetorja}", font_size=BODY_SIZE, color=WHITE)
+        handle = MathTex(r"\text{mesonjetorja.com}", font_size=BODY_SIZE, color=WHITE)
         handle.move_to(UP * 0.5)
         tagline = MathTex(
             r"\text{Më shumë ushtrime në faqen tonë!}",

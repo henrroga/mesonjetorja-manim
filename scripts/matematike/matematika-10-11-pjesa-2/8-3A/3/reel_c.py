@@ -145,15 +145,61 @@ class ReelC(Scene):
     # ────────────────────────────────────────────
 
     def count_and_solve(self):
-        # Show compact table with primes highlighted
-        title = MathTex(
-            r"\text{Numërojmë në tabelë:}",
-            font_size=BODY_SIZE, color=STEP_TITLE_COLOR,
+        # Show the difference table so this reel is fully standalone
+        table_title = MathTex(
+            r"\text{Numërojmë në tabelën e ndryshesave:}",
+            font_size=SMALL_SIZE, color=STEP_TITLE_COLOR,
         )
-        title.move_to(UP * SAFE_TOP)
-        self.play(FadeIn(title), run_time=0.4)
+        table_title.move_to(UP * SAFE_TOP)
+        self.play(FadeIn(table_title), run_time=0.4)
 
-        # Count for each prime value
+        cell_w, cell_h = 0.58, 0.42
+        table_cells = VGroup()
+        val_cells = {}
+
+        # Corner
+        corner = MathTex(r"|i{-}j|", font_size=14, color=DIVIDER_COLOR)
+        corner.move_to(ORIGIN)
+        table_cells.add(corner)
+
+        # Headers
+        for c in range(6):
+            h = MathTex(str(c + 1), font_size=TABLE_SIZE, color=SHAPE_COLOR)
+            h.move_to(RIGHT * (c + 1) * cell_w)
+            table_cells.add(h)
+        for r in range(6):
+            h = MathTex(str(r + 1), font_size=TABLE_SIZE, color=AUX_COLOR)
+            h.move_to(DOWN * (r + 1) * cell_h)
+            table_cells.add(h)
+
+        # Values
+        for r in range(6):
+            for c in range(6):
+                val = DIFF[r][c]
+                txt = MathTex(str(val), font_size=TABLE_SIZE, color=WHITE)
+                txt.move_to(RIGHT * (c + 1) * cell_w + DOWN * (r + 1) * cell_h)
+                table_cells.add(txt)
+                val_cells[(r, c)] = txt
+
+        table_cells.move_to(UP * 1.8)
+        self.play(FadeIn(table_cells), run_time=0.8)
+        self.wait(0.8)
+
+        # Highlight prime-valued cells (2, 3, 5)
+        prime_rects = VGroup()
+        for r in range(6):
+            for c in range(6):
+                if DIFF[r][c] in PRIMES:
+                    rect = SurroundingRectangle(
+                        val_cells[(r, c)], color=ANSWER_COLOR,
+                        buff=0.03, stroke_width=1.5,
+                    )
+                    prime_rects.add(rect)
+
+        self.play(LaggedStartMap(Create, prime_rects, lag_ratio=0.03), run_time=0.8)
+        self.wait(1.0)
+
+        # Count for each prime value — below the table
         count_2 = MathTex(
             r"\text{Ndryshesa } 2 \;\to\; 8 \text{ herë}",
             font_size=BODY_SIZE, color=ANSWER_COLOR,
@@ -166,8 +212,8 @@ class ReelC(Scene):
             r"\text{Ndryshesa } 5 \;\to\; 2 \text{ herë}",
             font_size=BODY_SIZE, color=ANSWER_COLOR,
         )
-        counts = VGroup(count_2, count_3, count_5).arrange(DOWN, buff=0.3)
-        counts.next_to(title, DOWN, buff=0.6)
+        counts = VGroup(count_2, count_3, count_5).arrange(DOWN, buff=0.25)
+        counts.next_to(table_cells, DOWN, buff=0.4)
         counts.set_x(0)
 
         self.play(
@@ -175,6 +221,12 @@ class ReelC(Scene):
             run_time=1.2,
         )
         self.wait(1.5)
+
+        # Clear table to make room for final calc
+        self.play(
+            FadeOut(table_cells), FadeOut(prime_rects), FadeOut(table_title),
+            run_time=0.4,
+        )
 
         # Sum
         sum_line = MathTex(
@@ -218,7 +270,7 @@ class ReelC(Scene):
     def cta(self):
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
 
-        handle = MathTex(r"\text{@mesonjetorja}", font_size=BODY_SIZE, color=WHITE)
+        handle = MathTex(r"\text{mesonjetorja.com}", font_size=BODY_SIZE, color=WHITE)
         handle.move_to(UP * 0.5)
         tagline = MathTex(
             r"\text{Më shumë ushtrime në faqen tonë!}",
