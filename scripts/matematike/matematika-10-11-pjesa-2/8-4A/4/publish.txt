@@ -1,0 +1,73 @@
+═══════════════════════════════════════════════════════
+ YOUTUBE VIDEO
+═══════════════════════════════════════════════════════
+
+Title:
+Ushtrimi 4 | Kapitulli 8.4A | Matematika 10 - 11: Pjesa II (Botime Pegi)
+
+Description:
+Në këtë video zgjidhim ushtrimin 4 nga kapitulli 8.4A ku Jetmira shkon në punë me makinë ose autobus. Ndërtojmë diagramin pemë të probabilitetit, llogarisim frekuencat për 150 ditë pune, dhe gjejmë probabilitetin total të vonimit duke përdorur formulën P(V) = P(M)P(V|M) + P(A)P(V|A) = 0.16.
+
+Zgjidhjet e librit: https://mesonjetorja.com/zgjidhje/matematika-10-11-pjesa-2
+
+Lini komentet tuaja më poshtë dhe bëni Subscribe për më shumë.
+
+Website: https://mesonjetorja.com/
+Instagram: https://www.instagram.com/mesonjetorja
+TikTok: https://www.tiktok.com/@mesonjetorja
+
+#matematike #probabilitet #diagrampeme #klasa11
+
+
+═══════════════════════════════════════════════════════
+ REEL A — Diagrami pemë i probabilitetit
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Jetmira shkon në punë me makinë 2 ditë/javë dhe autobus 3 ditë/javë. Vonohet 10% me makinë, 20% me autobus. Si duket diagrami pemë?
+
+M (0.4) → V (0.1) / NK (0.9)
+A (0.6) → V (0.2) / NK (0.8)
+
+Ushtrimi 4 | Kapitulli 8.4A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #probabilitet #diagrampeme #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL B — Frekuencat në 150 ditë pune
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Jetmira punon 150 ditë. Me makinë 60 ditë, me autobus 90 ditë. Sa ditë vonohet gjithsej?
+
+150 → 60 makinë / 90 autobus
+60 → 6 vonë + 54 në kohë
+90 → 18 vonë + 72 në kohë
+Vonë gjithsej: 6 + 18 = 24 ditë
+
+Ushtrimi 4 | Kapitulli 8.4A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #probabilitet #diagrampeme #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL C — Probabiliteti total i vonimit
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Sa mundësi ka Jetmira të vonohet në një ditë të rastësishme pune?
+
+P(V) = P(M)·P(V|M) + P(A)·P(V|A)
+P(V) = 0.4 × 0.1 + 0.6 × 0.2
+P(V) = 0.04 + 0.12 = 0.16 = 16%
+
+Ushtrimi 4 | Kapitulli 8.4A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #probabilitet #diagrampeme #klasa11 #mesonjetorja
