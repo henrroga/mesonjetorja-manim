@@ -1,0 +1,56 @@
+═══════════════════════════════════════════════════════
+ YOUTUBE VIDEO
+═══════════════════════════════════════════════════════
+
+Title:
+Ushtrimi 6 | Kapitulli 8.5A | Matematika 10 - 11: Pjesa II (Botime Pegi)
+
+Description:
+Në këtë video zgjidhim ushtrimin 6 nga kapitulli 8.5A ku analizojmë testin mjekësor me anë të diagramit pemë të frekuencave. Nga 800.000 të testuar, sëmundja prek vetëm 1 në 500 persona. Testi ka saktësi 98% (true positive) dhe 1% alarm të rremë (false positive). Ndërtojmë pemën e frekuencave, llogarisim P(S|N) ≈ 0,00004 dhe zbulojmë paradoksin: P(S|P) = 16,4% — edhe pse testi është "98% i saktë", vetëm 16,4% e pozitivëve janë vërtet të sëmurë!
+
+Zgjidhjet e librit: https://mesonjetorja.com/zgjidhje/matematika-10-11-pjesa-2
+
+Lini komentet tuaja më poshtë dhe bëni Subscribe për më shumë.
+
+Website: https://mesonjetorja.com/
+Instagram: https://www.instagram.com/mesonjetorja
+TikTok: https://www.tiktok.com/@mesonjetorja
+
+#matematike #probabilitet #bayes #klasa11
+
+
+═══════════════════════════════════════════════════════
+ REEL A — Diagrami pemë i frekuencave
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+800.000 njerëz testohen për një sëmundje. Sëmundja: 1 në 500. Testi: 98% i saktë, 1% alarm i rremë. Si ndahen numrat në pemën e frekuencave? 🏥🔬
+
+1.600 të sëmurë → 1.568 pozitiv / 32 negativ
+798.400 të shëndetshëm → 7.984 pozitiv / 790.416 negativ
+
+Bonus: P(S|N) = 32/790.448 ≈ 0,00004 — testi negativ = pothuajse i sigurt!
+
+Ushtrimi 6 | Kapitulli 8.5A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #probabilitet #bayes #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL B — Vetëm 16,4%!
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Testi ka saktësi 98%. Rezultati yt: POZITIV. Sa mundësi ke që je vërtet i sëmurë? 🤔
+
+Shumica mendojnë ~98%... por përgjigja e vërtetë është vetëm 16,4%! Kur sëmundja prek 1 në 500 persona, shumica e rezultateve pozitive janë alarme të rreme. Kjo quhet "base rate fallacy" — gabimi i normës bazë.
+
+P(S|P) = 1.568/9.552 ≈ 0,164 = 16,4%
+
+Ushtrimi 6 | Kapitulli 8.5A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #probabilitet #bayes #klasa11 #mesonjetorja
