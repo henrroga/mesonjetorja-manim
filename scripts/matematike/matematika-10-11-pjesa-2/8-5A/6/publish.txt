@@ -43,11 +43,11 @@ Më shumë zgjidhje: mesonjetorja.com
 ═══════════════════════════════════════════════════════
 
 Caption (Instagram / TikTok):
-Testi ka saktësi 98%. Rezultati yt: POZITIV. Sa mundësi ke që je vërtet i sëmurë? 🤔
+Një sëmundje prek 1 në 500. Testi ka saktësi 98%. Rezultati yt: POZITIV. Sa mundësi ke që je vërtet i sëmurë? 🤔
 
-Shumica mendojnë ~98%... por përgjigja e vërtetë është vetëm 16,4%! Kur sëmundja prek 1 në 500 persona, shumica e rezultateve pozitive janë alarme të rreme. Kjo quhet "base rate fallacy" — gabimi i normës bazë.
+Nga 800.000 të testuar: 1.568 vërtet të sëmurë dalin pozitiv, por edhe 7.984 të shëndetshëm dalin pozitiv (alarme të rreme!). Gjithsej 9.552 pozitiv — por vetëm 16,4% janë vërtet të sëmurë!
 
-P(S|P) = 1.568/9.552 ≈ 0,164 = 16,4%
+P(S|P) = 1.568/9.552 ≈ 0,164 = 16,4% — JO 98%!
 
 Ushtrimi 6 | Kapitulli 8.5A | Matematika 10-11 (Botime Pegi)
 
