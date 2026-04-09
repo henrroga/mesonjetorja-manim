@@ -126,50 +126,67 @@ Every reel follows this 4-phase structure:
 
 ### Phase 1 — HOOK + CONTEXT (0–10 seconds)
 
-**The viewer must understand the problem.** This is the MOST important phase.
-Students should think: "Oh, I know this exercise from school!"
+**The viewer must understand the problem AND want to solve it.** This is the MOST important phase.
 
-Rules:
+#### Mini-Puzzle Hooks (USE WHEN POSSIBLE)
+
+When the exercise has a natural "guess the answer" moment, **lead with it as a mini-puzzle**.
+This makes viewers PAUSE and THINK before scrolling — they want to test themselves.
+
+**Great hook patterns:**
+- **Sequences:** Show the terms, ask "Cili numër vjen tjetër?" (What number comes next?)
+- **Equations:** Show the equation, ask "Sa është x?"
+- **Geometry:** Show the figure with a "?" on the unknown side/angle
+- **Probability:** "Sa mundësi ke...?" with the full scenario visible
+- **True/false:** "E vërtetë apo e gabuar?" with a bold claim
+
+```python
+def hook(self):
+    # Show the sequence — viewer tries to spot the pattern
+    seq = MathTex(
+        r"15, \; 12, \; 9, \; 6, \; 3, \; \ldots",
+        font_size=44, color=WHITE,
+    )
+    seq.move_to(UP * 3.0)
+
+    question = MathTex(
+        r"\text{Cili numër vjen tjetër?}",
+        font_size=42, color=LABEL_COLOR,
+    )
+    question.next_to(seq, DOWN, buff=0.6)
+
+    self.play(FadeIn(seq, shift=UP * 0.3), run_time=0.8)
+    self.wait(1.0)
+    self.play(FadeIn(question, shift=UP * 0.2), run_time=0.6)
+    self.wait(3.0)  # LET THEM THINK
+```
+
+**After the hook pause (2–3 seconds), show the FULL solution** — not just the answer.
+The hook gets them to stop scrolling; the solution keeps them watching.
+
+**Not every exercise has a natural hook** — only use a mini-puzzle when it fits naturally.
+When there's no natural puzzle, fall back to the clear problem statement approach below.
+
+#### Clear Problem Statement (fallback)
+
+When a mini-puzzle doesn't fit, state the problem clearly so the viewer immediately understands:
+
 - **Show the ACTUAL question** — not a vague teaser, not truncated text
 - Use **large text** (font_size 40–48) readable on a phone
 - If the question needs 3 lines, use 3 lines — don't truncate
 - **Give the question time to be READ** — if it takes 5 seconds to read, wait 5 seconds
-- A visual element (dice, shapes, table outline) helps but must NOT replace the text
 
-```python
-def hook(self):
-    # The ACTUAL question, clearly stated
-    q_line1 = MathTex(
-        r"\text{Hidhen dy zare të rregullta.}",
-        font_size=38, color=WHITE,
-    )
-    q_line2 = MathTex(
-        r"\text{Mbahet shënim ndryshesa e pikëve.}",
-        font_size=38, color=WHITE,
-    )
-    q_line3 = MathTex(
-        r"\text{Sa është } P(0) \text{ ?}",
-        font_size=44, color=LABEL_COLOR,  # The specific question in COLOR
-    )
-    question = VGroup(q_line1, q_line2, q_line3).arrange(DOWN, buff=0.35)
-    question.move_to(UP * 2.0)
+#### Hook Rules (both types)
 
-    self.play(
-        FadeIn(question, shift=UP * 0.5),
-        run_time=1.2,
-    )
-    self.wait(3.0)  # LET THEM READ IT
-```
+- The viewer must understand what's being asked within 5 seconds
+- A visual element (shapes, numbers, table) helps but must NOT replace the text
+- Students should think: "Oh, I know this from school — let me try!"
+- After the hook, always explain the solution FULLY — never skip steps
 
-**Bad hooks** (too vague, viewer doesn't know what's happening):
+**Bad hooks:**
 - "Sa mundësi ke...?" with no context
 - A giant "?" with no problem statement
-- Jumping straight into a table without explaining what it represents
-
-**Good hooks** (viewer immediately understands the exercise):
-- Full problem statement, then highlight the specific question
-- "Hidhen dy zare. Ndryshesa e pikëve. Sa është P(0)?"
-- Show the setup visually while the question text is on screen
+- Jumping straight into a solution without showing the problem
 
 ### Phase 2 — SETUP / BUILD (10–20 seconds)
 

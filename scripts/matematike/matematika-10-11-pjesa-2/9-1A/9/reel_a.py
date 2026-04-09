@@ -52,29 +52,37 @@ class ReelA(Scene):
     # ────────────────────────────────────────────
 
     def hook(self):
-        badge = MathTex(
-            r"\text{Vargje Aritmetike}",
-            font_size=SMALL_SIZE, color=HIGHLIGHT_COLOR,
-        )
-        badge.move_to(UP * SAFE_TOP)
-        self.play(FadeIn(badge, shift=DOWN * 0.2), run_time=0.4)
-
+        # Mini-puzzle hook: show the sequence, ask "what comes next?"
         seq = MathTex(
             r"15, \; 12, \; 9, \; 6, \; 3, \; \ldots",
             font_size=HOOK_SIZE, color=WHITE,
         )
-        seq.move_to(UP * 3.0)
+        seq.move_to(UP * 3.5)
 
         question = MathTex(
-            r"\text{Gjeni kufizën e } n\text{-të}",
-            font_size=QUESTION_SIZE, color=HIGHLIGHT_COLOR,
+            r"\text{Cili numër vjen tjetër?}",
+            font_size=QUESTION_SIZE, color=LABEL_COLOR,
         )
-        question.next_to(seq, DOWN, buff=0.7)
+        question.next_to(seq, DOWN, buff=0.6)
 
-        self.play(Write(seq), run_time=0.8)
+        self.play(FadeIn(seq, shift=UP * 0.3), run_time=0.8)
         self.wait(1.5)
-        self.play(FadeIn(question, shift=UP * 0.3), run_time=0.6)
-        self.wait(1.0)
+        self.play(FadeIn(question, shift=UP * 0.2), run_time=0.6)
+        self.wait(3.0)  # let viewer THINK
+
+        # Reveal: it's 0! And the real question...
+        answer_tease = MathTex(r"0", font_size=QUESTION_SIZE, color=ANSWER_COLOR)
+        answer_tease.next_to(question, DOWN, buff=0.5)
+        self.play(GrowFromCenter(answer_tease), run_time=0.5)
+        self.wait(0.8)
+
+        real_q = MathTex(
+            r"\text{Po kufiza e } n\text{-të?}",
+            font_size=BODY_SIZE, color=HIGHLIGHT_COLOR,
+        )
+        real_q.next_to(answer_tease, DOWN, buff=0.4)
+        self.play(FadeIn(real_q, shift=UP * 0.2), run_time=0.5)
+        self.wait(1.5)
 
         # Formula reminder
         formula = MathTex(
