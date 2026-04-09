@@ -74,23 +74,22 @@ class Ushtrimi9(Scene):
     # ────────────────────────────────────────────
 
     def show_formula(self):
+        # Center everything on screen — use the full space naturally
         heading = MathTex(
             r"\text{Kufiza e n-të e progresionit aritmetik:}",
             font_size=STEP_TITLE_SIZE, color=STEP_TITLE_COLOR,
         )
-        heading.to_edge(UP, buff=0.8)
-
         formula = MathTex(
             r"a_n = a_1 + (n - 1) \cdot d",
             font_size=ANSWER_SIZE, color=WHITE,
         )
-        formula.next_to(heading, DOWN, buff=0.6)
-
         explanation = MathTex(
             r"\text{ku } a_1 \text{ = kufiza e parë, } d \text{ = diferenca e përbashkët}",
             font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
         )
-        explanation.next_to(formula, DOWN, buff=0.5)
+
+        group = VGroup(heading, formula, explanation).arrange(DOWN, buff=0.6)
+        group.move_to(ORIGIN)
 
         self.play(Write(heading), run_time=T_STEP_TITLE)
         self.play(Write(formula), run_time=T_KEY_EQUATION)
@@ -98,7 +97,7 @@ class Ushtrimi9(Scene):
         self.play(FadeIn(explanation, shift=UP * 0.2), run_time=T_BODY_FADE)
         self.wait(W_AFTER_KEY)
 
-        self.play(FadeOut(heading), FadeOut(formula), FadeOut(explanation))
+        self.play(FadeOut(group))
         self.wait(0.3)
 
     # ────────────────────────────────────────────
@@ -188,6 +187,16 @@ class Ushtrimi9(Scene):
         self.play(Write(params), run_time=T_ROUTINE_EQUATION)
         self.wait(W_AFTER_ROUTINE)
 
+        # --- Clear the sequence visual to free screen for calculation ---
+        self.play(
+            FadeOut(terms), FadeOut(arrows_group),
+            run_time=0.4,
+        )
+
+        # --- Move params up to make room for the calculation chain ---
+        params_target = header.get_bottom() + DOWN * 0.5
+        self.play(params.animate.move_to(params_target).set_x(PX), run_time=0.4)
+
         # --- Substitution ---
         why_text = MathTex(
             r"\text{Zëvendësojmë në formulë:}",
@@ -199,21 +208,21 @@ class Ushtrimi9(Scene):
         self.wait(0.5)
 
         sub_eq = MathTex(sub_tex, font_size=CALC_SIZE, color=WHITE)
-        sub_eq.next_to(why_text, DOWN, buff=0.35)
+        sub_eq.next_to(why_text, DOWN, buff=0.4)
         sub_eq.set_x(PX)
         self.play(Write(sub_eq), run_time=T_KEY_EQUATION)
         self.wait(W_AFTER_ROUTINE)
 
         # --- Expand ---
         expand_eq = MathTex(expand_tex, font_size=CALC_SIZE, color=WHITE)
-        expand_eq.next_to(sub_eq, DOWN, buff=0.3)
+        expand_eq.next_to(sub_eq, DOWN, buff=0.4)
         expand_eq.set_x(PX)
         self.play(Write(expand_eq), run_time=T_ROUTINE_EQUATION)
         self.wait(0.8)
 
         # --- Simplify = answer ---
         answer_eq = MathTex(answer_tex, font_size=CALC_SIZE, color=ANSWER_COLOR)
-        answer_eq.next_to(expand_eq, DOWN, buff=0.3)
+        answer_eq.next_to(expand_eq, DOWN, buff=0.4)
         answer_eq.set_x(PX)
         self.play(Write(answer_eq), run_time=T_KEY_EQUATION)
         self.wait(0.8)
@@ -224,18 +233,14 @@ class Ushtrimi9(Scene):
         answer_boxed.set_x(PX)
 
         box = make_answer_box(answer_boxed)
-        self.play(
-            GrowFromCenter(answer_boxed), run_time=0.6,
-        )
+        self.play(GrowFromCenter(answer_boxed), run_time=0.6)
         self.play(Create(box), run_time=0.4)
-        self.play(
-            Circumscribe(answer_boxed, color=HIGHLIGHT_COLOR, run_time=0.8),
-        )
+        self.play(Circumscribe(answer_boxed, color=HIGHLIGHT_COLOR, run_time=0.8))
         self.wait(W_AFTER_KEY)
 
         # --- Clean up ---
         all_items = VGroup(
-            header, terms, arrows_group, params,
+            header, params,
             why_text, sub_eq, expand_eq, answer_eq,
             answer_boxed, box,
         )
