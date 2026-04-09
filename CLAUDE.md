@@ -730,6 +730,32 @@ When the exercise has a key visual (table, graph, triangle):
 3. **Highlight** relevant parts for each step, then **reset** before the next step
 4. **Remove** only when ALL referencing calculations are done
 
+## CurvedArrow — Use Create(), Never GrowArrow()
+
+`GrowArrow()` crashes on `CurvedArrow` in Manim CE 0.20.1 (`scale_tips` error). Always use `Create()`:
+
+```python
+# WRONG — crashes
+self.play(GrowArrow(CurvedArrow(start, end)))
+
+# CORRECT
+self.play(Create(CurvedArrow(start, end)))
+```
+
+## Layout Spacing — Use the Full Screen
+
+**Never cram elements near one edge.** Spread content across the full available space.
+
+For 16:9 YouTube (x ∈ [-7, 7], y ∈ [-4, 4]):
+- Place elements using absolute positions across the full range
+- Arrows/annotations go BELOW their parent (not above) to avoid header overlap
+- Chain positioning with `.next_to(prev_element, DOWN, buff=...)` — never hard-code y positions that risk overlap
+- After placing arrows below terms, position the next element relative to the arrows group, not the terms
+
+For 9:16 reels (x ∈ [-4, 4], y ∈ [-7, 7]):
+- Spread elements vertically: hook at y≈3, content at y≈0.5, answer at y≈-1.5, follow-up at y≈-3
+- Never cluster everything in the top quarter
+
 ## Double-Animation Prevention
 
 When building VGroups for staged animation (e.g., headers first, then values), **never** put items in a shared VGroup and then try to animate subsets — items get animated twice (appear, disappear, reappear). Keep groups separate:

@@ -123,20 +123,17 @@ class Ushtrimi9(Scene):
             r"\text{Pjesa " + label + r")}",
             font_size=PART_HEADER_SIZE, color=STEP_TITLE_COLOR,
         )
-        header.to_edge(UP, buff=0.5)
+        header.to_edge(UP, buff=0.4)
         self.play(Write(header), run_time=T_STEP_TITLE)
 
-        # --- Show the sequence terms horizontally ---
+        # --- Show the sequence terms — placed high with room for arrows below ---
         terms = MathTex(terms_tex, font_size=CALC_SIZE, color=WHITE)
-        terms.next_to(header, DOWN, buff=0.5)
+        terms.next_to(header, DOWN, buff=0.6)
         self.play(Write(terms), run_time=T_KEY_EQUATION)
         self.wait(0.6)
 
-        # --- Show curved arrows between terms with difference ---
-        # Parse the term positions from the MathTex
-        # We'll place arrows above the terms line
+        # --- Curved arrows BELOW the terms (avoids header overlap) ---
         arrows_group = VGroup()
-        # Get bounding box of terms to place arrows
         term_width = terms.width
         spacing = term_width / (num_terms - 0.2)
         left_edge = terms.get_left()[0] + spacing * 0.35
@@ -144,15 +141,14 @@ class Ushtrimi9(Scene):
         for i in range(num_terms - 1):
             x_start = left_edge + i * spacing * 0.85
             x_end = left_edge + (i + 1) * spacing * 0.85
-            y_base = terms.get_top()[1] + 0.15
+            y_base = terms.get_bottom()[1] - 0.15
 
             start_pt = np.array([x_start, y_base, 0])
             end_pt = np.array([x_end, y_base, 0])
-            mid_pt = (start_pt + end_pt) / 2 + UP * 0.35
 
             arrow = CurvedArrow(
                 start_pt, end_pt,
-                angle=-TAU / 4,
+                angle=TAU / 4,  # positive angle = curves downward
                 color=LABEL_COLOR,
                 stroke_width=2,
                 tip_length=0.15,
@@ -161,13 +157,14 @@ class Ushtrimi9(Scene):
             d_label = MathTex(
                 d_display, font_size=18, color=LABEL_COLOR,
             )
-            d_label.next_to(arrow, UP, buff=0.05)
+            d_label.next_to(arrow, DOWN, buff=0.05)
 
             arrows_group.add(VGroup(arrow, d_label))
 
+        # Use Create instead of GrowArrow (GrowArrow crashes on CurvedArrow)
         self.play(
             LaggedStart(
-                *[GrowArrow(ag[0]) for ag in arrows_group],
+                *[Create(ag[0]) for ag in arrows_group],
                 lag_ratio=0.15,
             ),
             run_time=0.8,
@@ -181,12 +178,12 @@ class Ushtrimi9(Scene):
         )
         self.wait(0.6)
 
-        # --- Show a₁ and d ---
+        # --- Show a₁ and d (below arrows) ---
         params = MathTex(
             r"a_1 = " + a1_tex + r", \quad d = " + d_tex,
             font_size=CALC_SIZE, color=SHAPE_COLOR,
         )
-        params.next_to(terms, DOWN, buff=0.7)
+        params.next_to(arrows_group, DOWN, buff=0.4)
         params.set_x(PX)
         self.play(Write(params), run_time=T_ROUTINE_EQUATION)
         self.wait(W_AFTER_ROUTINE)

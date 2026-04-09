@@ -52,35 +52,36 @@ class ReelA(Scene):
     # ────────────────────────────────────────────
 
     def hook(self):
-        # Mini-puzzle hook: show the sequence, ask "what comes next?"
+        # Mini-puzzle hook — spread across the full safe zone
         seq = MathTex(
             r"15, \; 12, \; 9, \; 6, \; 3, \; \ldots",
-            font_size=HOOK_SIZE, color=WHITE,
+            font_size=48, color=WHITE,
         )
-        seq.move_to(UP * 3.5)
+        seq.move_to(UP * 3.0)
 
         question = MathTex(
             r"\text{Cili numër vjen tjetër?}",
             font_size=QUESTION_SIZE, color=LABEL_COLOR,
         )
-        question.next_to(seq, DOWN, buff=0.6)
+        question.move_to(UP * 0.5)
 
         self.play(FadeIn(seq, shift=UP * 0.3), run_time=0.8)
         self.wait(1.5)
         self.play(FadeIn(question, shift=UP * 0.2), run_time=0.6)
         self.wait(3.0)  # let viewer THINK
 
-        # Reveal: it's 0! And the real question...
-        answer_tease = MathTex(r"0", font_size=QUESTION_SIZE, color=ANSWER_COLOR)
-        answer_tease.next_to(question, DOWN, buff=0.5)
+        # Reveal: it's 0!
+        answer_tease = MathTex(r"0", font_size=56, color=ANSWER_COLOR)
+        answer_tease.move_to(DOWN * 1.5)
         self.play(GrowFromCenter(answer_tease), run_time=0.5)
         self.wait(0.8)
 
+        # Transition to the real question
         real_q = MathTex(
             r"\text{Po kufiza e } n\text{-të?}",
             font_size=BODY_SIZE, color=HIGHLIGHT_COLOR,
         )
-        real_q.next_to(answer_tease, DOWN, buff=0.4)
+        real_q.move_to(DOWN * 3.0)
         self.play(FadeIn(real_q, shift=UP * 0.2), run_time=0.5)
         self.wait(1.5)
 
