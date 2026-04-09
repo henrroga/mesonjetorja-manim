@@ -154,7 +154,53 @@ self._reset_cells(target_val, rects)
 
 ---
 
-## 5. End Screen — MANDATORY
+## 5. Screen Space — Use the Full Screen, Never Cram
+
+### Center intro screens
+Formula intros, problem statements, or any standalone content should be **centered on screen** using `VGroup(...).arrange(DOWN).move_to(ORIGIN)`. Never pin them to the top edge leaving dead space below.
+
+### Two-phase layout for repetitive parts
+When an exercise has many similar sub-questions (e.g., 5 sequences), each part should use two phases:
+
+1. **Visual phase** — Show the sequence/diagram with annotations (arrows, labels) centered on screen
+2. **Calculation phase** — Fade out the visual, move key info (a₁, d) up, then chain the calculation steps using the freed space
+
+```python
+# Phase 1: show sequence + arrows
+self.play(Write(terms), ...)
+self.play(Create(arrows), ...)
+self.play(Write(params), ...)  # a₁ = 15, d = -3
+self.wait(...)
+
+# Phase 2: fade visual, reclaim space for calculation
+self.play(FadeOut(terms), FadeOut(arrows), run_time=0.4)
+self.play(params.animate.move_to(header.get_bottom() + DOWN * 0.5), run_time=0.4)
+
+# Now chain substitution → expand → simplify → answer in the freed space
+```
+
+This prevents tall content (fractions, long equations) from pushing the answer box off screen.
+
+### Arrows go BELOW, not above
+When adding curved arrows between sequence terms, place them **below** the terms (positive angle). Labels go below the arrows. This avoids overlapping with headers above.
+
+```python
+# WRONG — arrows above terms, crash into header
+y_base = terms.get_top()[1] + 0.15
+arrow = CurvedArrow(start, end, angle=-TAU/4)
+
+# CORRECT — arrows below terms
+y_base = terms.get_bottom()[1] - 0.15
+arrow = CurvedArrow(start, end, angle=TAU/4)  # positive = curves down
+d_label.next_to(arrow, DOWN, buff=0.05)
+```
+
+### CurvedArrow: use Create(), never GrowArrow()
+`GrowArrow()` crashes on `CurvedArrow` in Manim CE 0.20.1. Always use `Create()`.
+
+---
+
+## 6. End Screen — MANDATORY
 
 Every YouTube video MUST end with:
 ```python
@@ -286,5 +332,9 @@ One section per video. Include the key answers in reel captions so viewers can v
 - [ ] Highlights are reset between steps
 - [ ] All Albanian text uses proper ë and ç
 - [ ] End screen shows `mesonjetorja.com` with 8s hold
-- [ ] No overlapping elements anywhere
+- [ ] No overlapping elements anywhere — arrows below terms, labels clear of headers
+- [ ] Intro/formula screens are centered on screen (not pinned to top with dead space)
+- [ ] Repetitive parts use two-phase layout (visual → fade → calculation)
+- [ ] Fractions/tall content doesn't push answer box off screen
+- [ ] CurvedArrow uses Create() not GrowArrow()
 - [ ] Video ends cleanly (no abrupt cut)
