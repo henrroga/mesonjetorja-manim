@@ -52,29 +52,36 @@ class ReelB(Scene):
     # ────────────────────────────────────────────
 
     def hook(self):
-        badge = MathTex(
-            r"\text{Vargje Aritmetike}",
-            font_size=SMALL_SIZE, color=HIGHLIGHT_COLOR,
-        )
-        badge.move_to(UP * SAFE_TOP)
-        self.play(FadeIn(badge, shift=DOWN * 0.2), run_time=0.4)
-
+        # Mini-puzzle hook — spread across the full safe zone
         seq = MathTex(
             r"10, \; 6, \; 2, \; {-2}, \; {-6}, \; \ldots",
-            font_size=HOOK_SIZE, color=WHITE,
+            font_size=48, color=WHITE,
         )
         seq.move_to(UP * 3.0)
 
         question = MathTex(
-            r"\text{Gjeni kufizën e } n\text{-të}",
-            font_size=QUESTION_SIZE, color=HIGHLIGHT_COLOR,
+            r"\text{Cili numër vjen tjetër?}",
+            font_size=QUESTION_SIZE, color=LABEL_COLOR,
         )
-        question.next_to(seq, DOWN, buff=0.7)
+        question.move_to(UP * 0.5)
 
-        self.play(Write(seq), run_time=0.8)
+        self.play(FadeIn(seq, shift=UP * 0.3), run_time=0.8)
         self.wait(1.5)
-        self.play(FadeIn(question, shift=UP * 0.3), run_time=0.6)
-        self.wait(1.0)
+        self.play(FadeIn(question, shift=UP * 0.2), run_time=0.6)
+        self.wait(3.0)
+
+        answer_tease = MathTex(r"-10", font_size=56, color=ANSWER_COLOR)
+        answer_tease.move_to(DOWN * 1.5)
+        self.play(GrowFromCenter(answer_tease), run_time=0.5)
+        self.wait(0.8)
+
+        real_q = MathTex(
+            r"\text{Po kufiza e } n\text{-të?}",
+            font_size=BODY_SIZE, color=HIGHLIGHT_COLOR,
+        )
+        real_q.move_to(DOWN * 3.0)
+        self.play(FadeIn(real_q, shift=UP * 0.2), run_time=0.5)
+        self.wait(1.5)
 
         # Formula reminder
         formula = MathTex(
