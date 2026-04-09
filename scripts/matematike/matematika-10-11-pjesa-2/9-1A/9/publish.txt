@@ -1,0 +1,104 @@
+═══════════════════════════════════════════════════════
+ YOUTUBE VIDEO
+═══════════════════════════════════════════════════════
+
+Title:
+Ushtrimi 9 | Kapitulli 9.1A | Matematika 10 - 11: Pjesa II (Botime Pegi)
+
+Description:
+Në këtë video zgjidhim ushtrimin 9 nga kapitulli 9.1A ku gjejmë kufizën e n-të për 5 vargje aritmetike. Për secilin varg identifikojmë diferencën d dhe kufizën e parë a₁, pastaj zëvendësojmë në formulën aₙ = a₁ + (n-1)·d dhe thjeshtojmë.
+
+Zgjidhjet e librit: https://mesonjetorja.com/zgjidhje/matematika-10-11-pjesa-2
+
+Lini komentet tuaja më poshtë dhe bëni Subscribe për më shumë.
+
+Website: https://mesonjetorja.com/
+Instagram: https://www.instagram.com/mesonjetorja
+TikTok: https://www.tiktok.com/@mesonjetorja
+
+#matematike #vargje #progresion #klasa11
+
+
+═══════════════════════════════════════════════════════
+ REEL A — Vargu: 15, 12, 9, 6, 3, ...
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Gjeni kufizën e n-të: 15, 12, 9, 6, 3, ...
+
+d = -3, a₁ = 15
+aₙ = 18 - 3n
+
+Ushtrimi 9a | Kapitulli 9.1A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #vargje #progresion #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL B — Vargu: 10, 6, 2, -2, -6, ...
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Gjeni kufizën e n-të: 10, 6, 2, -2, -6, ...
+
+d = -4, a₁ = 10
+aₙ = 14 - 4n
+
+Ushtrimi 9b | Kapitulli 9.1A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #vargje #progresion #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL C — Vargu: 5, 1, -3, -7, -11, ...
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Gjeni kufizën e n-të: 5, 1, -3, -7, -11, ...
+
+d = -4, a₁ = 5
+aₙ = 9 - 4n
+
+Ushtrimi 9c | Kapitulli 9.1A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #vargje #progresion #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL D — Vargu: -2, -5, -8, -11, -14, ...
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Gjeni kufizën e n-të: -2, -5, -8, -11, -14, ...
+
+d = -3, a₁ = -2
+aₙ = 1 - 3n
+
+Ushtrimi 9d | Kapitulli 9.1A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #vargje #progresion #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL E — Vargu: 1/2, -1/4, -1, -7/4, -5/2, ...
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Gjeni kufizën e n-të: 1/2, -1/4, -1, -7/4, -5/2, ...
+
+d = -3/4, a₁ = 1/2
+aₙ = 5/4 - (3/4)n
+
+Ushtrimi 9e | Kapitulli 9.1A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #vargje #progresion #klasa11 #mesonjetorja

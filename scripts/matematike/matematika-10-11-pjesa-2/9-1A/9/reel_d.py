@@ -1,0 +1,231 @@
+"""
+Reel D — Ushtrimi 9, Njësia 9.1A
+Vargu: -2, -5, -8, -11, -14, ...  →  aₙ = 1 − 3n
+
+Standalone vertical reel: hook, solve, answer + CTA.
+"""
+
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
+
+from manim import *
+import numpy as np
+from style_guide import (
+    apply_style, make_answer_box, BG_COLOR,
+    STEP_TITLE_COLOR, BODY_TEXT_COLOR, LABEL_COLOR,
+    ANSWER_COLOR, SHAPE_COLOR, AUX_COLOR, HIGHLIGHT_COLOR, DIVIDER_COLOR,
+    ALBANIAN_TEX,
+)
+
+# ── Vertical 9:16 config ────────────────────
+config.pixel_width = 1080
+config.pixel_height = 1920
+config.frame_width = 8
+config.frame_height = 8 * (1920 / 1080)
+
+# ── Safe zone ────────────────────────────────
+SAFE_TOP = 4.8
+SAFE_BOTTOM = -3.3
+
+# ── Font sizes ───────────────────────────────
+HOOK_SIZE = 38
+QUESTION_SIZE = 42
+EQ_SIZE = 36
+ANSWER_SIZE = 42
+BODY_SIZE = 30
+SMALL_SIZE = 26
+
+
+class ReelD(Scene):
+    def construct(self):
+        apply_style(self)
+        MathTex.set_default(tex_template=ALBANIAN_TEX)
+        Tex.set_default(tex_template=ALBANIAN_TEX)
+
+        self.hook()
+        self.solve()
+        self.answer()
+        self.cta()
+
+    # ────────────────────────────────────────────
+    #  HOOK (0–8s)
+    # ────────────────────────────────────────────
+
+    def hook(self):
+        badge = MathTex(
+            r"\text{Vargje Aritmetike}",
+            font_size=SMALL_SIZE, color=HIGHLIGHT_COLOR,
+        )
+        badge.move_to(UP * SAFE_TOP)
+        self.play(FadeIn(badge, shift=DOWN * 0.2), run_time=0.4)
+
+        seq = MathTex(
+            r"{-2}, \; {-5}, \; {-8}, \; {-11}, \; {-14}, \; \ldots",
+            font_size=HOOK_SIZE, color=WHITE,
+        )
+        seq.move_to(UP * 3.0)
+
+        question = MathTex(
+            r"\text{Gjeni kufizën e } n\text{-të}",
+            font_size=QUESTION_SIZE, color=HIGHLIGHT_COLOR,
+        )
+        question.next_to(seq, DOWN, buff=0.7)
+
+        self.play(Write(seq), run_time=0.8)
+        self.wait(1.5)
+        self.play(FadeIn(question, shift=UP * 0.3), run_time=0.6)
+        self.wait(1.0)
+
+        # Formula reminder
+        formula = MathTex(
+            r"a_n = a_1 + (n-1) \cdot d",
+            font_size=EQ_SIZE, color=SHAPE_COLOR,
+        )
+        formula.next_to(question, DOWN, buff=0.8)
+        self.play(Write(formula), run_time=0.8)
+        self.wait(2.0)
+
+        self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
+
+    # ────────────────────────────────────────────
+    #  SOLVE (8–25s)
+    # ────────────────────────────────────────────
+
+    def solve(self):
+        title = MathTex(
+            r"\text{Zgjidhje}",
+            font_size=BODY_SIZE, color=STEP_TITLE_COLOR,
+        )
+        title.move_to(UP * SAFE_TOP)
+        self.play(FadeIn(title), run_time=0.3)
+
+        # Show sequence with difference arrows
+        terms = MathTex(
+            r"{-2}, \quad {-5}, \quad {-8}, \quad {-11}, \quad {-14}",
+            font_size=EQ_SIZE, color=WHITE,
+        )
+        terms.move_to(UP * 3.2)
+        self.play(Write(terms), run_time=0.7)
+        self.wait(0.5)
+
+        # Difference arrows
+        arrow_group = VGroup()
+        positions = [(-2.1, 3.2), (-0.75, 3.2), (0.6, 3.2), (2.0, 3.2)]
+        for i, (x, y) in enumerate(positions):
+            arr = CurvedArrow(
+                np.array([x - 0.45, y + 0.3, 0]),
+                np.array([x + 0.45, y + 0.3, 0]),
+                angle=-TAU / 4,
+                color=AUX_COLOR,
+                stroke_width=2,
+                tip_length=0.15,
+            )
+            lab = MathTex(r"-3", font_size=22, color=AUX_COLOR)
+            lab.next_to(arr, UP, buff=0.05)
+            arrow_group.add(VGroup(arr, lab))
+
+        self.play(
+            LaggedStart(*[FadeIn(a, shift=DOWN * 0.1) for a in arrow_group], lag_ratio=0.15),
+            run_time=0.8,
+        )
+        self.wait(1.0)
+
+        # d = -3
+        d_eq = MathTex(r"d = -3", font_size=EQ_SIZE, color=LABEL_COLOR)
+        d_eq.move_to(UP * 1.2)
+        self.play(Write(d_eq), run_time=0.6)
+        self.wait(0.8)
+
+        # a₁ = -2
+        a1_eq = MathTex(r"a_1 = -2", font_size=EQ_SIZE, color=LABEL_COLOR)
+        a1_eq.next_to(d_eq, DOWN, buff=0.4)
+        self.play(Write(a1_eq), run_time=0.6)
+        self.wait(0.8)
+
+        # Substitute
+        sub_title = MathTex(
+            r"\text{Zëvendësojmë në formulë:}",
+            font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
+        )
+        sub_title.next_to(a1_eq, DOWN, buff=0.6)
+        self.play(FadeIn(sub_title), run_time=0.4)
+
+        step1 = MathTex(
+            r"a_n = -2 + (n-1) \cdot (-3)",
+            font_size=EQ_SIZE, color=WHITE,
+        )
+        step1.next_to(sub_title, DOWN, buff=0.4)
+        self.play(Write(step1), run_time=0.8)
+        self.wait(1.0)
+
+        # Expand
+        step2 = MathTex(
+            r"a_n = -2 - 3n + 3",
+            font_size=EQ_SIZE, color=WHITE,
+        )
+        step2.next_to(step1, DOWN, buff=0.4)
+        self.play(Write(step2), run_time=0.7)
+        self.wait(0.8)
+
+        # Simplify
+        step3 = MathTex(
+            r"a_n = 1 - 3n",
+            font_size=EQ_SIZE, color=ANSWER_COLOR,
+        )
+        step3.next_to(step2, DOWN, buff=0.4)
+        self.play(Write(step3), run_time=0.7)
+        self.wait(1.5)
+
+        self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
+
+    # ────────────────────────────────────────────
+    #  ANSWER (25–35s)
+    # ────────────────────────────────────────────
+
+    def answer(self):
+        ans = MathTex(
+            r"a_n = 1 - 3n",
+            font_size=ANSWER_SIZE, color=ANSWER_COLOR,
+        )
+        ans.move_to(UP * 1.5)
+
+        self.play(Write(ans), run_time=0.8)
+        self.wait(0.6)
+
+        box = make_answer_box(ans)
+        self.play(Create(box), run_time=0.4)
+        self.play(
+            Flash(ans.get_center(), color=ANSWER_COLOR,
+                  line_length=0.25, num_lines=12, run_time=0.6),
+        )
+        self.play(
+            Circumscribe(VGroup(ans, box), color=HIGHLIGHT_COLOR, run_time=0.8),
+        )
+        self.wait(2.0)
+
+        # Quick verification
+        verify = MathTex(
+            r"a_1 = 1 - 3(1) = -2 \;\checkmark",
+            font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
+        )
+        verify.next_to(box, DOWN, buff=0.6)
+        self.play(FadeIn(verify, shift=UP * 0.2), run_time=0.5)
+        self.wait(1.5)
+
+    # ────────────────────────────────────────────
+    #  CTA
+    # ────────────────────────────────────────────
+
+    def cta(self):
+        self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
+
+        handle = MathTex(r"\text{mesonjetorja.com}", font_size=BODY_SIZE, color=WHITE)
+        handle.move_to(UP * 0.5)
+        tagline = MathTex(
+            r"\text{Më shumë ushtrime në faqen tonë!}",
+            font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
+        )
+        tagline.next_to(handle, DOWN, buff=0.4)
+
+        self.play(GrowFromCenter(handle), FadeIn(tagline, shift=UP * 0.3), run_time=0.8)
+        self.wait(1.5)
