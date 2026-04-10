@@ -100,7 +100,42 @@ Only remove the visual when ALL calculations that reference it are done.
 
 ---
 
-## 3. Tables — Use MathTable, Never Manual Grids
+## 3. Integral / Area Exercises
+
+### Albanian terminology
+- Use **"integrali"** — never "antiderivatë" or "antiderivata". Students know "integrali".
+- "Njehsojmë integralin:" not "Gjejmë antiderivatën:"
+
+### Always show units on area results
+Area answers MUST include **"njësi katrore"** (square units):
+```python
+# WRONG — 3 what?
+r"S = 3"
+
+# CORRECT
+r"S = 3 \text{ njësi katrore}"
+# or shorter:
+r"S = 3 \text{ nj}^2"
+```
+
+### Graph boundary labels vs axis ticks
+When drawing vertical boundary lines (x=1, x=2) on a graph, do NOT place labels that overlap with existing axis tick numbers. Options:
+1. **Let axis numbers speak for themselves** — don't add redundant "x=1" labels at the same position
+2. If boundary labels are needed, **offset them** above/below the axis, not on top of the tick number
+3. Use dashed lines for boundaries WITHOUT text labels when the axis already shows the number
+
+```python
+# WRONG — "x=1" label overlaps with axis tick "1"
+bound_label = MathTex("x=1").next_to(axes.c2p(1, 0), DOWN)  # sits on top of "1"
+
+# CORRECT — dashed line only, axis tick already shows "1"
+bound_line = DashedLine(axes.c2p(1, 0), axes.c2p(1, y_max), color=DIVIDER_COLOR)
+# No redundant text label needed
+```
+
+---
+
+## 4. Tables — Use MathTable, Never Manual Grids
 
 **NEVER** position table cells manually with coordinate math. It causes misalignment.
 
