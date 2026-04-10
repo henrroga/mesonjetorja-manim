@@ -274,7 +274,7 @@ class Ushtrimi2(Scene):
             sub_tex=r"= \frac{2^2}{2} - \frac{1^2}{2}",
             simplify_tex=r"= \frac{4}{2} - \frac{1}{2}",
             answer_tex=r"= \frac{3}{2} = 1{,}5",
-            answer_boxed_tex=r"S = \frac{3}{2} = 1{,}5",
+            answer_boxed_tex=r"S = \frac{3}{2} = 1{,}5 \text{ njësi katrore}",
             bound_lines=[(1, 1), (2, 2)],
         )
 
@@ -298,7 +298,7 @@ class Ushtrimi2(Scene):
             sub_tex=r"= -\frac{(-1)^2}{2} - \left(-\frac{(-2)^2}{2}\right)",
             simplify_tex=r"= -\frac{1}{2} + \frac{4}{2}",
             answer_tex=r"= \frac{3}{2} = 1{,}5",
-            answer_boxed_tex=r"S = \frac{3}{2} = 1{,}5",
+            answer_boxed_tex=r"S = \frac{3}{2} = 1{,}5 \text{ njësi katrore}",
             bound_lines=[(-2, 2), (-1, 1)],
         )
 
@@ -320,7 +320,7 @@ class Ushtrimi2(Scene):
             sub_tex=r"= (3^2 + 3) - (2^2 + 2)",
             simplify_tex=r"= (9 + 3) - (4 + 2)",
             answer_tex=r"= 12 - 6 = 6",
-            answer_boxed_tex=r"S = 6",
+            answer_boxed_tex=r"S = 6 \text{ njësi katrore}",
             bound_lines=[(2, 5), (3, 7)],
         )
 
@@ -342,7 +342,7 @@ class Ushtrimi2(Scene):
             sub_tex=r"= \left(\frac{3^3}{3} + 2 \cdot 3\right) - \left(\frac{0^3}{3} + 2 \cdot 0\right)",
             simplify_tex=r"= \left(\frac{27}{3} + 6\right) - 0",
             answer_tex=r"= 9 + 6 = 15",
-            answer_boxed_tex=r"S = 15",
+            answer_boxed_tex=r"S = 15 \text{ njësi katrore}",
             bound_lines=[(0, 2), (3, 11)],
         )
 
@@ -358,10 +358,10 @@ class Ushtrimi2(Scene):
         heading.to_edge(UP, buff=0.6)
 
         answers_data = [
-            r"\text{a)} \quad S = \frac{3}{2} = 1{,}5",
-            r"\text{b)} \quad S = \frac{3}{2} = 1{,}5",
-            r"\text{c)} \quad S = 6",
-            r"\text{d)} \quad S = 15",
+            r"\text{a)} \quad S = \frac{3}{2} = 1{,}5 \text{ njësi katrore}",
+            r"\text{b)} \quad S = \frac{3}{2} = 1{,}5 \text{ njësi katrore}",
+            r"\text{c)} \quad S = 6 \text{ njësi katrore}",
+            r"\text{d)} \quad S = 15 \text{ njësi katrore}",
         ]
 
         rows = VGroup()

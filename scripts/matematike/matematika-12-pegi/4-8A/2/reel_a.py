@@ -80,12 +80,7 @@ class ReelA(Scene):
         func_label = MathTex(r"y = x", font_size=SMALL_SIZE, color=SHAPE_COLOR)
         func_label.next_to(axes.c2p(2.6, 2.6), RIGHT, buff=0.15)
 
-        x1_label = MathTex(r"x=1", font_size=20, color=LABEL_COLOR)
-        x1_label.next_to(axes.c2p(1, 0), DOWN, buff=0.25)
-        x2_label = MathTex(r"x=2", font_size=20, color=LABEL_COLOR)
-        x2_label.next_to(axes.c2p(2, 0), DOWN, buff=0.25)
-
-        graph_group = VGroup(axes, graph, area, x1_line, x2_line, func_label, x1_label, x2_label)
+        graph_group = VGroup(axes, graph, area, x1_line, x2_line, func_label)
 
         # Question
         question = MathTex(
@@ -98,7 +93,6 @@ class ReelA(Scene):
         self.play(Create(graph), run_time=0.5)
         self.play(
             FadeIn(x1_line), FadeIn(x2_line),
-            FadeIn(x1_label), FadeIn(x2_label),
             run_time=0.4,
         )
         self.play(DrawBorderThenFill(area), run_time=0.6)
@@ -132,7 +126,7 @@ class ReelA(Scene):
 
         # Antiderivative
         why1 = MathTex(
-            r"\text{Gjejmë antiderivatën:}",
+            r"\text{Njehsojmë integralin:}",
             font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
         )
         why1.next_to(integral, DOWN, buff=0.5)
@@ -179,7 +173,7 @@ class ReelA(Scene):
 
     def answer(self):
         ans = MathTex(
-            r"S = \dfrac{3}{2} = 1{,}5",
+            r"S = \dfrac{3}{2} = 1{,}5 \text{ njësi katrore}",
             font_size=ANSWER_SIZE, color=ANSWER_COLOR,
         )
         ans.move_to(UP * 1.5)

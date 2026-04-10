@@ -74,9 +74,6 @@ class ReelD(Scene):
         func_label = MathTex(r"y = x^2 + 2", font_size=SMALL_SIZE, color=SHAPE_COLOR)
         func_label.next_to(axes.c2p(3.2, 11), RIGHT, buff=0.15)
 
-        x2_label = MathTex(r"x=3", font_size=20, color=LABEL_COLOR)
-        x2_label.next_to(axes.c2p(3, 0), DOWN, buff=0.25)
-
         question = MathTex(
             r"\text{Sa është syprina?}",
             font_size=QUESTION_SIZE, color=LABEL_COLOR,
@@ -86,7 +83,7 @@ class ReelD(Scene):
         self.play(Create(axes), run_time=0.6)
         self.play(Create(graph), run_time=0.7)
         self.play(
-            FadeIn(x2_line), FadeIn(x2_label),
+            FadeIn(x2_line),
             run_time=0.4,
         )
         self.play(DrawBorderThenFill(area), run_time=0.8)
@@ -120,7 +117,7 @@ class ReelD(Scene):
 
         # Antiderivative
         why1 = MathTex(
-            r"\text{Gjejmë antiderivatën:}",
+            r"\text{Njehsojmë integralin:}",
             font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
         )
         why1.next_to(integral, DOWN, buff=0.5)
@@ -175,7 +172,7 @@ class ReelD(Scene):
 
     def answer(self):
         ans = MathTex(
-            r"S = 15",
+            r"S = 15 \text{ njësi katrore}",
             font_size=ANSWER_SIZE, color=ANSWER_COLOR,
         )
         ans.move_to(UP * 1.5)
