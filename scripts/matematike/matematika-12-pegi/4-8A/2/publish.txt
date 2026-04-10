@@ -1,0 +1,83 @@
+===================================================
+ YOUTUBE VIDEO
+===================================================
+
+Title:
+Ushtrimi 2 | Kapitulli 4.8A | Matematika 12 (Botime Pegi)
+
+Description:
+Ne kete video zgjidhim ushtrimin 2 nga kapitulli 4.8A ku llogarisim syprinat e figurave te kufizuara nga funksione te ndryshme duke perdorur integralin e caktuar. Kater raste: y=x, y=-x, y=2x+1, dhe y=x^2+2.
+
+Zgjidhjet e librit: https://mesonjetorja.com/zgjidhje/matematika-12-pegi
+
+Lini komentet tuaja me poshte dhe beni Subscribe per me shume.
+
+Website: https://mesonjetorja.com/
+Instagram: https://www.instagram.com/mesonjetorja
+TikTok: https://www.tiktok.com/@mesonjetorja
+
+#matematike #integral #syprina #klasa12 #mesonjetorja
+
+
+===================================================
+ REEL A -- y = x, x in [1, 2], S = 3/2
+===================================================
+
+Caption (Instagram / TikTok):
+Sa eshte syprina nen y = x nga x=1 deri x=2? Integrale te caktuara me hapa te thjeshta.
+
+S = integral_1^2 x dx = [x^2/2] = 4/2 - 1/2 = 3/2 = 1,5
+
+Ushtrimi 2 | Kapitulli 4.8A | Matematika 12 (Botime Pegi)
+
+Me shume zgjidhje: mesonjetorja.com
+
+#matematike #integral #syprina #klasa12 #mesonjetorja
+
+
+===================================================
+ REEL B -- y = -x, x in [-2, -1], S = 3/2
+===================================================
+
+Caption (Instagram / TikTok):
+y = -x nga x=-2 deri x=-1. E njejta syprine si tek y=x? Po! Simetria ne veprim.
+
+S = integral_{-2}^{-1} (-x) dx = [-x^2/2] = -1/2 + 4/2 = 3/2 = 1,5
+
+Ushtrimi 2 | Kapitulli 4.8A | Matematika 12 (Botime Pegi)
+
+Me shume zgjidhje: mesonjetorja.com
+
+#matematike #integral #syprina #klasa12 #mesonjetorja
+
+
+===================================================
+ REEL C -- y = 2x+1, x in [2, 3], S = 6
+===================================================
+
+Caption (Instagram / TikTok):
+Syprina nen y = 2x + 1 nga x=2 deri x=3? Integrale e caktuar me funksion linear.
+
+S = integral_2^3 (2x+1) dx = [x^2 + x] = 12 - 6 = 6
+
+Ushtrimi 2 | Kapitulli 4.8A | Matematika 12 (Botime Pegi)
+
+Me shume zgjidhje: mesonjetorja.com
+
+#matematike #integral #syprina #klasa12 #mesonjetorja
+
+
+===================================================
+ REEL D -- y = x^2+2, x in [0, 3], S = 15
+===================================================
+
+Caption (Instagram / TikTok):
+Syprina nen parabolen y = x^2 + 2 nga 0 deri 3? Integrale me funksion kuadratik — me e bukura!
+
+S = integral_0^3 (x^2+2) dx = [x^3/3 + 2x] = (9+6) - 0 = 15
+
+Ushtrimi 2 | Kapitulli 4.8A | Matematika 12 (Botime Pegi)
+
+Me shume zgjidhje: mesonjetorja.com
+
+#matematike #integral #syprina #klasa12 #mesonjetorja
