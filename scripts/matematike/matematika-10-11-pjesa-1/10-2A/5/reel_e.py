@@ -1,7 +1,7 @@
 """
 Reel E — Ushtrimi 5, Njësia 10.2A
-Ekuacioni: 0 = 6x² + 12x - 15  →  rirendisim: 6x² + 12x - 15 = 0
-a=6, b=12, c=-15, D=504, x₁≈0,9  x₂≈-2,9
+Ekuacioni: x² + 20x = 45  →  rirendisim: x² + 20x - 45 = 0
+a=1, b=20, c=-45, D=580, x₁≈2,0  x₂≈-22,0
 
 Standalone vertical reel: hook, rearrange, solve, answer + CTA.
 """
@@ -54,7 +54,7 @@ class ReelE(Scene):
 
     def hook(self):
         eq = MathTex(
-            r"0 = 6x^2 + 12x - 15",
+            r"x^2 + 20x = 45",
             font_size=48, color=WHITE,
         )
         eq.move_to(UP * 3.0)
@@ -70,9 +70,9 @@ class ReelE(Scene):
         self.play(FadeIn(question, shift=UP * 0.2), run_time=0.6)
         self.wait(3.0)
 
-        # Hint: flip it around
+        # Hint: needs rearrangement
         hint = MathTex(
-            r"\text{Kujdes: ktheje në formë standarde!}",
+            r"\text{Kujdes: duhet rirendisur!}",
             font_size=SMALL_SIZE, color=HIGHLIGHT_COLOR,
         )
         hint.move_to(DOWN * 1.5)
@@ -95,7 +95,7 @@ class ReelE(Scene):
 
         # Show original equation
         eq_orig = MathTex(
-            r"0 = 6x^2 + 12x - 15",
+            r"x^2 + 20x = 45",
             font_size=EQ_SIZE, color=WHITE,
         )
         eq_orig.move_to(UP * 3.5)
@@ -104,14 +104,14 @@ class ReelE(Scene):
 
         # Rearrange
         rearr_label = MathTex(
-            r"\text{Shkruajmë në formën standarde:}",
+            r"\text{Rirendisim në formën } ax^2 + bx + c = 0 \text{:}",
             font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
         )
         rearr_label.move_to(UP * 2.5)
         self.play(FadeIn(rearr_label), run_time=0.4)
 
         eq_std = MathTex(
-            r"6x^2 + 12x - 15 = 0",
+            r"x^2 + 20x - 45 = 0",
             font_size=EQ_SIZE, color=SHAPE_COLOR,
         )
         eq_std.move_to(UP * 1.7)
@@ -120,7 +120,7 @@ class ReelE(Scene):
 
         # Identify a, b, c
         abc = MathTex(
-            r"a = 6, \quad b = 12, \quad c = -15",
+            r"a = 1, \quad b = 20, \quad c = -45",
             font_size=EQ_SIZE, color=LABEL_COLOR,
         )
         abc.move_to(UP * 0.7)
@@ -136,7 +136,7 @@ class ReelE(Scene):
         self.play(FadeIn(d_title), run_time=0.3)
 
         d_calc = MathTex(
-            r"D = 12^2 - 4 \cdot 6 \cdot (-15)",
+            r"D = 20^2 - 4 \cdot 1 \cdot (-45)",
             font_size=EQ_SIZE, color=WHITE,
         )
         d_calc.move_to(DOWN * 0.8)
@@ -144,7 +144,7 @@ class ReelE(Scene):
         self.wait(0.5)
 
         d_result = MathTex(
-            r"D = 144 + 360 = 504",
+            r"D = 400 + 180 = 580",
             font_size=EQ_SIZE, color=ANSWER_COLOR,
         )
         d_result.move_to(DOWN * 1.6)
@@ -170,44 +170,36 @@ class ReelE(Scene):
         self.wait(0.5)
 
         x_sub = MathTex(
-            r"x = \frac{-12 \pm \sqrt{504}}{2 \cdot 6}",
+            r"x = \frac{-20 \pm \sqrt{580}}{2}",
             font_size=EQ_SIZE, color=WHITE,
         )
         x_sub.move_to(UP * 2.0)
         self.play(Write(x_sub), run_time=0.7)
         self.wait(0.5)
 
-        x_simp = MathTex(
-            r"x = \frac{-12 \pm \sqrt{504}}{12}",
-            font_size=EQ_SIZE, color=WHITE,
-        )
-        x_simp.move_to(UP * 1.0)
-        self.play(Write(x_simp), run_time=0.6)
-        self.wait(0.5)
-
         sqrt_note = MathTex(
-            r"\sqrt{504} \approx 22{,}45",
+            r"\sqrt{580} \approx 24{,}08",
             font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
         )
-        sqrt_note.move_to(UP * 0.2)
+        sqrt_note.move_to(UP * 1.1)
         self.play(FadeIn(sqrt_note), run_time=0.4)
         self.wait(0.5)
 
         # x1
         x1_eq = MathTex(
-            r"x_1 = \frac{-12 + 22{,}45}{12} = \frac{10{,}45}{12} \approx 0{,}9",
+            r"x_1 = \frac{-20 + 24{,}08}{2} = \frac{4{,}08}{2} \approx 2{,}0",
             font_size=EQ_SIZE, color=ANSWER_COLOR,
         )
-        x1_eq.move_to(DOWN * 0.8)
+        x1_eq.move_to(DOWN * 0.1)
         self.play(Write(x1_eq), run_time=0.8)
         self.wait(0.8)
 
         # x2
         x2_eq = MathTex(
-            r"x_2 = \frac{-12 - 22{,}45}{12} = \frac{-34{,}45}{12} \approx -2{,}9",
+            r"x_2 = \frac{-20 - 24{,}08}{2} = \frac{-44{,}08}{2} \approx -22{,}0",
             font_size=EQ_SIZE, color=ANSWER_COLOR,
         )
-        x2_eq.move_to(DOWN * 2.0)
+        x2_eq.move_to(DOWN * 1.3)
         self.play(Write(x2_eq), run_time=0.8)
         self.wait(1.5)
 
@@ -219,13 +211,13 @@ class ReelE(Scene):
 
     def answer(self):
         ans1 = MathTex(
-            r"x_1 \approx 0{,}9",
+            r"x_1 \approx 2{,}0",
             font_size=ANSWER_SIZE, color=ANSWER_COLOR,
         )
         ans1.move_to(UP * 1.5)
 
         ans2 = MathTex(
-            r"x_2 \approx -2{,}9",
+            r"x_2 \approx -22{,}0",
             font_size=ANSWER_SIZE, color=ANSWER_COLOR,
         )
         ans2.move_to(UP * 0.2)

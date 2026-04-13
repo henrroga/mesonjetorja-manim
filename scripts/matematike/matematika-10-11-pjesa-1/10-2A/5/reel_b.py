@@ -1,9 +1,9 @@
 """
-Reel B — Ushtrimi 5, Njësia 10.2A
-Ekuacioni: x² + 20x = 45  →  rirendisim: x² + 20x - 45 = 0
-a=1, b=20, c=-45, D=580, x₁≈2,0  x₂≈-22,0
+Reel B — Ushtrimi 5, Njësia 10.2A (Pjesa 2)
+Ekuacioni: x² + 3x - 11 = 0
+a=1, b=3, c=-11, D=53, x₁≈2,1  x₂≈-5,1
 
-Standalone vertical reel: hook, rearrange, solve, answer + CTA.
+Standalone vertical reel: hook, solve, answer + CTA.
 """
 
 import sys, os
@@ -54,7 +54,7 @@ class ReelB(Scene):
 
     def hook(self):
         eq = MathTex(
-            r"x^2 + 20x = 45",
+            r"x^2 + 3x - 11 = 0",
             font_size=48, color=WHITE,
         )
         eq.move_to(UP * 3.0)
@@ -70,14 +70,14 @@ class ReelB(Scene):
         self.play(FadeIn(question, shift=UP * 0.2), run_time=0.6)
         self.wait(3.0)
 
-        # Hint: needs rearrangement
-        hint = MathTex(
-            r"\text{Kujdes: duhet rirendisur!}",
-            font_size=SMALL_SIZE, color=HIGHLIGHT_COLOR,
+        # Show quadratic formula
+        formula = MathTex(
+            r"x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}",
+            font_size=EQ_SIZE, color=SHAPE_COLOR,
         )
-        hint.move_to(DOWN * 1.5)
-        self.play(FadeIn(hint, shift=UP * 0.2), run_time=0.5)
-        self.wait(1.5)
+        formula.move_to(DOWN * 1.5)
+        self.play(Write(formula), run_time=0.8)
+        self.wait(2.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
 
@@ -93,63 +93,70 @@ class ReelB(Scene):
         title.move_to(UP * SAFE_TOP)
         self.play(FadeIn(title), run_time=0.3)
 
-        # Show original equation
-        eq_orig = MathTex(
-            r"x^2 + 20x = 45",
+        # Restate equation
+        eq = MathTex(
+            r"x^2 + 3x - 11 = 0",
             font_size=EQ_SIZE, color=WHITE,
         )
-        eq_orig.move_to(UP * 3.5)
-        self.play(Write(eq_orig), run_time=0.6)
+        eq.move_to(UP * 3.5)
+        self.play(Write(eq), run_time=0.6)
         self.wait(0.5)
-
-        # Rearrange
-        rearr_label = MathTex(
-            r"\text{Rirendisim në formën } ax^2 + bx + c = 0 \text{:}",
-            font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
-        )
-        rearr_label.move_to(UP * 2.5)
-        self.play(FadeIn(rearr_label), run_time=0.4)
-
-        eq_std = MathTex(
-            r"x^2 + 20x - 45 = 0",
-            font_size=EQ_SIZE, color=SHAPE_COLOR,
-        )
-        eq_std.move_to(UP * 1.7)
-        self.play(Write(eq_std), run_time=0.7)
-        self.wait(1.0)
 
         # Identify a, b, c
-        abc = MathTex(
-            r"a = 1, \quad b = 20, \quad c = -45",
-            font_size=EQ_SIZE, color=LABEL_COLOR,
-        )
-        abc.move_to(UP * 0.7)
-        self.play(Write(abc), run_time=0.7)
-        self.wait(0.8)
-
-        # Discriminant
-        d_title = MathTex(
-            r"\text{Dallori:}",
+        id_label = MathTex(
+            r"\text{Identifikojmë koeficientët:}",
             font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
         )
-        d_title.move_to(DOWN * 0.1)
-        self.play(FadeIn(d_title), run_time=0.3)
+        id_label.move_to(UP * 2.5)
+        self.play(FadeIn(id_label), run_time=0.4)
 
-        d_calc = MathTex(
-            r"D = 20^2 - 4 \cdot 1 \cdot (-45)",
+        abc = MathTex(
+            r"a = 1, \quad b = 3, \quad c = -11",
+            font_size=EQ_SIZE, color=LABEL_COLOR,
+        )
+        abc.move_to(UP * 1.7)
+        self.play(Write(abc), run_time=0.7)
+        self.wait(1.0)
+
+        # Calculate discriminant
+        d_title = MathTex(
+            r"\text{Llogarisim dallorin:}",
+            font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
+        )
+        d_title.move_to(UP * 0.7)
+        self.play(FadeIn(d_title), run_time=0.4)
+
+        d_step1 = MathTex(
+            r"D = b^2 - 4ac",
             font_size=EQ_SIZE, color=WHITE,
         )
-        d_calc.move_to(DOWN * 0.8)
-        self.play(Write(d_calc), run_time=0.7)
+        d_step1.move_to(UP * 0.0)
+        self.play(Write(d_step1), run_time=0.6)
         self.wait(0.5)
 
-        d_result = MathTex(
-            r"D = 400 + 180 = 580",
+        d_step2 = MathTex(
+            r"D = 3^2 - 4 \cdot 1 \cdot (-11)",
+            font_size=EQ_SIZE, color=WHITE,
+        )
+        d_step2.move_to(DOWN * 0.7)
+        self.play(Write(d_step2), run_time=0.7)
+        self.wait(0.5)
+
+        d_step3 = MathTex(
+            r"D = 9 + 44 = 53",
             font_size=EQ_SIZE, color=ANSWER_COLOR,
         )
-        d_result.move_to(DOWN * 1.6)
-        self.play(Write(d_result), run_time=0.7)
+        d_step3.move_to(DOWN * 1.4)
+        self.play(Write(d_step3), run_time=0.7)
         self.wait(1.0)
+
+        d_pos = MathTex(
+            r"D > 0 \;\Rightarrow\; \text{dy zgjidhje reale}",
+            font_size=SMALL_SIZE, color=STEP_TITLE_COLOR,
+        )
+        d_pos.move_to(DOWN * 2.2)
+        self.play(FadeIn(d_pos, shift=UP * 0.2), run_time=0.5)
+        self.wait(1.5)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
 
@@ -170,36 +177,44 @@ class ReelB(Scene):
         self.wait(0.5)
 
         x_sub = MathTex(
-            r"x = \frac{-20 \pm \sqrt{580}}{2}",
+            r"x = \frac{-3 \pm \sqrt{53}}{2 \cdot 1}",
             font_size=EQ_SIZE, color=WHITE,
         )
         x_sub.move_to(UP * 2.0)
         self.play(Write(x_sub), run_time=0.7)
+        self.wait(0.8)
+
+        x_simp = MathTex(
+            r"x = \frac{-3 \pm \sqrt{53}}{2}",
+            font_size=EQ_SIZE, color=WHITE,
+        )
+        x_simp.move_to(UP * 0.9)
+        self.play(Write(x_simp), run_time=0.7)
         self.wait(0.5)
 
         sqrt_note = MathTex(
-            r"\sqrt{580} \approx 24{,}08",
+            r"\sqrt{53} \approx 7{,}28",
             font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
         )
-        sqrt_note.move_to(UP * 1.1)
+        sqrt_note.move_to(UP * 0.1)
         self.play(FadeIn(sqrt_note), run_time=0.4)
         self.wait(0.5)
 
         # x1
         x1_eq = MathTex(
-            r"x_1 = \frac{-20 + 24{,}08}{2} = \frac{4{,}08}{2} \approx 2{,}0",
+            r"x_1 = \frac{-3 + 7{,}28}{2} = \frac{4{,}28}{2} \approx 2{,}1",
             font_size=EQ_SIZE, color=ANSWER_COLOR,
         )
-        x1_eq.move_to(DOWN * 0.1)
+        x1_eq.move_to(DOWN * 0.9)
         self.play(Write(x1_eq), run_time=0.8)
         self.wait(0.8)
 
         # x2
         x2_eq = MathTex(
-            r"x_2 = \frac{-20 - 24{,}08}{2} = \frac{-44{,}08}{2} \approx -22{,}0",
+            r"x_2 = \frac{-3 - 7{,}28}{2} = \frac{-10{,}28}{2} \approx -5{,}1",
             font_size=EQ_SIZE, color=ANSWER_COLOR,
         )
-        x2_eq.move_to(DOWN * 1.3)
+        x2_eq.move_to(DOWN * 2.0)
         self.play(Write(x2_eq), run_time=0.8)
         self.wait(1.5)
 
@@ -211,13 +226,13 @@ class ReelB(Scene):
 
     def answer(self):
         ans1 = MathTex(
-            r"x_1 \approx 2{,}0",
+            r"x_1 \approx 2{,}1",
             font_size=ANSWER_SIZE, color=ANSWER_COLOR,
         )
         ans1.move_to(UP * 1.5)
 
         ans2 = MathTex(
-            r"x_2 \approx -22{,}0",
+            r"x_2 \approx -5{,}1",
             font_size=ANSWER_SIZE, color=ANSWER_COLOR,
         )
         ans2.move_to(UP * 0.2)

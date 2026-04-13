@@ -6,7 +6,7 @@ Title:
 Ushtrimi 5 | Kapitulli 10.2A | Matematika 10 - 11: Pjesa I (Botime Pegi)
 
 Description:
-Në këtë video zgjidhim ushtrimin 5 nga kapitulli 10.2A ku përdorim formulën kuadratike për të zgjidhur 5 ekuacione të shkallës së dytë. Identifikojmë koeficientët a, b, c, llogarisim dallorin D = b² - 4ac, dhe gjejmë zgjidhjet x₁ dhe x₂ për secilin ekuacion.
+Në këtë video zgjidhim ushtrimin 5 nga kapitulli 10.2A ku përdorim formulën kuadratike për të zgjidhur 10 ekuacione të shkallës së dytë. Identifikojmë koeficientët a, b, c, llogarisim dallorin D = b² - 4ac, dhe gjejmë zgjidhjet x₁ dhe x₂ për secilin ekuacion.
 
 Zgjidhjet e librit: https://mesonjetorja.com/zgjidhje/matematika-10-11-pjesa-1
 
@@ -20,11 +20,45 @@ TikTok: https://www.tiktok.com/@mesonjetorja
 
 
 ═══════════════════════════════════════════════════════
- REEL A — x² - 8x + 6 = 0
+ REEL A — x² + 9x - 25 = 0 (Pjesa 1)
 ═══════════════════════════════════════════════════════
 
 Caption (Instagram / TikTok):
-Zgjidhe me formulën kuadratike: x² - 8x + 6 = 0 📐
+Zgjidhe me formulën kuadratike: x² + 9x - 25 = 0
+
+D = 81 + 100 = 181
+x₁ ≈ 2,2  x₂ ≈ -11,2
+
+Ushtrimi 5 | Kapitulli 10.2A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #ekuacione #kuadratike #klasa10 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL B — x² + 3x - 11 = 0 (Pjesa 2)
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Zgjidhe me formulën kuadratike: x² + 3x - 11 = 0
+
+D = 9 + 44 = 53
+x₁ ≈ 2,1  x₂ ≈ -5,1
+
+Ushtrimi 5 | Kapitulli 10.2A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #ekuacione #kuadratike #klasa10 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL C — x² - 8x + 6 = 0 (Pjesa 3)
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Zgjidhe me formulën kuadratike: x² - 8x + 6 = 0
 
 D = 64 - 24 = 40
 x₁ ≈ 7,2  x₂ ≈ 0,8
@@ -37,11 +71,28 @@ Më shumë zgjidhje: mesonjetorja.com
 
 
 ═══════════════════════════════════════════════════════
- REEL B — x² + 20x = 45 (rirendisim!)
+ REEL D — x² - 7x + 3 = 0 (Pjesa 4)
 ═══════════════════════════════════════════════════════
 
 Caption (Instagram / TikTok):
-Kujdes: x² + 20x = 45 duhet rirendisur! Si e zgjidhim me formulë? 🔄
+Zgjidhe me formulën kuadratike: x² - 7x + 3 = 0
+
+D = 49 - 12 = 37
+x₁ ≈ 6,5  x₂ ≈ 0,5
+
+Ushtrimi 5 | Kapitulli 10.2A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #ekuacione #kuadratike #klasa10 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL E — x² + 20x = 45 (Pjesa 5, rirendisim!)
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Kujdes: x² + 20x = 45 duhet rirendisur! Si e zgjidhim me formulë?
 
 x² + 20x - 45 = 0
 D = 400 + 180 = 580
@@ -55,14 +106,15 @@ Më shumë zgjidhje: mesonjetorja.com
 
 
 ═══════════════════════════════════════════════════════
- REEL C — 5x² + 7x - 12 = 0 (zgjidhje e pastër!)
+ REEL F — x² + 13x = 2 (Pjesa 6, rirendisim!)
 ═══════════════════════════════════════════════════════
 
 Caption (Instagram / TikTok):
-5x² + 7x - 12 = 0 — dallori del katror i plotë! 🎯
+Kujdes: x² + 13x = 2 duhet rirendisur! Si e zgjidhim me formulë?
 
-D = 289 = 17²
-x₁ = 1 (numër i plotë!)  x₂ = -2,4
+x² + 13x - 2 = 0
+D = 169 + 8 = 177
+x₁ ≈ 0,2  x₂ ≈ -13,2
 
 Ushtrimi 5 | Kapitulli 10.2A | Matematika 10-11 (Botime Pegi)
 
@@ -72,11 +124,11 @@ Më shumë zgjidhje: mesonjetorja.com
 
 
 ═══════════════════════════════════════════════════════
- REEL D — 3x² + 3x - 2 = 0
+ REEL G — 3x² + 3x - 2 = 0 (Pjesa 7)
 ═══════════════════════════════════════════════════════
 
 Caption (Instagram / TikTok):
-Kur a > 1 dhe përgjigjet janë thyesa: 3x² + 3x - 2 = 0 🧮
+Kur a > 1 dhe përgjigjet janë thyesa: 3x² + 3x - 2 = 0
 
 D = 33, x = (-3 ± √33) / 6
 x₁ ≈ 0,5  x₂ ≈ -1,5
@@ -89,15 +141,50 @@ Më shumë zgjidhje: mesonjetorja.com
 
 
 ═══════════════════════════════════════════════════════
- REEL E — 0 = 6x² + 12x - 15 (formë e kthyer!)
+ REEL H — 5x² + 7x - 12 = 0 (Pjesa 8, zgjidhje e pastër!)
 ═══════════════════════════════════════════════════════
 
 Caption (Instagram / TikTok):
-0 = 6x² + 12x - 15 — e kthejmë në formë standarde dhe zgjidhim! ✏️
+5x² + 7x - 12 = 0 — dallori del katror i plotë!
+
+D = 289 = 17²
+x₁ = 1 (numër i plotë!)  x₂ = -2,4
+
+Ushtrimi 5 | Kapitulli 10.2A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #ekuacione #kuadratike #klasa10 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL I — 0 = 6x² + 12x - 15 (Pjesa 9, formë e kthyer!)
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+0 = 6x² + 12x - 15 — e kthejmë në formë standarde dhe zgjidhim!
 
 6x² + 12x - 15 = 0
 D = 144 + 360 = 504
 x₁ ≈ 0,9  x₂ ≈ -2,9
+
+Ushtrimi 5 | Kapitulli 10.2A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #ekuacione #kuadratike #klasa10 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL J — 0 = 4x² + 11x - 18 (Pjesa 10, formë e kthyer!)
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+0 = 4x² + 11x - 18 — e kthejmë në formë standarde dhe zgjidhim!
+
+4x² + 11x - 18 = 0
+D = 121 + 288 = 409
+x₁ ≈ 1,2  x₂ ≈ -3,9
 
 Ushtrimi 5 | Kapitulli 10.2A | Matematika 10-11 (Botime Pegi)
 

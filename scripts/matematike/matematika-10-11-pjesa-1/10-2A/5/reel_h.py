@@ -1,7 +1,7 @@
 """
-Reel A — Ushtrimi 5, Njësia 10.2A (Pjesa 1)
-Ekuacioni: x² + 9x - 25 = 0
-a=1, b=9, c=-25, D=181, x₁≈2,2  x₂≈-11,2
+Reel H — Ushtrimi 5, Njësia 10.2A
+Ekuacioni: 5x² + 7x - 12 = 0
+a=5, b=7, c=-12, D=289=17², x₁=1, x₂=-2,4  (CLEAN integer!)
 
 Standalone vertical reel: hook, solve, answer + CTA.
 """
@@ -37,7 +37,7 @@ BODY_SIZE = 30
 SMALL_SIZE = 26
 
 
-class ReelA(Scene):
+class ReelH(Scene):
     def construct(self):
         apply_style(self)
         MathTex.set_default(tex_template=ALBANIAN_TEX)
@@ -54,7 +54,7 @@ class ReelA(Scene):
 
     def hook(self):
         eq = MathTex(
-            r"x^2 + 9x - 25 = 0",
+            r"5x^2 + 7x - 12 = 0",
             font_size=48, color=WHITE,
         )
         eq.move_to(UP * 3.0)
@@ -70,14 +70,14 @@ class ReelA(Scene):
         self.play(FadeIn(question, shift=UP * 0.2), run_time=0.6)
         self.wait(3.0)
 
-        # Show quadratic formula
-        formula = MathTex(
-            r"x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}",
-            font_size=EQ_SIZE, color=SHAPE_COLOR,
+        # Tease: one answer is an integer!
+        tease = MathTex(
+            r"\text{Njëra zgjidhje është numër i plotë!}",
+            font_size=SMALL_SIZE, color=HIGHLIGHT_COLOR,
         )
-        formula.move_to(DOWN * 1.5)
-        self.play(Write(formula), run_time=0.8)
-        self.wait(2.0)
+        tease.move_to(DOWN * 1.5)
+        self.play(FadeIn(tease, shift=UP * 0.2), run_time=0.5)
+        self.wait(1.5)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
 
@@ -95,7 +95,7 @@ class ReelA(Scene):
 
         # Restate equation
         eq = MathTex(
-            r"x^2 + 9x - 25 = 0",
+            r"5x^2 + 7x - 12 = 0",
             font_size=EQ_SIZE, color=WHITE,
         )
         eq.move_to(UP * 3.5)
@@ -103,59 +103,48 @@ class ReelA(Scene):
         self.wait(0.5)
 
         # Identify a, b, c
-        id_label = MathTex(
-            r"\text{Identifikojmë koeficientët:}",
-            font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
-        )
-        id_label.move_to(UP * 2.5)
-        self.play(FadeIn(id_label), run_time=0.4)
-
         abc = MathTex(
-            r"a = 1, \quad b = 9, \quad c = -25",
+            r"a = 5, \quad b = 7, \quad c = -12",
             font_size=EQ_SIZE, color=LABEL_COLOR,
         )
-        abc.move_to(UP * 1.7)
+        abc.move_to(UP * 2.5)
         self.play(Write(abc), run_time=0.7)
-        self.wait(1.0)
+        self.wait(0.8)
 
-        # Calculate discriminant
+        # Discriminant
         d_title = MathTex(
-            r"\text{Llogarisim dallorin:}",
+            r"\text{Dallori:}",
             font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
         )
-        d_title.move_to(UP * 0.7)
-        self.play(FadeIn(d_title), run_time=0.4)
+        d_title.move_to(UP * 1.6)
+        self.play(FadeIn(d_title), run_time=0.3)
 
-        d_step1 = MathTex(
-            r"D = b^2 - 4ac",
+        d_calc = MathTex(
+            r"D = 7^2 - 4 \cdot 5 \cdot (-12)",
             font_size=EQ_SIZE, color=WHITE,
         )
-        d_step1.move_to(UP * 0.0)
-        self.play(Write(d_step1), run_time=0.6)
+        d_calc.move_to(UP * 0.9)
+        self.play(Write(d_calc), run_time=0.7)
         self.wait(0.5)
 
         d_step2 = MathTex(
-            r"D = 9^2 - 4 \cdot 1 \cdot (-25)",
+            r"D = 49 + 240 = 289",
             font_size=EQ_SIZE, color=WHITE,
         )
-        d_step2.move_to(DOWN * 0.7)
+        d_step2.move_to(UP * 0.1)
         self.play(Write(d_step2), run_time=0.7)
         self.wait(0.5)
 
-        d_step3 = MathTex(
-            r"D = 81 + 100 = 181",
+        # Wow moment: perfect square!
+        d_wow = MathTex(
+            r"289 = 17^2 \;\Rightarrow\; \sqrt{D} = 17",
             font_size=EQ_SIZE, color=ANSWER_COLOR,
         )
-        d_step3.move_to(DOWN * 1.4)
-        self.play(Write(d_step3), run_time=0.7)
-        self.wait(1.0)
-
-        d_pos = MathTex(
-            r"D > 0 \;\Rightarrow\; \text{dy zgjidhje reale}",
-            font_size=SMALL_SIZE, color=STEP_TITLE_COLOR,
+        d_wow.move_to(DOWN * 0.7)
+        self.play(Write(d_wow), run_time=0.7)
+        self.play(
+            Circumscribe(d_wow, color=HIGHLIGHT_COLOR, run_time=0.6),
         )
-        d_pos.move_to(DOWN * 2.2)
-        self.play(FadeIn(d_pos, shift=UP * 0.2), run_time=0.5)
         self.wait(1.5)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
@@ -177,44 +166,39 @@ class ReelA(Scene):
         self.wait(0.5)
 
         x_sub = MathTex(
-            r"x = \frac{-9 \pm \sqrt{181}}{2 \cdot 1}",
+            r"x = \frac{-7 \pm 17}{2 \cdot 5}",
             font_size=EQ_SIZE, color=WHITE,
         )
         x_sub.move_to(UP * 2.0)
         self.play(Write(x_sub), run_time=0.7)
-        self.wait(0.8)
-
-        x_simp = MathTex(
-            r"x = \frac{-9 \pm \sqrt{181}}{2}",
-            font_size=EQ_SIZE, color=WHITE,
-        )
-        x_simp.move_to(UP * 0.9)
-        self.play(Write(x_simp), run_time=0.7)
         self.wait(0.5)
 
-        sqrt_note = MathTex(
-            r"\sqrt{181} \approx 13{,}45",
-            font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
+        x_simp = MathTex(
+            r"x = \frac{-7 \pm 17}{10}",
+            font_size=EQ_SIZE, color=WHITE,
         )
-        sqrt_note.move_to(UP * 0.1)
-        self.play(FadeIn(sqrt_note), run_time=0.4)
+        x_simp.move_to(UP * 1.0)
+        self.play(Write(x_simp), run_time=0.6)
         self.wait(0.5)
 
         # x1
         x1_eq = MathTex(
-            r"x_1 = \frac{-9 + 13{,}45}{2} = \frac{4{,}45}{2} \approx 2{,}2",
+            r"x_1 = \frac{-7 + 17}{10} = \frac{10}{10} = 1",
             font_size=EQ_SIZE, color=ANSWER_COLOR,
         )
-        x1_eq.move_to(DOWN * 0.9)
+        x1_eq.move_to(DOWN * 0.2)
         self.play(Write(x1_eq), run_time=0.8)
+        self.play(
+            Indicate(x1_eq[-1], color=HIGHLIGHT_COLOR, run_time=0.5),
+        )
         self.wait(0.8)
 
         # x2
         x2_eq = MathTex(
-            r"x_2 = \frac{-9 - 13{,}45}{2} = \frac{-22{,}45}{2} \approx -11{,}2",
+            r"x_2 = \frac{-7 - 17}{10} = \frac{-24}{10} = -2{,}4",
             font_size=EQ_SIZE, color=ANSWER_COLOR,
         )
-        x2_eq.move_to(DOWN * 2.0)
+        x2_eq.move_to(DOWN * 1.4)
         self.play(Write(x2_eq), run_time=0.8)
         self.wait(1.5)
 
@@ -226,13 +210,13 @@ class ReelA(Scene):
 
     def answer(self):
         ans1 = MathTex(
-            r"x_1 \approx 2{,}2",
+            r"x_1 = 1",
             font_size=ANSWER_SIZE, color=ANSWER_COLOR,
         )
         ans1.move_to(UP * 1.5)
 
         ans2 = MathTex(
-            r"x_2 \approx -11{,}2",
+            r"x_2 = -2{,}4",
             font_size=ANSWER_SIZE, color=ANSWER_COLOR,
         )
         ans2.move_to(UP * 0.2)
