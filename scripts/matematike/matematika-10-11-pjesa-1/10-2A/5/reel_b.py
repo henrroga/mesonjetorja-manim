@@ -129,7 +129,7 @@ class ReelB(Scene):
 
         # Discriminant
         d_title = MathTex(
-            r"\text{Diskriminanta:}",
+            r"\text{Dallori:}",
             font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
         )
         d_title.move_to(DOWN * 0.1)

@@ -120,7 +120,7 @@ class ReelA(Scene):
 
         # Calculate discriminant
         d_title = MathTex(
-            r"\text{Llogarisim diskriminantën:}",
+            r"\text{Llogarisim dallorin:}",
             font_size=SMALL_SIZE, color=BODY_TEXT_COLOR,
         )
         d_title.move_to(UP * 0.7)

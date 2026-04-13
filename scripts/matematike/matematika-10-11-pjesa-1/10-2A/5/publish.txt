@@ -6,7 +6,7 @@ Title:
 Ushtrimi 5 | Kapitulli 10.2A | Matematika 10 - 11: Pjesa I (Botime Pegi)
 
 Description:
-Në këtë video zgjidhim ushtrimin 5 nga kapitulli 10.2A ku përdorim formulën kuadratike për të zgjidhur 5 ekuacione të shkallës së dytë. Identifikojmë koeficientët a, b, c, llogarisim diskriminantën D = b² - 4ac, dhe gjejmë zgjidhjet x₁ dhe x₂ për secilin ekuacion.
+Në këtë video zgjidhim ushtrimin 5 nga kapitulli 10.2A ku përdorim formulën kuadratike për të zgjidhur 5 ekuacione të shkallës së dytë. Identifikojmë koeficientët a, b, c, llogarisim dallorin D = b² - 4ac, dhe gjejmë zgjidhjet x₁ dhe x₂ për secilin ekuacion.
 
 Zgjidhjet e librit: https://mesonjetorja.com/zgjidhje/matematika-10-11-pjesa-1
 
@@ -59,7 +59,7 @@ Më shumë zgjidhje: mesonjetorja.com
 ═══════════════════════════════════════════════════════
 
 Caption (Instagram / TikTok):
-5x² + 7x - 12 = 0 — diskriminanta del katror i plotë! 🎯
+5x² + 7x - 12 = 0 — dallori del katror i plotë! 🎯
 
 D = 289 = 17²
 x₁ = 1 (numër i plotë!)  x₂ = -2,4

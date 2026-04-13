@@ -100,10 +100,32 @@ Only remove the visual when ALL calculations that reference it are done.
 
 ---
 
-## 3. Integral / Area Exercises
+## 3. Albanian Mathematical Terminology
 
-### Albanian terminology
-- Use **"integrali"** — never "antiderivatë" or "antiderivata". Students know "integrali".
+**ALWAYS use Albanian textbook terms, not Latin/foreign loanwords.** Match the exact terminology from the exercise's solution text — that is authoritative.
+
+| Correct (Albanian) | WRONG (avoid) | Context |
+|---|---|---|
+| **Dallori** | "Diskriminanta" | Discriminant D = b² - 4ac (quadratic) |
+| **Integrali** | "antiderivatë" | Integral in calculus |
+| **Syprina** | "Sipërfaqja" (generic) | Area under curve |
+| **Kufiza e n-të** | "Termi i n-të" | nth term of sequence |
+| **Diferenca e përbashkët** | "Raporti" | Common difference (arithmetic seq) |
+| **Herësi** | — | Quotient |
+| **Njehsojmë** | — | "We calculate" (general solve verb) |
+| **Zgjidhje** | — | Solution |
+| **Ekuacion kuadratik** | "Ekuacion kuadratik" ✓ | Quadratic equation |
+| **Përkufizimi** | "Definicioni" | Definition |
+| **Provë** | — | Verification/check |
+
+**Why:** Students learn specific Albanian terms. Foreign loanwords like "diskriminanta" or "antiderivatë" aren't used in Albanian schools — students won't recognize them.
+
+**How to apply:** When the user provides an exercise JSON, look at the `solution` field — that has the authoritative terminology. Match it.
+
+## 4. Integral / Area Specifics
+
+### Terminology
+- Use **"integrali"** — never "antiderivatë" or "antiderivata"
 - "Njehsojmë integralin:" not "Gjejmë antiderivatën:"
 
 ### Always show units on area results
