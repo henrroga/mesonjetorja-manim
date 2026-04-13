@@ -1,10 +1,9 @@
 """
 Reel B — Ushtrimi 5, Njësia 8.4A
-"Sa atletë gjithsej dalin pozitiv?"
+"Sa pozitivë gjithsej?" (Total positive = 95 + 8 = 103)
 
-Standalone reel: re-establishes the doping-test context,
-shows compact tree with the two positive branches highlighted,
-calculates 95 + 8 = 103 total positives.
+Standalone reel: re-establishes the full doping-test context with numbers,
+shows both sources of positives, calculates the total.
 """
 
 import sys, os
@@ -45,12 +44,12 @@ class ReelB(Scene):
         Tex.set_default(tex_template=ALBANIAN_TEX)
 
         self.hook()
-        self.compact_tree()
+        self.setup_numbers()
         self.calculate()
         self.cta()
 
     # -----------------------------------------------
-    #  HOOK (0-8s)
+    #  HOOK (0-5s)
     # -----------------------------------------------
 
     def hook(self):
@@ -59,30 +58,30 @@ class ReelB(Scene):
             font_size=HOOK_SIZE, color=WHITE,
         )
         line2 = MathTex(
-            r"\text{100 përdorin barna, 400 jo.}",
-            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
+            r"\text{20\% përdorin barna.}",
+            font_size=BODY_SIZE, color=AUX_COLOR,
         )
         hook_group = VGroup(line1, line2).arrange(DOWN, buff=0.35)
-        hook_group.move_to(UP * 2.5)
+        hook_group.move_to(UP * 3.0)
 
         ask = MathTex(
-            r"\text{Sa atletë gjithsej dalin pozitiv?}",
+            r"\text{Sa atletë dalin pozitiv gjithsej?}",
             font_size=QUESTION_SIZE, color=HIGHLIGHT_COLOR,
         )
         ask.next_to(hook_group, DOWN, buff=0.7)
 
-        self.play(FadeIn(hook_group, shift=UP * 0.4), run_time=1.2)
-        self.wait(2.0)
+        self.play(FadeIn(hook_group, shift=UP * 0.4), run_time=1.0)
+        self.wait(1.5)
         self.play(FadeIn(ask, shift=UP * 0.3), run_time=0.8)
         self.wait(2.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
 
     # -----------------------------------------------
-    #  COMPACT TREE (8-28s)
+    #  SETUP NUMBERS (5-18s)
     # -----------------------------------------------
 
-    def compact_tree(self):
+    def setup_numbers(self):
         title = MathTex(
             r"\text{Nga diagrami pemë:}",
             font_size=BODY_SIZE, color=STEP_TITLE_COLOR,
@@ -90,104 +89,97 @@ class ReelB(Scene):
         title.move_to(UP * SAFE_TOP)
         self.play(FadeIn(title), run_time=0.5)
 
-        # Root
-        root = MathTex(r"500", font_size=EQ_SIZE, color=WHITE)
-        root.move_to(UP * 3.5)
-        self.play(GrowFromCenter(root), run_time=0.4)
-
-        # Level 1
-        user_pos = LEFT * 2.5 + UP * 1.5
-        clean_pos = RIGHT * 2.5 + UP * 1.5
-
-        line_user = Line(root.get_bottom(), user_pos + UP * 0.35, buff=0.1,
-                         color=AUX_COLOR, stroke_width=2.5)
-        line_clean = Line(root.get_bottom(), clean_pos + UP * 0.35, buff=0.1,
-                          color=SHAPE_COLOR, stroke_width=2.5)
-
-        user_node = MathTex(r"100", font_size=EQ_SIZE, color=AUX_COLOR)
-        user_node.move_to(user_pos)
-        clean_node = MathTex(r"400", font_size=EQ_SIZE, color=SHAPE_COLOR)
-        clean_node.move_to(clean_pos)
-
-        self.play(
-            Create(line_user), Create(line_clean),
-            GrowFromCenter(user_node), GrowFromCenter(clean_node),
-            run_time=0.7,
+        # --- Population split ---
+        pop_line = MathTex(
+            r"500 \text{ atletë}",
+            font_size=EQ_SIZE, color=WHITE,
         )
-        self.wait(0.5)
+        pop_line.move_to(UP * 3.5)
+        self.play(GrowFromCenter(pop_line), run_time=0.5)
 
-        # Level 2 — all four endpoints
-        up_pos = LEFT * 3.5 + DOWN * 0.5
-        un_pos = LEFT * 1.5 + DOWN * 0.5
-        cp_pos = RIGHT * 1.5 + DOWN * 0.5
-        cn_pos = RIGHT * 3.5 + DOWN * 0.5
-
-        line_up = Line(user_node.get_bottom(), up_pos + UP * 0.35, buff=0.1,
-                       color=LABEL_COLOR, stroke_width=2.5)
-        line_un = Line(user_node.get_bottom(), un_pos + UP * 0.35, buff=0.1,
-                       color=BODY_TEXT_COLOR, stroke_width=1.5)
-        line_cp = Line(clean_node.get_bottom(), cp_pos + UP * 0.35, buff=0.1,
-                       color=HIGHLIGHT_COLOR, stroke_width=2.5)
-        line_cn = Line(clean_node.get_bottom(), cn_pos + UP * 0.35, buff=0.1,
-                       color=BODY_TEXT_COLOR, stroke_width=1.5)
-
-        up_node = MathTex(r"95", font_size=EQ_SIZE, color=LABEL_COLOR)
-        up_node.move_to(up_pos)
-        up_sub = MathTex(r"\text{Poz.}", font_size=SMALL_SIZE, color=LABEL_COLOR)
-        up_sub.next_to(up_node, DOWN, buff=0.12)
-
-        un_node = MathTex(r"5", font_size=BODY_SIZE, color=BODY_TEXT_COLOR)
-        un_node.move_to(un_pos)
-        un_sub = MathTex(r"\text{Neg.}", font_size=SMALL_SIZE, color=BODY_TEXT_COLOR)
-        un_sub.next_to(un_node, DOWN, buff=0.12)
-
-        cp_node = MathTex(r"8", font_size=EQ_SIZE, color=HIGHLIGHT_COLOR)
-        cp_node.move_to(cp_pos)
-        cp_sub = MathTex(r"\text{Poz.}", font_size=SMALL_SIZE, color=HIGHLIGHT_COLOR)
-        cp_sub.next_to(cp_node, DOWN, buff=0.12)
-
-        cn_node = MathTex(r"392", font_size=BODY_SIZE, color=BODY_TEXT_COLOR)
-        cn_node.move_to(cn_pos)
-        cn_sub = MathTex(r"\text{Neg.}", font_size=SMALL_SIZE, color=BODY_TEXT_COLOR)
-        cn_sub.next_to(cn_node, DOWN, buff=0.12)
-
-        self.play(
-            Create(line_up), Create(line_un),
-            Create(line_cp), Create(line_cn),
-            run_time=0.6,
+        # Left branch: users
+        user_label = MathTex(
+            r"100 \text{ përdorin barna}",
+            font_size=BODY_SIZE, color=AUX_COLOR,
         )
-        self.play(
-            GrowFromCenter(up_node), FadeIn(up_sub),
-            GrowFromCenter(un_node), FadeIn(un_sub),
-            GrowFromCenter(cp_node), FadeIn(cp_sub),
-            GrowFromCenter(cn_node), FadeIn(cn_sub),
-            run_time=0.6,
+        user_label.move_to(LEFT * 1.8 + UP * 2.2)
+        arrow_l = Arrow(
+            pop_line.get_bottom() + DOWN * 0.1,
+            user_label.get_top() + UP * 0.1,
+            buff=0.1, color=AUX_COLOR, stroke_width=2.5, max_tip_length_to_length_ratio=0.15,
         )
-        self.wait(1.5)
 
-        # Highlight the two positive endpoints
+        # Right branch: non-users
+        clean_label = MathTex(
+            r"400 \text{ nuk përdorin}",
+            font_size=BODY_SIZE, color=SHAPE_COLOR,
+        )
+        clean_label.move_to(RIGHT * 1.8 + UP * 2.2)
+        arrow_r = Arrow(
+            pop_line.get_bottom() + DOWN * 0.1,
+            clean_label.get_top() + UP * 0.1,
+            buff=0.1, color=SHAPE_COLOR, stroke_width=2.5, max_tip_length_to_length_ratio=0.15,
+        )
+
         self.play(
-            Indicate(up_node, color=LABEL_COLOR, scale_factor=1.3),
-            Indicate(cp_node, color=HIGHLIGHT_COLOR, scale_factor=1.3),
+            GrowArrow(arrow_l), GrowArrow(arrow_r),
+            FadeIn(user_label), FadeIn(clean_label),
             run_time=0.8,
         )
         self.wait(1.0)
 
-        # Store references
-        self.up_node = up_node
-        self.cp_node = cp_node
+        # --- User positives ---
+        user_pos_text = MathTex(
+            r"19/20 \;\rightarrow\; 95 \text{ pozitivë}",
+            font_size=BODY_SIZE, color=LABEL_COLOR,
+        )
+        user_pos_text.next_to(user_label, DOWN, buff=0.5)
+
+        self.play(FadeIn(user_pos_text, shift=UP * 0.2), run_time=0.7)
+        self.wait(1.0)
+
+        # --- Clean false positives ---
+        clean_pos_text = MathTex(
+            r"1/50 \;\rightarrow\; 8 \text{ pozitivë}",
+            font_size=BODY_SIZE, color=HIGHLIGHT_COLOR,
+        )
+        clean_pos_text.next_to(clean_label, DOWN, buff=0.5)
+
+        alarm_note = MathTex(
+            r"\text{(alarme të rreme!)}",
+            font_size=SMALL_SIZE, color=HIGHLIGHT_COLOR,
+        )
+        alarm_note.next_to(clean_pos_text, DOWN, buff=0.15)
+
+        self.play(FadeIn(clean_pos_text, shift=UP * 0.2), run_time=0.7)
+        self.play(FadeIn(alarm_note), run_time=0.4)
+        self.wait(1.5)
+
+        # Flash the false alarm number
+        self.play(
+            Indicate(clean_pos_text, color=HIGHLIGHT_COLOR, scale_factor=1.1),
+            run_time=0.6,
+        )
+        self.wait(1.0)
+
+        # Store for transition
+        self.setup_mobs = VGroup(
+            title, pop_line, arrow_l, arrow_r,
+            user_label, clean_label,
+            user_pos_text, clean_pos_text, alarm_note,
+        )
 
     # -----------------------------------------------
-    #  CALCULATE (28-42s)
+    #  CALCULATE (18-35s)
     # -----------------------------------------------
 
     def calculate(self):
-        # Sum equation
+        # Sum title
         sum_title = MathTex(
             r"\text{Pozitivë gjithsej:}",
             font_size=BODY_SIZE, color=STEP_TITLE_COLOR,
         )
-        sum_title.move_to(DOWN * 2.0)
+        sum_title.move_to(DOWN * 0.8)
 
         sum_eq = MathTex(
             r"95 + 8 = 103",
@@ -199,7 +191,7 @@ class ReelB(Scene):
         self.play(Write(sum_eq), run_time=1.0)
         self.wait(1.5)
 
-        # Answer screen
+        # Clear and show answer
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
 
         ans_label = MathTex(

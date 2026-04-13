@@ -1,9 +1,10 @@
 """
 Reel C — Ushtrimi 5, Njësia 8.4A
-"Sa prej pozitivëve janë alarme të rreme?"
+"Alarmet e rreme" — 8 atletë të pafajshëm dalin pozitiv!
 
-Standalone reel: the surprise — 8 out of 103 positives are clean athletes!
-Shows 8/103 ~ 7.8% false positive rate among positives.
+Standalone reel: the SURPRISE reel. Shows WHY 8 false alarms exist.
+400 clean athletes, test gives false positive 1/50 times => 8 false alarms.
+8 out of 103 total positives (~8%) are innocent.
 """
 
 import sys, os
@@ -44,8 +45,8 @@ class ReelC(Scene):
         Tex.set_default(tex_template=ALBANIAN_TEX)
 
         self.hook()
-        self.breakdown()
-        self.surprise()
+        self.setup_numbers()
+        self.false_alarm_calc()
         self.cta()
 
     # -----------------------------------------------
@@ -54,154 +55,182 @@ class ReelC(Scene):
 
     def hook(self):
         line1 = MathTex(
-            r"\text{Testi i dopingut doli pozitiv}",
+            r"\text{500 atletë testohen për doping.}",
             font_size=HOOK_SIZE, color=WHITE,
         )
         line2 = MathTex(
-            r"\text{për 103 atletë.}",
-            font_size=HOOK_SIZE, color=WHITE,
+            r"\text{20\% përdorin barna.}",
+            font_size=BODY_SIZE, color=AUX_COLOR,
         )
-        hook_group = VGroup(line1, line2).arrange(DOWN, buff=0.3)
-        hook_group.move_to(UP * 2.5)
+        line3 = MathTex(
+            r"\text{Testi është 95\% i saktë --}",
+            font_size=BODY_SIZE, color=BODY_TEXT_COLOR,
+        )
+        hook_group = VGroup(line1, line2, line3).arrange(DOWN, buff=0.3)
+        hook_group.move_to(UP * 3.0)
 
         ask = MathTex(
-            r"\text{Sa prej tyre janë TË PASTËR?}",
+            r"\text{por a mund të gabojë?}",
             font_size=QUESTION_SIZE, color=HIGHLIGHT_COLOR,
         )
-        ask.next_to(hook_group, DOWN, buff=0.7)
+        ask.next_to(hook_group, DOWN, buff=0.6)
 
         self.play(FadeIn(hook_group, shift=UP * 0.4), run_time=1.2)
         self.wait(2.0)
         self.play(FadeIn(ask, shift=UP * 0.3), run_time=0.8)
-        self.wait(2.0)
+        self.wait(2.5)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
 
     # -----------------------------------------------
-    #  BREAKDOWN (8-30s)
+    #  SETUP — show the clean-athlete branch (8-22s)
     # -----------------------------------------------
 
-    def breakdown(self):
+    def setup_numbers(self):
         title = MathTex(
-            r"\text{Nga ku vijnë 103 pozitivët?}",
+            r"\text{Atletët që NUK përdorin barna:}",
             font_size=BODY_SIZE, color=STEP_TITLE_COLOR,
         )
         title.move_to(UP * SAFE_TOP)
         self.play(FadeIn(title), run_time=0.5)
 
-        # Two sources
-        src1_label = MathTex(
-            r"\text{Përdorues barnash:}",
-            font_size=BODY_SIZE, color=AUX_COLOR,
+        # Population split
+        pop = MathTex(
+            r"500 \text{ atletë}",
+            font_size=EQ_SIZE, color=WHITE,
         )
-        src1_val = MathTex(
-            r"95 \text{ pozitivë}",
-            font_size=EQ_SIZE, color=AUX_COLOR,
-        )
-        src1 = VGroup(src1_label, src1_val).arrange(DOWN, buff=0.2)
-        src1.move_to(UP * 2.5)
+        pop.move_to(UP * 3.5)
+        self.play(GrowFromCenter(pop), run_time=0.5)
 
-        src2_label = MathTex(
-            r"\text{Atletë të pastër:}",
-            font_size=BODY_SIZE, color=HIGHLIGHT_COLOR,
+        # Split arrow
+        split_l = MathTex(
+            r"100 \text{ përdorin}",
+            font_size=SMALL_SIZE, color=AUX_COLOR,
         )
-        src2_val = MathTex(
-            r"8 \text{ pozitivë (alarme të rreme!)}",
-            font_size=EQ_SIZE, color=HIGHLIGHT_COLOR,
+        split_l.move_to(LEFT * 2.0 + UP * 2.3)
+        split_r = MathTex(
+            r"400 \text{ nuk përdorin}",
+            font_size=BODY_SIZE, color=SHAPE_COLOR,
         )
-        src2 = VGroup(src2_label, src2_val).arrange(DOWN, buff=0.2)
-        src2.next_to(src1, DOWN, buff=0.6)
+        split_r.move_to(RIGHT * 1.5 + UP * 2.3)
 
-        self.play(FadeIn(src1, shift=UP * 0.3), run_time=0.8)
-        self.wait(1.5)
-        self.play(FadeIn(src2, shift=UP * 0.3), run_time=0.8)
-        self.wait(1.0)
+        arrow_l = Arrow(
+            pop.get_bottom() + DOWN * 0.1,
+            split_l.get_top() + UP * 0.1,
+            buff=0.1, color=AUX_COLOR, stroke_width=2, max_tip_length_to_length_ratio=0.15,
+        )
+        arrow_r = Arrow(
+            pop.get_bottom() + DOWN * 0.1,
+            split_r.get_top() + UP * 0.1,
+            buff=0.1, color=SHAPE_COLOR, stroke_width=2.5, max_tip_length_to_length_ratio=0.15,
+        )
 
-        # Flash the false alarm
+        # Dim the left (user) branch, focus on right (clean)
         self.play(
-            Indicate(src2_val, color=HIGHLIGHT_COLOR, scale_factor=1.1),
+            GrowArrow(arrow_l), GrowArrow(arrow_r),
+            FadeIn(split_l), FadeIn(split_r),
             run_time=0.8,
         )
+        self.play(
+            split_l.animate.set_opacity(0.35),
+            arrow_l.animate.set_opacity(0.35),
+            run_time=0.4,
+        )
+        self.wait(1.0)
+
+        # Highlight the 400 clean athletes
+        self.play(
+            Indicate(split_r, color=SHAPE_COLOR, scale_factor=1.1),
+            run_time=0.6,
+        )
+
+        # Show the false positive rate
+        rate_text = MathTex(
+            r"\text{Testi jep pozitiv në } \frac{1}{50} \text{ rastesh}",
+            font_size=BODY_SIZE, color=HIGHLIGHT_COLOR,
+        )
+        rate_text.move_to(UP * 0.9)
+        self.play(FadeIn(rate_text, shift=UP * 0.2), run_time=0.8)
         self.wait(1.5)
 
-        # Total
-        total_eq = MathTex(
-            r"\text{Gjithsej pozitivë:} \quad 95 + 8 = 103",
-            font_size=BODY_SIZE, color=WHITE,
-        )
-        total_eq.next_to(src2, DOWN, buff=0.6)
-        self.play(Write(total_eq), run_time=0.8)
-        self.wait(1.5)
-
-        # False positive count
-        fp_title = MathTex(
-            r"\text{Alarme të rreme:}",
-            font_size=BODY_SIZE, color=STEP_TITLE_COLOR,
-        )
-        fp_title.next_to(total_eq, DOWN, buff=0.6)
-
-        fp_eq = MathTex(
-            r"8 \text{ atletë të pastër me test pozitiv}",
+        # The multiplication
+        calc = MathTex(
+            r"400 \times \frac{1}{50} = 8",
             font_size=EQ_SIZE, color=HIGHLIGHT_COLOR,
         )
-        fp_eq.next_to(fp_title, DOWN, buff=0.3)
+        calc.next_to(rate_text, DOWN, buff=0.5)
+        self.play(Write(calc), run_time=1.0)
+        self.wait(1.0)
 
-        self.play(FadeIn(fp_title), run_time=0.5)
-        self.play(Write(fp_eq), run_time=0.8)
+        alarm_label = MathTex(
+            r"\text{8 alarme të rreme!}",
+            font_size=QUESTION_SIZE, color=HIGHLIGHT_COLOR,
+        )
+        alarm_label.next_to(calc, DOWN, buff=0.5)
+        self.play(FadeIn(alarm_label, shift=UP * 0.2), run_time=0.7)
+        self.play(
+            Indicate(alarm_label, color=HIGHLIGHT_COLOR, scale_factor=1.1),
+            run_time=0.7,
+        )
         self.wait(2.0)
 
     # -----------------------------------------------
-    #  SURPRISE — percentage (30-45s)
+    #  CONTEXT + ANSWER (22-35s)
     # -----------------------------------------------
 
-    def surprise(self):
+    def false_alarm_calc(self):
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.4)
 
-        q = MathTex(
-            r"\text{Nga 103 pozitivë, sa janë të rremë?}",
+        # Context: 8 out of 103 positives
+        context_title = MathTex(
+            r"\text{Nga 103 pozitivë gjithsej:}",
             font_size=BODY_SIZE, color=STEP_TITLE_COLOR,
         )
-        q.move_to(UP * 3.0)
-        self.play(FadeIn(q), run_time=0.5)
+        context_title.move_to(UP * 3.0)
+        self.play(FadeIn(context_title), run_time=0.5)
 
-        frac_eq = MathTex(
-            r"\frac{8}{103} \approx 0{,}078 = 7{,}8\%",
-            font_size=EQ_SIZE, color=HIGHLIGHT_COLOR,
+        # Show both sources
+        src1 = MathTex(
+            r"95 \text{ janë përdorues të vërtetë}",
+            font_size=BODY_SIZE, color=AUX_COLOR,
         )
-        frac_eq.next_to(q, DOWN, buff=0.7)
-        self.play(Write(frac_eq), run_time=1.2)
-        self.wait(1.5)
+        src1.next_to(context_title, DOWN, buff=0.5)
 
-        # Big reveal
-        reveal = MathTex(
-            r"\text{7{,}8\% e pozitivëve janë}",
-            font_size=BODY_SIZE, color=WHITE,
+        src2 = MathTex(
+            r"8 \text{ janë atletë të pafajshëm!}",
+            font_size=BODY_SIZE, color=HIGHLIGHT_COLOR,
         )
-        reveal2 = MathTex(
-            r"\text{alarme të rreme!}",
-            font_size=QUESTION_SIZE, color=HIGHLIGHT_COLOR,
-        )
-        reveal_group = VGroup(reveal, reveal2).arrange(DOWN, buff=0.3)
-        reveal_group.next_to(frac_eq, DOWN, buff=0.8)
+        src2.next_to(src1, DOWN, buff=0.35)
 
-        self.play(FadeIn(reveal_group, shift=UP * 0.3), run_time=0.8)
+        self.play(FadeIn(src1, shift=UP * 0.2), run_time=0.6)
+        self.wait(0.8)
+        self.play(FadeIn(src2, shift=UP * 0.2), run_time=0.6)
         self.wait(1.0)
 
+        # Percentage
+        pct = MathTex(
+            r"\frac{8}{103} \approx 7{,}8\%",
+            font_size=EQ_SIZE, color=HIGHLIGHT_COLOR,
+        )
+        pct.next_to(src2, DOWN, buff=0.6)
+        self.play(Write(pct), run_time=0.8)
+        self.wait(1.5)
+
         # Answer box
-        ans = MathTex(
+        answer = MathTex(
             r"8 \text{ alarme të rreme}",
             font_size=ANSWER_SIZE, color=ANSWER_COLOR,
         )
-        ans.next_to(reveal_group, DOWN, buff=0.7)
-        box = make_answer_box(ans)
+        answer.next_to(pct, DOWN, buff=0.7)
+        box = make_answer_box(answer)
 
-        self.play(Write(ans), run_time=0.8)
+        self.play(Write(answer), run_time=0.8)
         self.play(Create(box), run_time=0.4)
         self.play(
-            Flash(ans.get_center(), color=ANSWER_COLOR,
+            Flash(answer.get_center(), color=ANSWER_COLOR,
                   line_length=0.2, num_lines=10, run_time=0.5),
         )
-        self.wait(3.0)
+        self.wait(2.5)
 
     # -----------------------------------------------
     #  CTA

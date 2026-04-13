@@ -111,12 +111,34 @@ Analyze the exercise and identify natural "reel boundaries":
 - `reel_b.py` — "P(0), P(3), P(6) for dice differences" (three quick probabilities)
 - `reel_c.py` — "Is a dice difference prime?" (prime analysis + P(prime))
 
-### Standalone Rule
+### Standalone Rule — SHOW THE NUMBERS
 
-Each reel must re-establish context. Don't assume the viewer saw a previous reel.
-- Reel B can't start with "continuing from before..." — it must state the problem fresh
-- Brief context recap (5–8 seconds) is NOT wasted time, it's essential
-- Show the dice / table / setup again if needed — fast, but present
+Each reel MUST re-establish context with the actual numbers from the problem. Never assume the viewer knows the setup.
+
+**Every reel must show:**
+- The KEY NUMBERS from the original problem (e.g., "500 atletë, 20% përdorin", "1 në 500 i sëmurë")
+- What is being asked in THIS specific reel
+- A brief visual of the setup (mini-tree, small table, or at minimum a compact numbers block)
+
+**Example — good vs bad:**
+
+```
+# BAD — viewer has no idea what the numbers mean
+Hook: "Sa pozitivë të rremë janë?"
+→ jumps to calculation
+
+# GOOD — numbers establish the problem
+Hook: "500 atletë testohen. 20% përdorin doping."
+      "Testi: 95% saktësi. Sa pozitivë të rremë?"
+→ shows the key numbers first, then the specific question
+```
+
+**Rules:**
+- A 5–10 second numbers recap is NOT wasted time — it's essential
+- Show the key data FIRST before asking the specific question
+- Use a mini-tree/table/diagram if the original has one
+- If the reel is about one sub-calculation, show ALL the numbers it depends on
+- The viewer should think "Oh, I understand the setup" by second 10
 
 ---
 
