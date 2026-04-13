@@ -1,0 +1,96 @@
+═══════════════════════════════════════════════════════
+ YOUTUBE VIDEO
+═══════════════════════════════════════════════════════
+
+Title:
+Ushtrimi 5 | Kapitulli 8.4A | Matematika 10 - 11: Pjesa II (Botime Pegi)
+
+Description:
+Në këtë video zgjidhim ushtrimin 5 nga kapitulli 8.4A — testi i dopingut për 500 atletë. Ndërtojmë diagramin pemë të frekuencave, gjejmë numrin total të analizave pozitive (103), zbulojmë alarmet e rreme (8 atletë të pastër me test pozitiv!), dhe llogarisim probabilitetin që testi jep rezultat të saktë: P = 487/500 = 0,974 = 97,4%.
+
+Zgjidhjet e librit: https://mesonjetorja.com/zgjidhje/matematika-10-11-pjesa-2
+
+Lini komentet tuaja më poshtë dhe bëni Subscribe për më shumë.
+
+Website: https://mesonjetorja.com/
+Instagram: https://www.instagram.com/mesonjetorja
+TikTok: https://www.tiktok.com/@mesonjetorja
+
+#matematike #probabilitet #diagrampeme #doping #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL A — Diagrami pemë i frekuencave
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+500 atletë testohen për doping. 20% përdorin barna (100 atletë), 80% janë të pastër (400).
+
+Përdorues: 95 pozitivë / 5 negativë
+Jo-përdorues: 8 pozitivë (alarme të rreme!) / 392 negativë
+
+Si duket diagrami pemë? Shiko deri në fund!
+
+Ushtrimi 5 | Kapitulli 8.4A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #probabilitet #diagrampeme #doping #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL B — Sa atletë dalin pozitiv gjithsej?
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+500 atletë, test dopingu. 100 përdorin barna, 400 jo. Sa dalin pozitiv gjithsej?
+
+Përdorues pozitivë: 95
+Jo-përdorues pozitivë: 8 (alarme të rreme!)
+Gjithsej: 95 + 8 = 103 analiza pozitive
+
+Ushtrimi 5 | Kapitulli 8.4A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #probabilitet #diagrampeme #doping #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL C — Alarme të rreme (false positives)
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+103 atletë dalin pozitiv në testin e dopingut. Por sa prej tyre janë TË PASTËR?
+
+8 atletë janë alarme të rreme — atletë të pastër me test pozitiv!
+8/103 ≈ 7,8% e pozitivëve janë gabim!
+
+Kjo është arsyeja pse testet konfirmohen dy herë.
+
+Ushtrimi 5 | Kapitulli 8.4A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #probabilitet #diagrampeme #doping #falsepositives #klasa11 #mesonjetorja
+
+
+═══════════════════════════════════════════════════════
+ REEL D — Probabiliteti i rezultatit të saktë
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Sa i saktë është testi i dopingut?
+
+Rezultate të sakta = përdorues+pozitiv + jo-përdorues+negativ
+= 95 + 392 = 487
+
+P(saktë) = 487/500 = 0,974 = 97,4%
+
+Testi ka saktësi 97,4% — por prapë bën 13 gabime nga 500!
+
+Ushtrimi 5 | Kapitulli 8.4A | Matematika 10-11 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #probabilitet #diagrampeme #doping #klasa11 #mesonjetorja
