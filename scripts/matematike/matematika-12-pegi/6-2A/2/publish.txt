@@ -1,0 +1,137 @@
+═══════════════════════════════════════════════════════
+ YOUTUBE VIDEO
+═══════════════════════════════════════════════════════
+
+Title:
+Ushtrimi 2 | Kapitulli 6.2A | Matematika 12 (Botime Pegi)
+
+Description:
+Në këtë video zgjidhim ushtrimin 2 nga kapitulli 6.2A ku gjejmë gjatësinë dhe këndin α për 7 vektorë në plan.
+
+Vektorët:
+a) 5i + 2j     b) 7i + 9j     c) -5j
+d) -2i + 3j    e) 3i - 5j     f) -6i - 5j    g) -2i
+
+Përdorim formulën e gjatësisë |v| = √(x² + y²) dhe këndin me boshtin Ox nëpërmjet cos⁻¹(x/|v|).
+
+Zgjidhjet e librit: https://mesonjetorja.com/zgjidhje/matematika-12-pegi
+
+Lini komentet tuaja më poshtë dhe bëni Subscribe për më shumë.
+
+Website: https://mesonjetorja.com/
+Instagram: https://www.instagram.com/mesonjetorja
+TikTok: https://www.tiktok.com/@mesonjetorja
+
+#matematike #vektore #gjatesia #kendi #klasa12
+
+═══════════════════════════════════════════════════════
+ REEL A — 5i + 2j
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Gjej gjatësinë dhe këndin α për vektorin 5i + 2j
+
+|v| = √29 ≈ 5,39
+α ≈ 21,8°
+
+Ushtrimi 2 | Kapitulli 6.2A | Matematika 12 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #vektore #kendi #klasa12 #mesonjetorja
+
+═══════════════════════════════════════════════════════
+ REEL B — 7i + 9j
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Gjej gjatësinë dhe këndin α për vektorin 7i + 9j
+
+|v| = √130 ≈ 11,4
+α ≈ 52,1°
+
+Ushtrimi 2 | Kapitulli 6.2A | Matematika 12 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #vektore #kendi #klasa12 #mesonjetorja
+
+═══════════════════════════════════════════════════════
+ REEL C — -5j
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+-5j — vektor mbi boshtin Oy. Çfarë këndi bën me Ox?
+
+|v| = 5
+α = -90°
+
+Ushtrimi 2 | Kapitulli 6.2A | Matematika 12 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #vektore #kendi #klasa12 #mesonjetorja
+
+═══════════════════════════════════════════════════════
+ REEL D — -2i + 3j
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Vektori -2i + 3j ndodhet në kuadratin II. Sa është këndi?
+
+|v| = √13 ≈ 3,61
+α ≈ 123,7°
+
+Ushtrimi 2 | Kapitulli 6.2A | Matematika 12 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #vektore #kendi #klasa12 #mesonjetorja
+
+═══════════════════════════════════════════════════════
+ REEL E — 3i - 5j
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Kur y < 0, këndi bëhet negativ! Gjej α për 3i - 5j
+
+|v| = √34 ≈ 5,83
+α ≈ -59,0°
+
+Ushtrimi 2 | Kapitulli 6.2A | Matematika 12 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #vektore #kendi #klasa12 #mesonjetorja
+
+═══════════════════════════════════════════════════════
+ REEL F — -6i - 5j
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+Kuadrati III: -6i - 5j. Gjej gjatësinë dhe këndin!
+
+|v| = √61 ≈ 7,81
+α ≈ -140,2°
+
+Ushtrimi 2 | Kapitulli 6.2A | Matematika 12 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #vektore #kendi #klasa12 #mesonjetorja
+
+═══════════════════════════════════════════════════════
+ REEL G — -2i
+═══════════════════════════════════════════════════════
+
+Caption (Instagram / TikTok):
+-2i — vektor mbi boshtin negativ Ox. Sa është këndi?
+
+|v| = 2
+α = 180°
+
+Ushtrimi 2 | Kapitulli 6.2A | Matematika 12 (Botime Pegi)
+
+Më shumë zgjidhje: mesonjetorja.com
+
+#matematike #vektore #kendi #klasa12 #mesonjetorja
